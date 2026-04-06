@@ -61,7 +61,7 @@
                   <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#xe-noi-bat">Sản phẩm</a>
+                  <a class="nav-link" href="./products.html">Sản phẩm</a>
                 </li>
                 <li class="nav-item active">
                   <a class="nav-link" href="./create_product.html"
@@ -89,7 +89,7 @@
                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                   </svg>
                 </a>
-                <a class="cart_link" href="#xe-noi-bat" aria-label="Yêu thích">
+                <a class="cart_link" href="./order.html" aria-label="Yêu thích">
                   <svg
                     version="1.1"
                     xmlns="http://www.w3.org/2000/svg"
@@ -168,7 +168,7 @@
           <div class="col-lg-8">
             <div class="shadow-lg p-4 rounded mt-3">
               <form>
-                <!-- NAME -->
+                <!-- TÊN XE -->
                 <div class="mb-3">
                   <label><b>Tên xe</b></label>
                   <input
@@ -178,7 +178,7 @@
                   />
                 </div>
 
-                <!-- PRICE -->
+                <!-- GIÁ -->
                 <div class="mb-3">
                   <label><b>Giá (VND)</b></label>
                   <input
@@ -188,7 +188,7 @@
                   />
                 </div>
 
-                <!-- CATEGORY -->
+                <!-- LOẠI XE -->
                 <div class="mb-3">
                   <label><b>Loại xe</b></label>
                   <select class="form-control">
@@ -199,13 +199,36 @@
                   </select>
                 </div>
 
-                <!-- QUANTITY -->
+                <!-- TÌNH TRẠNG -->
+                <div class="mb-3">
+                  <label><b>Tình trạng xe</b></label>
+
+                  <input
+                    list="conditionList"
+                    class="form-control"
+                    placeholder="VD: 90%, mới, đã sửa"
+                  />
+
+                  <datalist id="conditionList">
+                    <option value="Mới 100%"></option>
+                    <option value="Like new (95%)"></option>
+                    <option value="90%"></option>
+                    <option value="80%"></option>
+                    <option value="Đã sửa chữa"></option>
+                  </datalist>
+
+                  <small class="text-muted">
+                    Có thể nhập hoặc chọn gợi ý
+                  </small>
+                </div>
+
+                <!-- SỐ LƯỢNG -->
                 <div class="mb-3">
                   <label><b>Số lượng</b></label>
                   <input type="number" class="form-control" value="1" />
                 </div>
 
-                <!-- DESCRIPTION -->
+                <!-- MÔ TẢ -->
                 <div class="mb-3">
                   <label><b>Mô tả</b></label>
                   <textarea
@@ -215,12 +238,73 @@
                   ></textarea>
                 </div>
 
-                <!-- IMAGE -->
+                <!-- GIAO DỊCH -->
                 <div class="mb-3">
-                  <label for="formFile" class="form-label"
-                    ><b>Hình ảnh</b></label
-                  >
+                  <label><b>Hình thức giao dịch</b></label>
+
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="delivery"
+                      id="meet"
+                      checked
+                    />
+                    <label class="form-check-label">Gặp trực tiếp</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      name="delivery"
+                      id="ship"
+                    />
+                    <label class="form-check-label">Giao hàng (ship)</label>
+                  </div>
+                </div>
+
+                <div class="mb-3" id="addressBox">
+                  <label><b>Địa điểm giao dịch</b></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="VD: Quận 9, TP.HCM"
+                  />
+                </div>
+
+                <!-- PHÍ SHIP -->
+                <div class="mb-3" id="shipFeeBox" style="display: none">
+                  <label><b>Phí vận chuyển</b></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    placeholder="VD: 50000"
+                  />
+                </div>
+
+                <!-- LIÊN HỆ -->
+                <div class="mb-3">
+                  <label><b>Số điện thoại liên hệ</b></label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    placeholder="VD: 0123456789"
+                  />
+                </div>
+
+                <!-- ẢNH -->
+                <div class="mb-3">
+                  <label><b>Hình ảnh</b></label>
                   <input class="form-control" type="file" id="formFile" />
+                </div>
+
+                <!-- CAM KẾT -->
+                <div class="form-check mb-3">
+                  <input class="form-check-input" type="checkbox" id="agree" />
+                  <label class="form-check-label">
+                    Tôi cam kết thông tin là chính xác
+                  </label>
                 </div>
 
                 <!-- BUTTON -->
@@ -320,5 +404,24 @@
     <!-- JS -->
     <script src="js/jquery-3.4.1.min.js"></script>
     <script src="js/bootstrap.js"></script>
+
+    <script>
+      const meet = document.getElementById("meet");
+      const ship = document.getElementById("ship");
+      const addressBox = document.getElementById("addressBox");
+
+      function toggleAddress() {
+        if (meet.checked) {
+          addressBox.style.display = "block";
+        } else {
+          addressBox.style.display = "none";
+        }
+      }
+
+      meet.addEventListener("change", toggleAddress);
+      ship.addEventListener("change", toggleAddress);
+
+      toggleAddress();
+    </script>
   </body>
 </html>
