@@ -1,0 +1,58 @@
+services:
+  php:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bike_marketplace_php
+    ports:
+      - "80:80"
+    volumes:
+      - ./backend:/var/www/html
+      - ./docker/apache/php.ini:/usr/local/etc/php/php.ini
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_DATABASE=bike_marketplace
+      - DB_USERNAME=root
+      - DB_PASSWORD=root_password
+    depends_on:
+      - mysql
+    networks:
+      - bike_network
+
+  mysql:
+    image: mysql:8.0
+    container_name: bike_marketplace_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: bike_marketplace
+      MYSQL_USER: bike_user
+      MYSQL_PASSWORD: bike_password
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - bike_network
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: bike_marketplace_phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: root_password
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - bike_network
+
+volumes:
+  mysql_data:
+
+networks:
+  bike_network:
+    driver: bridge
