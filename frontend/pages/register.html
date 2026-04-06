@@ -123,10 +123,23 @@
                 <input type="password" class="form-control" name="password" placeholder="Mật khẩu" required />
               </div>
               <div>
-                <input type="text" class="form-control" name="phone" placeholder="Số điện thoại" required />
+                <input
+                  type="password"
+                  class="form-control"
+                  name="confirmPassword"
+                  placeholder="Nhập lại mật khẩu"
+                  required
+                />
               </div>
               <div>
-                <input type="text" class="form-control" name="address" placeholder="Địa chỉ" required />
+                <select class="form-control" name="role" required>
+                  <option value="" disabled selected>Loại tài khoản</option>
+                  <option value="user">Người mua</option>
+                  <option value="seller">Người bán</option>
+                </select>
+              </div>
+              <div>
+                <input type="text" class="form-control" name="phone" placeholder="Số điện thoại" required />
               </div>
               <div class="btn_box">
                 <button type="submit">Đăng ký</button>

@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -21,7 +21,7 @@
       href="../assets/images/favicon.png"
       type="image/png"
     />
-    <title>Bike Marketplace - Xe đạp thể thao cũ</title>
+    <title>Đăng bán sản phẩm - Bike Marketplace</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
     <link href="../assets/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../assets/css/style.css" rel="stylesheet" />
@@ -29,13 +29,11 @@
   </head>
 
   <body class="sub_page">
-    <!-- HERO -->
     <div class="hero_area">
       <div class="bg-box">
         <img src="../assets/images/hero-bg.webp" alt="" />
       </div>
 
-      <!-- HEADER -->
       <header class="header_section">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
@@ -61,7 +59,7 @@
                   <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="#xe-noi-bat">Sản phẩm</a>
+                  <a class="nav-link" href="./index.html#xe-noi-bat">Sản phẩm</a>
                 </li>
                 <li class="nav-item active">
                   <a class="nav-link" href="./create_product.html"
@@ -89,7 +87,7 @@
                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                   </svg>
                 </a>
-                <a class="cart_link" href="#xe-noi-bat" aria-label="Yêu thích">
+                <a class="cart_link" href="./index.html#xe-noi-bat" aria-label="Yêu thích">
                   <svg
                     version="1.1"
                     xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +154,6 @@
       </header>
     </div>
 
-    <!-- FORM -->
     <section class="layout_padding">
       <div class="container">
         <div class="heading_container heading_center">
@@ -167,65 +164,107 @@
         <div class="row justify-content-center">
           <div class="col-lg-8">
             <div class="shadow-lg p-4 rounded mt-3">
-              <form>
-                <!-- NAME -->
+              <div
+                id="productFormMessage"
+                class="alert d-none"
+                role="alert"
+                aria-live="polite"
+              ></div>
+              <form id="createProductForm">
                 <div class="mb-3">
-                  <label><b>Tên xe</b></label>
+                  <label for="productName"><b>Tên xe</b></label>
                   <input
+                    id="productName"
+                    name="name"
                     type="text"
                     class="form-control"
                     placeholder="VD: Xe MTB Giant X3"
+                    required
                   />
                 </div>
 
-                <!-- PRICE -->
                 <div class="mb-3">
-                  <label><b>Giá (VND)</b></label>
+                  <label for="productPrice"><b>Giá (VND)</b></label>
                   <input
+                    id="productPrice"
+                    name="price"
                     type="number"
                     class="form-control"
                     placeholder="VD: 10000000"
+                    min="1000"
+                    step="1000"
+                    required
                   />
                 </div>
 
-                <!-- CATEGORY -->
                 <div class="mb-3">
-                  <label><b>Loại xe</b></label>
-                  <select class="form-control">
-                    <option>MTB</option>
-                    <option>Road</option>
-                    <option>Gravel</option>
-                    <option>City</option>
+                  <label for="productCategory"><b>Loại xe</b></label>
+                  <select id="productCategory" name="category" class="form-control" required>
+                    <option value="" disabled selected>Chọn loại xe</option>
+                    <option value="MTB">MTB</option>
+                    <option value="Road">Road</option>
+                    <option value="Gravel">Gravel</option>
+                    <option value="City">City</option>
                   </select>
                 </div>
 
-                <!-- QUANTITY -->
                 <div class="mb-3">
-                  <label><b>Số lượng</b></label>
-                  <input type="number" class="form-control" value="1" />
+                  <label for="productQuantity"><b>Số lượng</b></label>
+                  <input
+                    id="productQuantity"
+                    name="quantity"
+                    type="number"
+                    class="form-control"
+                    value="1"
+                    min="1"
+                    required
+                  />
                 </div>
 
-                <!-- DESCRIPTION -->
                 <div class="mb-3">
-                  <label><b>Mô tả</b></label>
+                  <label for="productStatus"><b>Trạng thái</b></label>
+                  <select id="productStatus" name="status" class="form-control" required>
+                    <option value="" disabled selected>Chọn trạng thái</option>
+                    <option value="available">Đang bán</option>
+                    <option value="reserved">Đã giữ chỗ</option>
+                    <option value="sold">Đã bán</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="productDescription"><b>Mô tả</b></label>
                   <textarea
+                    id="productDescription"
+                    name="description"
                     class="form-control"
                     rows="4"
                     placeholder="Mô tả chi tiết sản phẩm..."
+                    required
                   ></textarea>
                 </div>
 
-                <!-- IMAGE -->
                 <div class="mb-3">
-                  <label for="formFile" class="form-label"
-                    ><b>Hình ảnh</b></label
-                  >
-                  <input class="form-control" type="file" id="formFile" />
+                  <label for="productImage" class="form-label"><b>Hình ảnh</b></label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    id="productImage"
+                    name="image"
+                    accept="image/*"
+                  />
+                  <img
+                    id="productImagePreview"
+                    class="img-fluid rounded mt-3 d-none"
+                    alt="Xem trước ảnh sản phẩm"
+                  />
                 </div>
 
-                <!-- BUTTON -->
                 <div class="text-center mt-4">
-                  <button class="btn btn-warning px-5 py-2 text-white">
+                  <button
+                    id="submitProductButton"
+                    type="submit"
+                    class="btn btn-warning px-5 py-2 text-white"
+                  >
                     Đăng sản phẩm
                   </button>
                 </div>
@@ -236,7 +275,6 @@
       </div>
     </section>
 
-    <!-- FOOTER -->
     <footer class="footer_section">
       <div class="container">
         <div class="row">
@@ -317,8 +355,9 @@
       </div>
     </footer>
 
-    <!-- JS -->
-    <script src="js/jquery-3.4.1.min.js"></script>
-    <script src="js/bootstrap.js"></script>
+    <script src="../assets/js/jquery-3.4.1.min.js"></script>
+    <script src="../assets/js/bootstrap.js"></script>
+    <script src="../assets/js/custom.js"></script>
+    <script src="../assets/js/product-form.js"></script>
   </body>
 </html>
