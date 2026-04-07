@@ -9,11 +9,11 @@
     />
     <meta
       name="keywords"
-      content="favorite xe dap, san pham yeu thich"
+      content="chi tiet xe dap, review xe dap, yeu thich xe dap"
     />
     <meta
       name="description"
-      content="Danh sách sản phẩm yêu thích của bạn."
+      content="Trang chi tiết sản phẩm xe đạp thể thao cũ."
     />
     <meta name="author" content="Bike Marketplace" />
     <link
@@ -21,7 +21,7 @@
       href="../assets/images/favicon.png"
       type="image/png"
     />
-    <title>Yêu thích - Bike Marketplace</title>
+    <title>Chi tiết sản phẩm - Bike Marketplace</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
     <link href="../assets/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../assets/css/style.css" rel="stylesheet" />
@@ -33,14 +33,12 @@
       <div class="bg-box">
         <img src="../assets/images/hero-bg.webp" alt="" />
       </div>
-
       <header class="header_section">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand" href="./index.html">
               <span>Bike Marketplace</span>
             </a>
-
             <button
               class="navbar-toggler"
               type="button"
@@ -61,10 +59,8 @@
                 <li class="nav-item">
                   <a class="nav-link" href="./create_product.html">Đăng bán</a>
                 </li>
-                <li class="nav-item active">
-                  <a class="nav-link" href="./favorites.html"
-                    >Yêu thích <span class="sr-only">(current)</span></a
-                  >
+                <li class="nav-item">
+                  <a class="nav-link" href="./favorites.html">Yêu thích</a>
                 </li>
               </ul>
               <div class="user_option">
@@ -93,31 +89,60 @@
 
     <section class="layout_padding">
       <div class="container">
-        <div class="heading_container heading_center">
-          <h2>Sản phẩm yêu thích</h2>
+        <div id="productDetailMessage" class="alert d-none" role="alert"></div>
+
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="shadow p-3 bg-white rounded">
+              <img
+                id="productDetailImage"
+                src="../assets/images/f1.png"
+                class="img-fluid w-100 rounded"
+                alt="Ảnh sản phẩm"
+              />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="shadow p-4 bg-white rounded h-100">
+              <h3 id="productDetailName">Chi tiết sản phẩm</h3>
+              <p class="mb-2"><b>Giá:</b> <span id="productDetailPrice">-</span></p>
+              <p class="mb-2"><b>Loại:</b> <span id="productDetailCategory">-</span></p>
+              <p class="mb-2"><b>Số lượng:</b> <span id="productDetailQuantity">-</span></p>
+              <p class="mb-2"><b>Trạng thái:</b> <span id="productDetailStatus">-</span></p>
+              <p class="mb-2"><b>Người bán:</b> <span id="productDetailSeller">-</span></p>
+              <p class="mb-3">
+                <b>Mô tả:</b><br />
+                <span id="productDetailDescription">-</span>
+              </p>
+
+              <div class="d-flex flex-wrap">
+                <button
+                  id="favoriteToggleButton"
+                  type="button"
+                  class="btn btn-warning mr-2 mb-2"
+                >
+                  <i class="fa fa-heart mr-1" aria-hidden="true"></i>
+                  <span id="favoriteToggleLabel">Thêm yêu thích</span>
+                </button>
+                <a href="./favorites.html" class="btn btn-outline-dark mb-2">
+                  Xem danh sách yêu thích
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div id="favoritesMessage" class="alert d-none" role="alert"></div>
-        <div id="favoritesLoading" class="text-center text-muted">Đang tải danh sách yêu thích...</div>
-
-        <div class="row mt-4" id="favoritesList"></div>
-
-        <div class="text-center mt-4 d-none" id="favoritesEmpty">
-          <svg
-            viewBox="0 0 24 24"
-            width="52"
-            height="52"
-            fill="none"
-            stroke="#6c757d"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            class="mb-3"
-          >
-            <path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1L5 14.6 12 21l7-6.4 1.8-1.9a5 5 0 0 0 0-7.1z"></path>
-          </svg>
-          <p class="text-muted">Chưa có sản phẩm yêu thích.</p>
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="shadow p-4 bg-white rounded">
+              <h4 class="mb-3">Đánh giá sản phẩm</h4>
+              <div id="reviewsLoading" class="text-muted">Đang tải đánh giá...</div>
+              <div id="reviewsEmpty" class="text-muted d-none">
+                Chưa có đánh giá cho sản phẩm này.
+              </div>
+              <div id="reviewsList"></div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -137,6 +162,6 @@
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/custom.js"></script>
     <script src="../assets/js/api-client.js"></script>
-    <script src="../assets/js/favorites.js"></script>
+    <script src="../assets/js/product-detail.js"></script>
   </body>
 </html>

@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -21,7 +21,7 @@
       href="../assets/images/favicon.png"
       type="image/png"
     />
-    <title>Đăng bán sản phẩm - Bike Marketplace</title>
+    <title>Bike Marketplace - Xe đạp thể thao cũ</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
     <link href="../assets/css/font-awesome.min.css" rel="stylesheet" />
     <link href="../assets/css/style.css" rel="stylesheet" />
@@ -29,11 +29,13 @@
   </head>
 
   <body class="sub_page">
+    <!-- HERO -->
     <div class="hero_area">
       <div class="bg-box">
         <img src="../assets/images/hero-bg.webp" alt="" />
       </div>
 
+      <!-- HEADER -->
       <header class="header_section">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
@@ -59,7 +61,7 @@
                   <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="./index.html#xe-noi-bat">Sản phẩm</a>
+                  <a class="nav-link" href="./products.html">Sản phẩm</a>
                 </li>
                 <li class="nav-item active">
                   <a class="nav-link" href="./create_product.html"
@@ -87,7 +89,7 @@
                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                   </svg>
                 </a>
-                <a class="cart_link" href="./index.html#xe-noi-bat" aria-label="Yêu thích">
+                <a class="cart_link" href="./order.html" aria-label="Yêu thích">
                   <svg
                     version="1.1"
                     xmlns="http://www.w3.org/2000/svg"
@@ -154,127 +156,110 @@
       </header>
     </div>
 
-    <section class="layout_padding">
-      <div class="container">
-        <div class="heading_container heading_center">
-          <h2>Đăng bán xe</h2>
-          <p>Nhập thông tin sản phẩm để đăng bán</p>
-        </div>
+    <!-- CONTENT -->
+    <div class="container mt-5">
+      <h2 class="text-center mb-4">Đơn hàng của bạn</h2>
 
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <div class="shadow-lg p-4 rounded mt-3">
-              <div
-                id="productFormMessage"
-                class="alert d-none"
-                role="alert"
-                aria-live="polite"
-              ></div>
-              <form id="createProductForm">
-                <div class="mb-3">
-                  <label for="productName"><b>Tên xe</b></label>
-                  <input
-                    id="productName"
-                    name="name"
-                    type="text"
-                    class="form-control"
-                    placeholder="VD: Xe MTB Giant X3"
-                    required
-                  />
-                </div>
+      <!-- TABLE -->
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-dark">
+            <tr>
+              <th>#</th>
+              <th>Ngày</th>
+              <th>Tổng tiền</th>
+              <th>Trạng thái</th>
+              <th>Hành động</th>
+            </tr>
+          </thead>
 
-                <div class="mb-3">
-                  <label for="productPrice"><b>Giá (VND)</b></label>
-                  <input
-                    id="productPrice"
-                    name="price"
-                    type="number"
-                    class="form-control"
-                    placeholder="VD: 10000000"
-                    min="1000"
-                    step="1000"
-                    required
-                  />
-                </div>
+          <tbody>
+            <!-- ORDER -->
+            <tr>
+              <td>#001</td>
+              <td>05/04/2026</td>
+              <td class="text-danger font-weight-bold">10.000.000 VND</td>
 
-                <div class="mb-3">
-                  <label for="productCategory"><b>Loại xe</b></label>
-                  <select id="productCategory" name="category" class="form-control" required>
-                    <option value="" disabled selected>Chọn loại xe</option>
-                    <option value="MTB">MTB</option>
-                    <option value="Road">Road</option>
-                    <option value="Gravel">Gravel</option>
-                    <option value="City">City</option>
-                  </select>
-                </div>
+              <td>
+                <span class="badge badge-warning">Pending</span>
+              </td>
 
-                <div class="mb-3">
-                  <label for="productQuantity"><b>Số lượng</b></label>
-                  <input
-                    id="productQuantity"
-                    name="quantity"
-                    type="number"
-                    class="form-control"
-                    value="1"
-                    min="1"
-                    required
-                  />
-                </div>
+              <td>
+                <button
+                  class="btn btn-sm btn-info"
+                  data-toggle="modal"
+                  data-target="#orderDetailModal"
+                >
+                  Chi tiết
+                </button>
+              </td>
+            </tr>
 
-                <div class="mb-3">
-                  <label for="productStatus"><b>Trạng thái</b></label>
-                  <select id="productStatus" name="status" class="form-control" required>
-                    <option value="" disabled selected>Chọn trạng thái</option>
-                    <option value="available">Đang bán</option>
-                    <option value="reserved">Đã giữ chỗ</option>
-                    <option value="sold">Đã bán</option>
-                  </select>
-                </div>
+            <tr>
+              <td>#002</td>
+              <td>03/04/2026</td>
+              <td class="text-danger font-weight-bold">7.500.000 VND</td>
 
-                <div class="mb-3">
-                  <label for="productDescription"><b>Mô tả</b></label>
-                  <textarea
-                    id="productDescription"
-                    name="description"
-                    class="form-control"
-                    rows="4"
-                    placeholder="Mô tả chi tiết sản phẩm..."
-                    required
-                  ></textarea>
-                </div>
+              <td>
+                <span class="badge badge-success">Success</span>
+              </td>
 
-                <div class="mb-3">
-                  <label for="productImage" class="form-label"><b>Hình ảnh</b></label>
-                  <input
-                    class="form-control"
-                    type="file"
-                    id="productImage"
-                    name="image"
-                    accept="image/*"
-                  />
-                  <img
-                    id="productImagePreview"
-                    class="img-fluid rounded mt-3 d-none"
-                    alt="Xem trước ảnh sản phẩm"
-                  />
-                </div>
+              <td>
+                <button
+                  class="btn btn-sm btn-info"
+                  data-toggle="modal"
+                  data-target="#orderDetailModal"
+                >
+                  Chi tiết
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
-                <div class="text-center mt-4">
-                  <button
-                    id="submitProductButton"
-                    type="submit"
-                    class="btn btn-warning px-5 py-2 text-white"
-                  >
-                    Đăng sản phẩm
-                  </button>
-                </div>
-              </form>
-            </div>
+      <!-- EMPTY -->
+      <div class="text-center mt-5 d-none" id="emptyState">
+        <i class="fa fa-shopping-cart fa-3x text-muted mb-3"></i>
+        <p class="text-muted">Bạn chưa có đơn hàng nào</p>
+      </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal fade" id="orderDetailModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Chi tiết đơn hàng</h5>
+            <button class="close" data-dismiss="modal">&times;</button>
+          </div>
+
+          <div class="modal-body">
+            <p><b>Mã đơn:</b> #001</p>
+            <p><b>Người nhận:</b> Nguyễn Văn A</p>
+            <p><b>SĐT:</b> 0123456789</p>
+            <p><b>Địa chỉ:</b> TP.HCM</p>
+
+            <hr />
+
+            <h6>Sản phẩm:</h6>
+
+            <ul class="list-group">
+              <li class="list-group-item d-flex justify-content-between">
+                Xe MTB Giant
+                <span>10.000.000 VND</span>
+              </li>
+            </ul>
+
+            <hr />
+
+            <p class="text-right font-weight-bold">Tổng: 10.000.000 VND</p>
           </div>
         </div>
       </div>
-    </section>
+    </div>
 
+    <!-- FOOTER -->
     <footer class="footer_section">
       <div class="container">
         <div class="row">
@@ -355,9 +340,8 @@
       </div>
     </footer>
 
+    <!-- JS -->
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
-    <script src="../assets/js/custom.js"></script>
-    <script src="../assets/js/product-form.js"></script>
   </body>
 </html>

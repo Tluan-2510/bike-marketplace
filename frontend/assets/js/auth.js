@@ -1,9 +1,34 @@
 ﻿(function () {
   "use strict";
 
+  function trimSlashesRight(value) {
+    return String(value || "").replace(/\/+$/, "");
+  }
+
+  function resolveApiBaseUrl() {
+    var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
+    var fromStorage = "";
+
+    try {
+      fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
+    } catch (error) {
+      fromStorage = "";
+    }
+
+    if (fromWindow) return fromWindow;
+    if (fromStorage) return fromStorage;
+    return "http://localhost/api";
+  }
+
+  function buildApiUrl(path) {
+    var cleanPath = String(path || "");
+    if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
+    return resolveApiBaseUrl() + cleanPath;
+  }
+
   var API = {
-    login: "/api/auth/login",
-    register: "/api/auth/register",
+    login: buildApiUrl("/auth/login"),
+    register: buildApiUrl("/auth/register"),
   };
 
   var STORAGE_KEYS = {
@@ -73,7 +98,14 @@
   }
 
   function validateRegisterInput(payload) {
-    if (!payload.username || !payload.email || !payload.password || !payload.phone || !payload.address) {
+    if (
+      !payload.username ||
+      !payload.email ||
+      !payload.password ||
+      !payload.confirmPassword ||
+      !payload.role ||
+      !payload.phone
+    ) {
       return "Vui lòng điền đầy đủ tất cả thông tin đăng ký.";
     }
 
@@ -87,6 +119,14 @@
 
     if (payload.password.length < 6) {
       return "Mật khẩu phải có ít nhất 6 ký tự.";
+    }
+
+    if (payload.password !== payload.confirmPassword) {
+      return "Mật khẩu xác nhận không khớp.";
+    }
+
+    if (payload.role !== "user" && payload.role !== "seller") {
+      return "Loại tài khoản không hợp lệ.";
     }
 
     if (!isValidPhone(payload.phone)) {
@@ -124,6 +164,14 @@
 
     if (status >= 500) {
       return "Hệ thống đang bận. Vui lòng thử lại sau.";
+    }
+
+    if (status === 404) {
+      return "Không tìm thấy API xác thực. Kiểm tra backend base URL.";
+    }
+
+    if (status === 405) {
+      return "Sai phương thức gọi API. Kiểm tra backend routing.";
     }
 
     if (status === 401) {
@@ -238,8 +286,9 @@
       username: normalizeValue(form.querySelector('input[name="username"]').value),
       email: normalizeValue(form.querySelector('input[name="email"]').value).toLowerCase(),
       password: String(form.querySelector('input[name="password"]').value || ""),
+      confirmPassword: String(form.querySelector('input[name="confirmPassword"]').value || ""),
+      role: normalizeValue(form.querySelector('select[name="role"]').value),
       phone: normalizeValue(form.querySelector('input[name="phone"]').value),
-      address: normalizeValue(form.querySelector('input[name="address"]').value),
     };
 
     var validationMessage = validateRegisterInput(payload);
@@ -258,9 +307,9 @@
         name: payload.username,
         email: payload.email,
         password: payload.password,
-        password_confirmation: payload.password,
+        password_confirmation: payload.confirmPassword,
+        role: payload.role,
         phone: payload.phone,
-        address: payload.address,
       };
 
       var response = await requestJSON(API.register, requestBody);
