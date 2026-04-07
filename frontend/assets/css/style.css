@@ -881,13 +881,12 @@ a:focus {
 }
 
 /*favorite*/
-
-#favoriteList .card {
+.card {
   background-color: #222831;
   color: #ffffff
 }
 
-#favoriteList .card .img-card {
+.card .img-card {
   background-color: #fff;
   text-align: center;
   border-radius: 0 0 0 25px ;
