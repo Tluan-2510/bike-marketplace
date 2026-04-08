@@ -23,5 +23,23 @@ function route(string $path, mixed $action): \App\Http\Route
     return $router->$method($actualPath, $action);
 }
 
+function response()
+{
+    return new \App\Http\ResponseFactory();
+}
 
+function env(string $key, $default = null)
+{
+    return $_ENV[$key] ?? $_SERVER[$key] ?? $default;
+}
+
+function now()
+{
+    return Carbon::now();
+}
+
+function db()
+{
+    return \Illuminate\Database\Capsule\Manager::connection();
+}
 
