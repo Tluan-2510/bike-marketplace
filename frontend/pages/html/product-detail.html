@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm - ReBike Market</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <div class="header-top">
+        <div class="logo">
+            <h1>🚴 ReBike Market</h1>
+            <p class="tagline">Marketplace Xe Đạp Professional</p>
+        </div>
+        <div class="header-right">
+            <div class="user-section">
+                <button onclick="toggleLoginModal()" class="btn-login">👤 Đăng nhập Admin</button>
+                <div class="cart-icon" onclick="toggleCart()">
+                    🛒 Giỏ hàng <span id="cartCount" class="badge">0</span>
+                </div>
+            </div>
+            <nav>
+                <a href="index.html" class="nav-link">🏠 Trang chủ</a>
+                <a href="#favorites" class="nav-link" onclick="showFavorites()">❤️ Yêu thích</a>
+                <a href="#" class="nav-link">📝 Đăng bán</a>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- Giỏ hàng slide -->
+<div id="cartSlide" class="cart-slide">
+    <!-- Phần Giỏ Hàng -->
+    <div id="cartView" class="cart-view">
+        <div class="cart-header">
+            <h2>Giỏ hàng</h2>
+            <span onclick="toggleCart()" class="close-btn">&times;</span>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <p class="empty-cart">Giỏ hàng trống</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Tổng cộng:</strong> <span id="cartTotal">0</span> VNĐ
+            </div>
+            <button class="btn-checkout" onclick="showCheckoutInCart()">Thanh toán</button>
+        </div>
+    </div>
+
+    <!-- Phần Thanh Toán -->
+    <div id="checkoutView" class="checkout-view" style="display: none;">
+        <div class="checkout-header">
+            <button onclick="backToCart()" class="btn-back">← Quay lại</button>
+            <h2>📦 Thanh Toán</h2>
+            <span onclick="toggleCart()" class="close-btn">&times;</span>
+        </div>
+        <div class="checkout-content-grid">
+            <!-- Cột 1: Form Giao Hàng -->
+            <div class="checkout-form-col">
+                <h3>📋 Thông Tin Giao Hàng</h3>
+                <form id="cartCheckoutForm" class="cart-checkout-form">
+                    <!-- Họ và Tên -->
+                    <div class="form-group">
+                        <label for="cartFullName">Họ và Tên *</label>
+                        <input type="text" id="cartFullName" name="fullName" placeholder="Nhập họ và tên" required>
+                    </div>
+
+                    <!-- Số Điện Thoại -->
+                    <div class="form-group">
+                        <label for="cartPhone">Số Điện Thoại *</label>
+                        <input type="tel" id="cartPhone" name="phone" placeholder="0901234567" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="cartEmail">Email *</label>
+                        <input type="email" id="cartEmail" name="email" placeholder="email@example.com" required>
+                    </div>
+
+                    <!-- Địa Chỉ -->
+                    <div class="form-group">
+                        <label for="cartAddress">Địa Chỉ *</label>
+                        <input type="text" id="cartAddress" name="address" placeholder="Nhập địa chỉ chi tiết" required>
+                    </div>
+
+                    <!-- Tỉnh/Thành Phố -->
+                    <div class="form-group">
+                        <label for="cartCity">Tỉnh/Thành Phố *</label>
+                        <select id="cartCity" name="city" required>
+                            <option value="">-- Chọn Tỉnh/Thành Phố --</option>
+                            <option value="TP.HCM">TP.HCM</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                            <option value="Hải Phòng">Hải Phòng</option>
+                            <option value="Cần Thơ">Cần Thơ</option>
+                        </select>
+                    </div>
+
+                    <!-- Ghi Chú -->
+                    <div class="form-group">
+                        <label for="cartNotes">Ghi Chú</label>
+                        <textarea id="cartNotes" name="notes" placeholder="Ghi chú thêm (không bắt buộc)" rows="2"></textarea>
+                    </div>
+
+                    <!-- Nút Đặt Hàng -->
+                    <button type="submit" class="btn-place-order-cart">🛍️ Đặt Hàng</button>
+                </form>
+            </div>
+
+            <!-- Cột 2: Đơn Hàng -->
+            <div class="checkout-order-col">
+                <div class="order-header-top">
+                    <h3>📦 Đơn Hàng Của Bạn</h3>
+                    <a href="index.html" class="btn-continue-shopping-slide">Tiếp tục mua sắm →</a>
+                </div>
+                
+                <div id="cartCheckoutItems" class="cart-checkout-items">
+                    <!-- Sản phẩm sẽ hiển thị tại đây -->
+                </div>
+
+                <div class="checkout-order-summary">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span id="cartCheckoutSubtotal">0 VNĐ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>50,000 VNĐ</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng tiền:</span>
+                        <span id="cartCheckoutTotal">0 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo Banner -->
+<section class="demo-banner">
+    <div class="demo-content">
+        <h2>🌟 ReBike Market - Nơi Tin Cậy Mua Bán Xe Đạp</h2>
+        <p>Khám phá bộ sưu tập xe đạp chất lượng cao từ những thương hiệu hàng đầu thế giới</p>
+        <div class="demo-images">
+            <img src="../images/Cross Country.jpg" alt="Cross Country" class="demo-img">
+            <img src="../images/Trail.jpg" alt="Trail" class="demo-img">
+            <img src="../images/Mountain.jpg" alt="Mountain" class="demo-img">
+            <img src="../images/Downhill.jpg" alt="Downhill" class="demo-img">
+        </div>
+        <p class="demo-desc">Hơn 1000+ sản phẩm | Giá tốt nhất | Giao hàng nhanh | Bảo hành chính hãng</p>
+    </div>
+</section>
+
+<!-- Chi tiết sản phẩm -->
+<section class="product-detail-container">
+    <div class="breadcrumb">
+        <a href="index.html">Trang chủ</a> > <span id="productBreadcrumb">Sản phẩm</span>
+    </div>
+    
+    <div class="product-detail">
+        <div class="product-image">
+            <img id="detailImage" src="" alt="Sản phẩm">
+            <div class="product-badges">
+                <span id="typeBadge" class="badge-type"></span>
+            </div>
+        </div>
+
+        <div class="product-info">
+            <h1 id="productName"></h1>
+            
+            <div class="rating">
+                ⭐⭐⭐⭐⭐ (120 đánh giá)
+            </div>
+
+            <div class="price-section">
+                <div class="price">
+                    <span class="current-price" id="detailPrice"></span>
+                </div>
+                <p class="price-note">Giá bao gồm VAT, giao hàng tỉnh từ 25k</p>
+            </div>
+
+            <table class="specs">
+                <tr>
+                    <th>Thương hiệu</th>
+                    <td id="specBrand">-</td>
+                </tr>
+                <tr>
+                    <th>Loại xe</th>
+                    <td id="specType">-</td>
+                </tr>
+                <tr>
+                    <th>Tình trạng</th>
+                    <td>Mới 100%</td>
+                </tr>
+                <tr>
+                    <th>Bảo hành</th>
+                    <td>24 tháng</td>
+                </tr>
+            </table>
+
+            <div class="action-buttons">
+                <button class="btn-buy" onclick="buyNowDirect()">💳 Mua ngay</button>
+                <button class="btn-add-cart" onclick="addToCart()">🛒 Thêm vào giỏ</button>
+                <button class="btn-favorite" id="favBtn" onclick="toggleFavorite()">🤍 Yêu thích</button>
+            </div>
+
+            <div class="contact-section">
+                <h3>📞 Liên hệ người bán</h3>
+                <p id="sellerName">Cửa hàng ReBike</p>
+                <p id="sellerPhone">0901 234 567</p>
+                <div class="contact-actions">
+                    <button class="btn-contact" onclick="callSeller()">📞 Gọi điện</button>
+                    <button class="btn-contact" onclick="chatSeller()">💬 Chat</button>
+                    <button class="btn-contact" onclick="visitShop()">🏪 Ghé shop</button>
+                </div>
+            </div>
+
+            <div class="product-description">
+                <h3>📝 Mô tả chi tiết</h3>
+                <p id="productDesc">
+                    Chiếc xe đạp này được thiết kế với các tiêu chuẩn cao nhất. 
+                    Sử dụng vật liệu carbon fiber, khung nhẹ, bền bỉ.
+                    Thích hợp cho những người yêu thích đi xe đạp chuyên nghiệp.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sản phẩm liên quan -->
+<section class="related-products">
+    <h2>🔗 Sản phẩm tương tự</h2>
+    <div id="relatedList" class="product-list">
+        <!-- JS render -->
+    </div>
+</section>
+
+<!-- Modal Đăng nhập Admin -->
+<div id="loginModal" class="modal">
+    <div class="modal-content admin-login">
+        <span onclick="closeLoginModal()" class="close">&times;</span>
+        <h2>🔐 Đăng nhập Admin</h2>
+        <form onsubmit="handleAdminLogin(event)">
+            <input type="text" id="adminUser" placeholder="Tên đăng nhập" required>
+            <input type="password" id="adminPass" placeholder="Mật khẩu" required>
+            <button type="submit" class="btn-login-submit">Đăng nhập</button>
+        </form>
+        <p class="login-hint">Demo: user = admin, pass = 123456</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-col">
+            <h3>Về ReBike Market</h3>
+            <p>Marketplace hàng đầu bán xe đạp chất lượng cao</p>
+        </div>
+        <div class="footer-col">
+            <h3>Liên hệ</h3>
+            <p>📞 1900-xxxx | 📧 info@rebike.vn</p>
+        </div>
+        <div class="footer-col">
+            <h3>Theo dõi</h3>
+            <p>Facebook | Instagram | YouTube</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 ReBike Market. Tất cả quyền được bảo lưu.</p>
+    </div>
+</footer>
+
+<script src="../js/script.js"></script>
+<script src="../js/product-detail.js"></script>
+</body>
+</html>
