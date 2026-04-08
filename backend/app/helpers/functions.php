@@ -23,6 +23,21 @@ function route(string $path, mixed $action): \App\Http\Route
     return $router->$method($actualPath, $action);
 }
 
+function app($abstract = null)
+{
+    static $container = null;
+
+    if ($container === null) {
+        $container = $GLOBALS['container'] ?? new \App\Container();
+    }
+
+    if ($abstract === null) {
+        return $container;
+    }
+
+    return $container->make($abstract);
+}
+
 function response()
 {
     return new \App\Http\ResponseFactory();
