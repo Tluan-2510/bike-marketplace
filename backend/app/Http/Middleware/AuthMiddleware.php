@@ -5,7 +5,7 @@ namespace App\Http\Middleware;
 use App\Models\User;
 use App\Services\JwtService;
 use Closure;
-use Illuminate\Http\Request;
+use App\Core\Request;
 
 class AuthMiddleware
 {

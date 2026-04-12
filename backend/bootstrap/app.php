@@ -4,9 +4,9 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use Dotenv\Dotenv;
 use Illuminate\Database\Capsule\Manager as Capsule;
-use App\Container;
-use App\Http\Router;
-use App\Http\Request;
+use App\Core\Container;
+use App\Core\Router;
+use App\Core\Request;
 use App\Services\JwtService;
 use App\Services\AuthService;
 

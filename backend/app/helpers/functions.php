@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Router;
+use App\Core\Router;
 use Illuminate\Support\Carbon;
 
-function route(string $path, mixed $action): \App\Http\Route
+function route(string $path, mixed $action): \App\Core\Route
 {
     $router = app(Router::class);
 

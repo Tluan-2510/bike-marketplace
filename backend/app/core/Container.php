@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Core;
 
 use Closure;
 use Exception;
@@ -35,8 +35,9 @@ class Container
             return $this->instances[$abstract];
         }
 
+
         if (!isset($this->bindings[$abstract])) {
-            throw new Exception("No binding found for [$abstract]");
+            return $this->build($abstract);
         }
 
         $concrete = $this->bindings[$abstract];
@@ -45,7 +46,7 @@ class Container
             return $concrete($this);
         }
 
-        return new $concrete();
+        return $this->build($concrete);
     }
 
     public function get(string $abstract)

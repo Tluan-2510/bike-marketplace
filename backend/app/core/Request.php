@@ -1,6 +1,6 @@
 <?php
 
-namespace Illuminate\Http;
+namespace App\Core;
 
 class Request
 {
