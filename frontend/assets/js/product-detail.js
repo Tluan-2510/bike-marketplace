@@ -1,275 +1,185 @@
-(function () {
-  "use strict";
-
-  if (!window.BikeApi) return;
-
-  var elements = {
-    message: document.getElementById("productDetailMessage"),
-    image: document.getElementById("productDetailImage"),
-    name: document.getElementById("productDetailName"),
-    price: document.getElementById("productDetailPrice"),
-    category: document.getElementById("productDetailCategory"),
-    quantity: document.getElementById("productDetailQuantity"),
-    status: document.getElementById("productDetailStatus"),
-    seller: document.getElementById("productDetailSeller"),
-    description: document.getElementById("productDetailDescription"),
-    favoriteButton: document.getElementById("favoriteToggleButton"),
-    favoriteLabel: document.getElementById("favoriteToggleLabel"),
-    reviewsLoading: document.getElementById("reviewsLoading"),
-    reviewsEmpty: document.getElementById("reviewsEmpty"),
-    reviewsList: document.getElementById("reviewsList"),
-  };
-
-  var state = {
-    productId: null,
-    isFavorite: false,
-    product: null,
-  };
-
-  function showMessage(text, type) {
-    if (!elements.message) return;
-    elements.message.textContent = text;
-    elements.message.className = "alert alert-" + (type === "success" ? "success" : "danger");
-  }
-
-  function hideMessage() {
-    if (!elements.message) return;
-    elements.message.textContent = "";
-    elements.message.className = "alert d-none";
-  }
-
-  function getProductIdFromUrl() {
-    var params = new URLSearchParams(window.location.search);
-    var id = params.get("id");
-    return id ? String(id).trim() : "";
-  }
-
-  function normalizeProduct(payload) {
-    var data = payload && payload.data ? payload.data : payload;
-    if (data && data.product) data = data.product;
-    if (!data || typeof data !== "object") return null;
-
-    return {
-      id: data.id || data.product_id || state.productId,
-      name: data.name || data.title || "Không rõ tên sản phẩm",
-      price: Number(data.price || 0),
-      category: data.category || data.type || "-",
-      quantity: data.quantity || data.stock || "-",
-      status: data.status || "-",
-      description: data.description || data.content || "-",
-      image:
-        data.image_url ||
-        data.image ||
-        data.thumbnail ||
-        "../assets/images/f1.png",
-      seller:
-        data.seller_name ||
-        data.owner_name ||
-        data.seller ||
-        data.user_name ||
-        "-",
-    };
-  }
-
-  function renderProduct(product) {
-    if (!product) return;
-    state.product = product;
-
-    if (elements.image) elements.image.src = product.image;
-    if (elements.name) elements.name.textContent = product.name;
-    if (elements.price) elements.price.textContent = window.BikeApi.formatCurrency(product.price);
-    if (elements.category) elements.category.textContent = product.category;
-    if (elements.quantity) elements.quantity.textContent = String(product.quantity);
-    if (elements.status) elements.status.textContent = product.status;
-    if (elements.seller) elements.seller.textContent = product.seller;
-    if (elements.description) elements.description.textContent = product.description;
-  }
-
-  function normalizeReview(item) {
-    return {
-      user: item.user_name || item.username || item.user || "Người dùng",
-      rating: Number(item.rating || 0),
-      comment: item.comment || item.content || "",
-      createdAt: item.created_at || item.createdAt || "",
-    };
-  }
-
-  function renderReviews(list) {
-    if (!elements.reviewsList || !elements.reviewsLoading || !elements.reviewsEmpty) return;
-    elements.reviewsLoading.classList.add("d-none");
-    elements.reviewsList.innerHTML = "";
-
-    if (!list.length) {
-      elements.reviewsEmpty.classList.remove("d-none");
-      return;
+// Load product detail
+function loadProductDetail() {
+    const productId = sessionStorage.getItem('selectedProductId');
+    if (!productId) {
+        window.location.href = './index.html';
+        return;
     }
 
-    elements.reviewsEmpty.classList.add("d-none");
-
-    list.forEach(function (review) {
-      var node = document.createElement("div");
-      node.className = "border rounded p-3 mb-3";
-
-      var stars = "";
-      var rating = Math.max(0, Math.min(5, review.rating));
-      for (var i = 0; i < 5; i += 1) {
-        stars += i < rating ? "★" : "☆";
-      }
-
-      var createdText = review.createdAt ? " · " + review.createdAt : "";
-      node.innerHTML =
-        "<div><b>" +
-        review.user +
-        "</b> <span class=\"text-warning\">" +
-        stars +
-        "</span><span class=\"text-muted\">" +
-        createdText +
-        "</span></div>" +
-        "<div class=\"mt-2\">" +
-        (review.comment || "Không có nội dung đánh giá.") +
-        "</div>";
-      elements.reviewsList.appendChild(node);
-    });
-  }
-
-  async function loadProduct() {
-    var payload = await window.BikeApi.request("/products/" + state.productId, {
-      method: "GET",
-    });
-    var product = normalizeProduct(payload);
+    const product = products.find(p => p.id === parseInt(productId));
     if (!product) {
-      throw new Error("Không đọc được dữ liệu sản phẩm từ backend.");
-    }
-    renderProduct(product);
-  }
-
-  async function loadReviews() {
-    try {
-      var payload = await window.BikeApi.request("/reviews/" + state.productId, {
-        method: "GET",
-      });
-      var list = window.BikeApi.pickList(payload).map(normalizeReview);
-      renderReviews(list);
-    } catch (error) {
-      elements.reviewsLoading.classList.add("d-none");
-      elements.reviewsEmpty.classList.remove("d-none");
-      showMessage("Không thể tải đánh giá: " + error.message, "danger");
-    }
-  }
-
-  function updateFavoriteButton() {
-    if (!elements.favoriteLabel) return;
-    elements.favoriteLabel.textContent = state.isFavorite
-      ? "Bỏ yêu thích"
-      : "Thêm yêu thích";
-  }
-
-  function isSameProduct(item, productId) {
-    var candidate = String(item.id || item.product_id || item.productId || "");
-    return candidate === String(productId);
-  }
-
-  async function loadFavoriteStatus() {
-    if (!window.BikeApi.getAuthToken()) {
-      state.isFavorite = false;
-      updateFavoriteButton();
-      return;
+        window.location.href = './index.html';
+        return;
     }
 
-    try {
-      var payload = await window.BikeApi.request("/favorites", {
-        method: "GET",
-        auth: true,
-      });
-      var list = window.BikeApi.pickList(payload);
-      state.isFavorite = list.some(function (item) {
-        return isSameProduct(item, state.productId);
-      });
-      updateFavoriteButton();
-    } catch (error) {
-      state.isFavorite = false;
-      updateFavoriteButton();
-    }
-  }
+    // Update breadcrumb
+    document.getElementById('productBreadcrumb').textContent = product.name;
 
-  async function addFavorite() {
-    await window.BikeApi.request("/favorites", {
-      method: "POST",
-      auth: true,
-      body: { product_id: state.productId },
+    // Update product details
+    document.getElementById('detailImage').src = product.img;
+    document.getElementById('productName').textContent = product.name;
+    document.getElementById('detailPrice').textContent = product.price.toLocaleString('vi-VN') + ' VNĐ';
+    document.getElementById('specBrand').textContent = product.brand;
+    document.getElementById('specType').textContent = getTypeLabel(product.type);
+    document.getElementById('sellerPhone').textContent = product.phone;
+    document.getElementById('productDesc').textContent = product.description;
+
+    // Update type badge
+    const typeBadge = document.getElementById('typeBadge');
+    typeBadge.textContent = getTypeLabel(product.type);
+    typeBadge.className = `badge-type badge-${product.type}`;
+
+    // Update favorite button
+    updateFavButton(product.id);
+
+    // Load related products
+    loadRelatedProducts(product.type, product.id);
+}
+
+function getTypeLabel(type) {
+    const labels = {
+        'road': '🏃 Road Bike',
+        'xc': '🏃 XC - Cross Country',
+        'trail': '🥾 Trail',
+        'enduro': '🦾 Enduro/ All Mountain',
+        'downhill': '🚡 Downhill',
+        'hybrid': '🚲 Hybrid',
+        'kids': '👶 Xe trẻ em'
+    };
+    return labels[type] || type;
+}
+
+function updateFavButton(productId) {
+    const isFav = favorites.includes(productId);
+    const favBtn = document.getElementById('favBtn');
+    if (isFav) {
+        favBtn.textContent = '❤️ Đã yêu thích';
+        favBtn.style.background = '#ff6b6b';
+        favBtn.style.color = 'white';
+    }
+}
+
+function toggleFavorite() {
+    const productId = parseInt(sessionStorage.getItem('selectedProductId'));
+    if (favorites.includes(productId)) {
+        favorites = favorites.filter(x => x !== productId);
+        document.getElementById('favBtn').textContent = '🤍 Yêu thích';
+        document.getElementById('favBtn').style.background = '#f5f5f5';
+        document.getElementById('favBtn').style.color = '#666';
+    } else {
+        favorites.push(productId);
+        document.getElementById('favBtn').textContent = '❤️ Đã yêu thích';
+        document.getElementById('favBtn').style.background = '#ff6b6b';
+        document.getElementById('favBtn').style.color = 'white';
+    }
+    saveToStorage();
+}
+
+function loadRelatedProducts(type, currentId) {
+    const mtbTypes = ['xc', 'trail', 'enduro', 'downhill'];
+    let related = [];
+
+    // Nếu là loại MTB, tìm sản phẩm tương tự trong các loại MTB khác
+    if (mtbTypes.includes(type)) {
+        related = products.filter(p => mtbTypes.includes(p.type) && p.id !== currentId).slice(0, 4);
+    } else {
+        // Nếu không phải MTB, tìm sản phẩm cùng loại
+        related = products.filter(p => p.type === type && p.id !== currentId).slice(0, 4);
+    }
+    
+    let html = "";
+    related.forEach(p => {
+        const isFav = favorites.includes(p.id);
+        html += `
+        <div class="card">
+            <img src="${p.img}" alt="${p.name}" onclick="selectProduct(${p.id})">
+            <h3>${p.name}</h3>
+            <p>${p.price.toLocaleString('vi-VN')} VNĐ</p>
+            <div class="card-buttons">
+                <button class="btn-view" onclick="selectProduct(${p.id})">👁️ Xem</button>
+                <button class="btn-heart ${isFav ? 'fav-active' : ''}" onclick="toggleFavFromRelated(${p.id})">
+                    ${isFav ? '❤️' : '🤍'}
+                </button>
+            </div>
+        </div>`;
     });
-  }
-
-  async function removeFavorite() {
-    try {
-      await window.BikeApi.request("/favorites/" + state.productId, {
-        method: "DELETE",
-        auth: true,
-      });
-      return;
-    } catch (error) {
-      if (error.status !== 404 && error.status !== 405) {
-        throw error;
-      }
+    
+    if (html) {
+        document.getElementById('relatedList').innerHTML = html;
+    } else {
+        document.getElementById('relatedList').innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #999;">Không có sản phẩm tương tự</p>';
     }
+}
 
-    await window.BikeApi.request("/favorites", {
-      method: "POST",
-      auth: true,
-      body: { product_id: state.productId, action: "remove" },
-    });
-  }
+function selectProduct(id) {
+    sessionStorage.setItem('selectedProductId', id);
+    window.location.reload();
+}
 
-  async function onFavoriteToggleClick() {
-    hideMessage();
-
-    if (!window.BikeApi.getAuthToken()) {
-      showMessage("Bạn cần đăng nhập để sử dụng yêu thích.", "danger");
-      return;
+function toggleFavFromRelated(id) {
+    if (favorites.includes(id)) {
+        favorites = favorites.filter(x => x !== id);
+    } else {
+        favorites.push(id);
     }
+    saveToStorage();
+    const product = products.find(p => p.id === parseInt(sessionStorage.getItem('selectedProductId')));
+    loadRelatedProducts(product.type, product.id);
+}
 
-    elements.favoriteButton.disabled = true;
-    try {
-      if (state.isFavorite) {
-        await removeFavorite();
-        state.isFavorite = false;
-        showMessage("Đã bỏ sản phẩm khỏi yêu thích.", "success");
-      } else {
-        await addFavorite();
-        state.isFavorite = true;
-        showMessage("Đã thêm sản phẩm vào yêu thích.", "success");
-      }
-      updateFavoriteButton();
-    } catch (error) {
-      showMessage("Không thể cập nhật yêu thích: " + error.message, "danger");
-    } finally {
-      elements.favoriteButton.disabled = false;
+function addToCart() {
+    const productId = parseInt(sessionStorage.getItem('selectedProductId'));
+    const product = products.find(p => p.id === productId);
+    
+    if (product) {
+        let cartItem = cart.find(x => x.id === productId);
+        if (cartItem) {
+            cartItem.quantity += 1;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                img: product.img,
+                quantity: 1
+            });
+        }
+        saveToStorage();
+        updateCartUI();
     }
-  }
+}
 
-  async function init() {
-    state.productId = getProductIdFromUrl();
-    if (!state.productId) {
-      showMessage("Thiếu product id trên URL. Ví dụ: product-detail.html?id=1", "danger");
-      if (elements.reviewsLoading) elements.reviewsLoading.classList.add("d-none");
-      return;
+function buyNow() {
+    addToCart();
+    toggleCart();
+    setTimeout(() => {
+        showCheckoutInCart();
+    }, 300);
+}
+
+// Mua ngay - chuyển tới trang order-checkout.html với đúng sản phẩm
+function buyNowDirect() {
+    const productId = parseInt(sessionStorage.getItem('selectedProductId'));
+    if (productId) {
+        window.location.href = './order-checkout.html?productId=' + productId;
     }
+}
 
-    if (elements.favoriteButton) {
-      elements.favoriteButton.addEventListener("click", onFavoriteToggleClick);
-    }
+function callSeller() {
+    const product = products.find(p => p.id === parseInt(sessionStorage.getItem('selectedProductId')));
+    alert(`📞 Gọi ngay: ${product.phone}\n\n(Tính năng này chỉ để demo)`);
+}
 
-    hideMessage();
+function chatSeller() {
+    alert('💬 Tính năng chat sẽ được cập nhật sớm!');
+}
 
-    try {
-      await loadProduct();
-    } catch (error) {
-      showMessage("Không thể tải chi tiết sản phẩm: " + error.message, "danger");
-    }
+function visitShop() {
+    alert('🏪 Ghé shop để xem trực tiếp sản phẩm!\n\nĐiạ chỉ: 123 Đường Nguyễn Huệ, Quận 1, TP.HCM');
+}
 
-    await loadFavoriteStatus();
-    await loadReviews();
-  }
-
-  document.addEventListener("DOMContentLoaded", init);
-})();
+// Initialize
+window.addEventListener('DOMContentLoaded', function() {
+    loadFromStorage();
+    loadProductDetail();
+});
