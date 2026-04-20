@@ -1,22 +1,27 @@
+<!-- kết nối DB -->
+
 <?php
+class Database {
+    private $host = "db";
+    private $db_name = "bike_db";
+    private $username = "root";
+    private $password = "root";
 
-return [
-    'default' => env('DB_CONNECTION', 'mysql'),
+    public function connect() {
+        $conn = new mysqli(
+            $this->host,
+            $this->username,
+            $this->password,
+            $this->db_name
+        );
 
-    'connections' => [
-        'mysql' => [
-            'driver' => 'mysql',
-            'host' => env('DB_HOST', 'localhost'),
-            'port' => env('DB_PORT', 3306),
-            'database' => env('DB_DATABASE', 'bike_marketplace'),
-            'username' => env('DB_USERNAME', 'root'),
-            'password' => env('DB_PASSWORD', ''),
-            'charset' => 'utf8mb4',
-            'collation' => 'utf8mb4_unicode_ci',
-            'prefix' => '',
-            'strict' => true,
-            'engine' => null,
-        ],
-    ],
-    'migrations' => 'migrations',
-];
+        if ($conn->connect_error) {
+            die("Database error");
+        }
+
+        $conn->set_charset("utf8");
+
+        return $conn;
+    }
+}
+?>

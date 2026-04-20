@@ -1,30 +1,43 @@
+<!-- định nghĩa API -->
+
 <?php
 
-use App\Http\Controllers\AuthController;
+require_once "../controllers/ProductController.php";
+require_once "../controllers/AuthController.php";
+require_once "../controllers/OrderController.php";
+require_once "../controllers/FavoriteController.php";
 
-/**
- * Authentication Routes
- */
+$uri = $_SERVER['REQUEST_URI'];
+$method = $_SERVER['REQUEST_METHOD'];
 
-// Public auth routes (no middleware required)
-route('POST /auth/register', [AuthController::class, 'register']);
-route('POST /auth/login', [AuthController::class, 'login']);
-route('POST /auth/refresh', [AuthController::class, 'refresh']);
-route('POST /auth/forgot-password', [AuthController::class, 'forgotPassword']);
-route('POST /auth/reset-password', [AuthController::class, 'resetPassword']);
+/* ================= PRODUCTS ================= */
 
-// Protected routes (auth middleware required)
-route('POST /auth/logout', [AuthController::class, 'logout'])->middleware('auth');
-route('GET /auth/me', [AuthController::class, 'me'])->middleware('auth');
+if ($uri == "/api/products" && $method == "GET") {
+    (new ProductController())->index();
+}
 
-/**
- * Example: Protected admin routes with role check
- */
-// route('GET /admin/users', [AdminController::class, 'getAllUsers'])
-//     ->middleware(['auth', 'role:admin']);
+if ($uri == "/api/products" && $method == "POST") {
+    (new ProductController())->store();
+}
 
-/**
- * Example: Seller routes
- */
-// route('POST /bikes', [BikeController::class, 'store'])
-//     ->middleware(['auth', 'role:seller,admin']);
+/* ================= AUTH ================= */
+
+if ($uri == "/api/auth/login") {
+    (new AuthController())->login();
+}
+
+if ($uri == "/api/auth/register") {
+    (new AuthController())->register();
+}
+
+/* ================= ORDER ================= */
+
+if ($uri == "/api/orders" && $method == "POST") {
+    (new OrderController())->create();
+}
+
+/* ================= FAVORITE ================= */
+
+if ($uri == "/api/favorites" && $method == "POST") {
+    (new FavoriteController())->add();
+}
