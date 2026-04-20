@@ -1,12 +1,12 @@
 <?php
 
-require_once __DIR__ . "/../models/Favorite.php";
+require_once __DIR__ . "/../models/BuyRequest.php";
 
-class FavoriteController {
-    private $favoriteModel;
+class BuyRequestController {
+    private $requestModel;
 
     public function __construct() {
-        $this->favoriteModel = new Favorite();
+        $this->requestModel = new BuyRequest();
     }
 
     private function jsonResponse($success, $data = null, $message = "") {
@@ -25,8 +25,8 @@ class FavoriteController {
         }
 
         $user_id = intval($_GET['user_id']);
-        $favorites = $this->favoriteModel->getByUserId($user_id);
-        $this->jsonResponse(true, $favorites);
+        $requests = $this->requestModel->getByUserId($user_id);
+        $this->jsonResponse(true, $requests);
     }
 
     public function store() {
@@ -37,22 +37,20 @@ class FavoriteController {
             $this->jsonResponse(false, null, "Invalid input data");
         }
 
-        $user_id = $input['user_id'] ?? null;
+        $buyer_id = $input['buyer_id'] ?? null;
         $product_id = $input['product_id'] ?? null;
-        $action = $input['action'] ?? 'add'; // 'add' or 'remove'
+        $message = $input['message'] ?? '';
 
-        if (!$user_id || !$product_id) {
+        if (!$buyer_id || !$product_id) {
             $this->jsonResponse(false, null, "Missing required fields");
         }
 
-        if ($action === 'add') {
-            $success = $this->favoriteModel->add($user_id, $product_id);
-            $message = $success ? "Added to favorites" : "Failed to add to favorites (may already exist)";
-        } else {
-            $success = $this->favoriteModel->remove($user_id, $product_id);
-            $message = $success ? "Removed from favorites" : "Failed to remove from favorites";
-        }
+        $request_id = $this->requestModel->create($buyer_id, $product_id, $message);
 
-        $this->jsonResponse($success, null, $message);
+        if ($request_id) {
+            $this->jsonResponse(true, ["request_id" => $request_id], "Buy request created successfully");
+        } else {
+            $this->jsonResponse(false, null, "Failed to create buy request");
+        }
     }
 }

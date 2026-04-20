@@ -30,8 +30,10 @@ class AuthController {
         $username = $input['username'] ?? '';
         $email = $input['email'] ?? '';
         $password = $input['password'] ?? '';
+        $phone_number = $input['phone_number'] ?? '';
+        $full_name = $input['full_name'] ?? '';
 
-        if (empty($username) || empty($email) || empty($password)) {
+        if (empty($username) || empty($email) || empty($password) || empty($phone_number)) {
             $this->jsonResponse(false, null, "Missing required fields");
         }
 
@@ -40,14 +42,16 @@ class AuthController {
             $this->jsonResponse(false, null, "Email already exists");
         }
 
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        $userId = $this->userModel->create($username, $email, $hashedPassword);
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+        $userId = $this->userModel->create($username, $email, $password_hash, $phone_number, $full_name);
 
         if ($userId) {
             $data = [
                 "user_id" => $userId,
                 "username" => $username,
-                "email" => $email
+                "email" => $email,
+                "phone_number" => $phone_number,
+                "full_name" => $full_name
             ];
             $this->jsonResponse(true, $data);
         } else {
@@ -72,8 +76,8 @@ class AuthController {
 
         $user = $this->userModel->findByEmail($email);
 
-        if ($user && password_verify($password, $user['password'])) {
-            unset($user['password']);
+        if ($user && password_verify($password, $user['password_hash'])) {
+            unset($user['password_hash']); // Don't return hash to client
             $this->jsonResponse(true, $user);
         } else {
             $this->jsonResponse(false, null, "Invalid email or password");

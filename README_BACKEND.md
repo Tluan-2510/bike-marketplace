@@ -1,7 +1,4 @@
-
-
-```md id="md2"
-# 🧠 Backend Structure (PHP)
+# 💻 Backend Structure (PHP)
 
 ## 📁 Cấu trúc
 
@@ -12,16 +9,15 @@ backend/
 ├── routes/
 ├── middleware/
 ├── utils/
-├── uploads/
+├── uploads/ (Nơi chứa ảnh upload vật lý)
 └── index.php
 
 ---
 
-## ⚙️ Quy tắc
-
-- Không code DB trong controller
-- Luôn dùng Database class
-- Luôn dùng response()
+## 🛑 Quy tắc
+- Không viết code thao tác DB (SQL) trực tiếp trong controller.
+- Luôn gọi qua Model (các file trong thư mục `models/`).
+- Trả về JSON đúng chuẩn qua hàm `jsonResponse()`.
 
 ---
 
@@ -30,5 +26,7 @@ backend/
 ```json
 {
   "success": true,
-  "data": {}
+  "data": {},
+  "message": ""
 }
+```

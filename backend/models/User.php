@@ -18,9 +18,9 @@ class User {
         return $result->fetch_assoc();
     }
 
-    public function create($username, $email, $password) {
-        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $email, $password);
+    public function create($username, $email, $password_hash, $phone_number, $full_name) {
+        $stmt = $this->conn->prepare("INSERT INTO users (username, email, password_hash, phone_number, full_name) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssss", $username, $email, $password_hash, $phone_number, $full_name);
         if ($stmt->execute()) {
             return $this->conn->insert_id;
         }
