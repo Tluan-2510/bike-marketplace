@@ -1,7 +1,40 @@
 # ========================
-# NODE MODULES
+# ENVIRONMENT VARIABLES (SENSITIVE!)
+# ========================
+.env
+.env.local
+.env.*.local
+!.env.example
+
+
+# ========================
+# PHP DEPENDENCIES
+# ========================
+vendor/
+composer.lock
+
+
+# ========================
+# NODE MODULES & DEPENDENCIES
 # ========================
 node_modules/
+package-lock.json
+yarn.lock
+
+
+# ========================
+# USER UPLOADS
+# ========================
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+
+# ========================
+# DATABASE FILES
+# ========================
+*.sql
+database/data/
+mysql_data/
 
 
 # ========================
@@ -10,6 +43,8 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+php_errors.log
+docker-compose.log
 
 
 # ========================
@@ -17,22 +52,34 @@ yarn-error.log*
 # ========================
 .DS_Store
 Thumbs.db
+desktop.ini
+
 
 # ========================
 # IDE / EDITOR
 # ========================
 .vscode/
 .idea/
+*.swp
+*.swo
+*~
+.sublime-project
+.sublime-workspace
+
 
 # ========================
-# BUILD / CACHE
+# BUILD / CACHE / TEMP
 # ========================
 dist/
 build/
 .cache/
+*.tmp
+*.temp
+.env.bak
+
 
 # ========================
-# TEMP FILES
+# DOCKER VOLUMES (Local data)
 # ========================
-*.tmp
-*.log
+mysql_data/
+php_sessions/
