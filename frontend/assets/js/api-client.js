@@ -17,7 +17,7 @@
 
     if (fromWindow) return fromWindow;
     if (fromStorage) return fromStorage;
-    return "http://localhost/api";
+    return "http://localhost/bike-marketplace/backend/api";
   }
 
   function buildApiUrl(path) {
@@ -145,6 +145,14 @@
     return amount.toLocaleString("vi-VN") + "đ";
   }
 
+  function resolveImageUrl(path) {
+    if (!path) return "../assets/images/placeholder-bike.png";
+    if (path.startsWith("http")) return path;
+    // Assuming uploads are in the same parent dir as api
+    var baseUrl = resolveApiBaseUrl().replace("/api", "/uploads");
+    return baseUrl + "/" + path;
+  }
+
   window.BikeApi = {
     resolveApiBaseUrl: resolveApiBaseUrl,
     buildApiUrl: buildApiUrl,
@@ -152,5 +160,29 @@
     request: request,
     pickList: pickList,
     formatCurrency: formatCurrency,
+    resolveImageUrl: resolveImageUrl,
+    
+    // API Helpers
+    getProducts: (params) => {
+      let query = "";
+      if (params) {
+        query = "?" + new URLSearchParams(params).toString();
+      }
+      return request("/products" + query);
+    },
+    getProduct: (id) => request("/products?id=" + id),
+    getCategories: () => request("/categories"),
+    getBrands: () => request("/brands"),
+    sendBuyRequest: (data) => request("/buy-requests", {
+      method: "POST",
+      body: data,
+      auth: true
+    }),
+    getFavorites: () => request("/favorites", { auth: true }),
+    toggleFavorite: (productId) => request("/favorites", {
+      method: "POST",
+      body: { product_id: productId },
+      auth: true
+    })
   };
 })();

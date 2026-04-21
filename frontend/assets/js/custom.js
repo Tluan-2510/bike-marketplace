@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   function getCurrentPageName() {
@@ -262,7 +262,7 @@
   }
 
   document.addEventListener("DOMContentLoaded", function () {
-    syncHeader();
+    // syncHeader();
     initHeaderSearchButton();
     setFooterYear();
     initSearchAndFilter();

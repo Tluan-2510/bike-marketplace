@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html>
   <head>
     <meta charset="utf-8" />
@@ -23,7 +23,7 @@
     />
     <title>Bike Marketplace - Xe đạp thể thao cũ</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
-    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/eliyantosarage/font-awesome-pro@main/fontawesome-pro-6.4.0-web/css/all.min.css" />
     <link href="../assets/css/style.css" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
   </head>
@@ -36,11 +36,11 @@
           alt="Nền trang chủ xe đạp thể thao"
         />
       </div>
-      <header class="header_section">
+      <header class="header_section bg-black">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand" href="./index.html">
-              <span>Bike Marketplace</span>
+              <span>Bike <span class="text-white">Market</span></span>
             </a>
 
             <button
@@ -58,9 +58,7 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-auto">
                 <li class="nav-item active">
-                  <a class="nav-link" href="./index.html"
-                    >Trang chủ <span class="sr-only">(current)</span></a
-                  >
+                  <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
                 <li class="nav-item">
                   <a class="nav-link" href="./products.html">Sản phẩm</a>
@@ -69,7 +67,7 @@
                   <a class="nav-link" href="./create_product.html">Đăng bán</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="favorites.html">Yêu thích</a>
+                  <a class="nav-link" href="./favorites.html">Yêu thích</a>
                 </li> 
               </ul>
               <div class="user_option">
@@ -89,47 +87,24 @@
                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                   </svg>
                 </a>
-                <a class="cart_link" href="./order.html" aria-label="Yêu thích">
+                <a class="cart_link" href="./favorites.html" aria-label="Yêu thích">
                   <svg
-                    version="1.1"
-                    xmlns="http://www.w3.org/2000/svg"
-                    x="0px"
-                    y="0px"
-                    viewBox="0 0 456.029 456.029"
-                    style="enable-background: new 0 0 456.029 456.029"
-                    xml:space="preserve"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
                   >
-                    <g>
-                      <g>
-                        <path
-                          d="M345.6,338.862c-29.184,0-53.248,23.552-53.248,53.248c0,29.184,23.552,53.248,53.248,53.248
-                   c29.184,0,53.248-23.552,53.248-53.248C398.336,362.926,374.784,338.862,345.6,338.862z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          d="M439.296,84.91c-1.024,0-2.56-0.512-4.096-0.512H112.64l-5.12-34.304C104.448,27.566,84.992,10.67,61.952,10.67H20.48
-                   C9.216,10.67,0,19.886,0,31.15c0,11.264,9.216,20.48,20.48,20.48h41.472c2.56,0,4.608,2.048,5.12,4.608l31.744,216.064
-                   c4.096,27.136,27.648,47.616,55.296,47.616h212.992c26.624,0,49.664-18.944,55.296-45.056l33.28-166.4
-                   C457.728,97.71,450.56,86.958,439.296,84.91z"
-                        />
-                      </g>
-                    </g>
-                    <g>
-                      <g>
-                        <path
-                          d="M215.04,389.55c-1.024-28.16-24.576-50.688-52.736-50.688c-29.696,1.536-52.224,26.112-51.2,55.296
-                   c1.024,28.16,24.064,50.688,52.224,50.688h1.024C193.536,443.31,216.576,418.734,215.04,389.55z"
-                        />
-                      </g>
-                    </g>
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                   </svg>
                 </a>
-                <form class="form-inline">
+                <form class="form-inline ml-3">
                   <button
-                    class="btn my-2 my-sm-0 nav_search-btn"
+                    class="nav_search-btn"
                     type="button"
                     aria-label="Tìm kiếm"
                   >
@@ -174,9 +149,9 @@
                         bạch. Tìm đúng mẫu xe phù hợp ngân sách và nhu cầu tập
                         luyện của bạn chỉ trong vài phút.
                       </p>
-                      <div class="btn-box">
-                        <a href="#xe-noi-bat" class="btn1">Tìm xe ngay</a>
-                        <a href="./create_product.html" class="btn1">Đăng bán xe</a>
+                      <div class="btn-box mt-4">
+                        <a href="#xe-noi-bat" class="btn-premium">Tìm xe ngay</a>
+                        <a href="./create_product.html" class="btn-outline-premium ml-2">Đăng bán xe</a>
                       </div>
                     </div>
                   </div>
@@ -194,9 +169,9 @@
                         Nhiều mẫu MTB, Road, Gravel, City và Folding được cập
                         nhật liên tục với giá, mô tả và tình trạng xe chi tiết.
                       </p>
-                      <div class="btn-box">
-                        <a href="#xe-noi-bat" class="btn1">Xem xe mới</a>
-                        <a href="./register.html" class="btn1">Tạo tài khoản</a>
+                      <div class="btn-box mt-4">
+                        <a href="#xe-noi-bat" class="btn-premium">Xem xe mới</a>
+                        <a href="./register.html" class="btn-outline-premium ml-2">Tạo tài khoản</a>
                       </div>
                     </div>
                   </div>
@@ -215,9 +190,9 @@
                         thời gian tìm kiếm, tăng độ an tâm trước khi chốt giao
                         dịch.
                       </p>
-                      <div class="btn-box">
-                        <a href="#tai-sao-chon" class="btn1">Xem lợi ích</a>
-                        <a href="./login.html" class="btn1">Đăng nhập</a>
+                      <div class="btn-box mt-4">
+                        <a href="#tai-sao-chon" class="btn-premium">Xem lợi ích</a>
+                        <a href="./login.html" class="btn-outline-premium ml-2">Đăng nhập</a>
                       </div>
                     </div>
                   </div>
@@ -281,7 +256,7 @@
                   </select>
                 </div>
                 <div class="btn_box">
-                  <button id="searchButton" type="submit">Lọc kết quả</button>
+                  <button id="searchButton" type="submit" class="btn-premium">Lọc kết quả</button>
                 </div>
               </form>
             </div>
@@ -299,19 +274,13 @@
           <div class="row justify-content-center">
             <div class="col-sm-6 col-lg-4">
               <div class="box">
-                <div
-                  class="img-box d-flex justify-content-center align-items-center"
-                >
-                  <img
-                    src="../assets/images/f1.png"
-                    class="img-fluid"
-                    alt="Danh mục xe MTB"
-                  />
+                <div class="img-box d-flex justify-content-center align-items-center">
+                  <img class="img-fluid" src="../assets/images/f1.png" alt="Danh mục xe MTB" />
                 </div>
                 <div class="detail-box">
                   <h5>MTB</h5>
                   <h6><span>124</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Xem ngay</a>
+                  <a href="./products.html?category=1" class="text-yellow">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -329,7 +298,7 @@
                 <div class="detail-box">
                   <h5>Road Bike</h5>
                   <h6><span>87</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Xem ngay</a>
+                  <a href="./products.html?category=2">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -347,7 +316,7 @@
                 <div class="detail-box">
                   <h5>Gravel</h5>
                   <h6><span>43</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Xem ngay</a>
+                  <a href="./products.html?category=3">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -365,7 +334,7 @@
                 <div class="detail-box">
                   <h5>City Bike</h5>
                   <h6><span>66</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Xem ngay</a>
+                  <a href="./products.html?category=4">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -383,7 +352,7 @@
                 <div class="detail-box">
                   <h5>Folding Bike</h5>
                   <h6><span>29</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Xem ngay</a>
+                  <a href="./products.html?category=5">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -401,7 +370,7 @@
                 <div class="detail-box">
                   <h5>Tất cả xe</h5>
                   <h6><span>349</span> tin đang bán</h6>
-                  <a href="#xe-noi-bat">Khám phá</a>
+                  <a href="./products.html">Khám phá <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -410,7 +379,7 @@
       </div>
     </section>
 
-    <section class="bike_section layout_padding-bottom" id="xe-noi-bat">
+    <section class="bike_section layout_padding" id="xe-noi-bat">
       <div class="container">
         <div class="heading_container heading_center">
           <h2>Xe đạp nổi bật / Mới đăng</h2>
@@ -427,310 +396,38 @@
 
         <div class="filters-content">
           <div class="row grid" id="productGrid">
-            <div
-              class="col-sm-6 col-lg-4 all mtb"
-              data-category="mtb"
-              data-price="12500000"
-              data-name="Trek Marlin 7 2022"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f6.png"
-                      alt="Xe đạp Trek Marlin 7 2022"
-                    />
+            <!-- Sản phẩm tạm thời để xem trước -->
+            <div class="col-sm-6 col-lg-4">
+              <div class="box h-100 d-flex flex-column">
+                <div class="img-box position-relative">
+                  <a href="./product-detail.html?id=demo" class="d-block w-100 h-100">
+                    <img src="../assets/images/demo-bike.png" alt="Specialized Tarmac SL7" class="img-fluid">
+                  </a>
+                  <div class="position-absolute" style="top: 10px; left: 10px;">
+                     <span class="badge badge-warning px-2 py-1 small">Road Bike</span>
                   </div>
-                  <div class="detail-box">
-                    <h5>Trek Marlin 7 2022</h5>
-                    <p>
-                      Khung nhôm, groupset Shimano Deore, xe đã bảo dưỡng định
-                      kỳ.
-                    </p>
-                    <div class="options">
-                      <h6>12.500.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Trek Marlin 7 2022"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
+                  <button class="fav-btn" title="Yêu thích">
+                    <i class="fa-light fa-heart"></i>
+                  </button>
+                </div>
+                <div class="detail-box flex-grow-1 d-flex flex-column">
+                  <div class="mb-1 small text-uppercase font-weight-bold text-muted" style="letter-spacing: 1px;">
+                    Specialized
+                  </div>
+                  <h5><a href="./product-detail.html?id=demo" class="text-dark">Specialized Tarmac SL7 Pro - 2023</a></h5>
+                  <p class="text-muted small mb-3" style="height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
+                    Dòng xe đua đỉnh cao, khung carbon siêu nhẹ, bộ truyền động Shimano Ultegra Di2. Xe còn mới 99%.
+                  </p>
+                  <div class="mt-auto">
+                     <div class="d-flex justify-content-between align-items-center options">
+                        <h6 class="mb-0">145.000.000 ₫</h6>
+                        <a href="./product-detail.html?id=demo" class="btn-view-detail">Chi tiết</a>
+                     </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all road"
-              data-category="road"
-              data-price="21000000"
-              data-name="Giant TCR Advanced"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f7.png"
-                      alt="Xe đạp Giant TCR Advanced"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Giant TCR Advanced</h5>
-                    <p>
-                      Xe road cũ đẹp, bánh 700c, phù hợp luyện tập và đi nhóm
-                      cuối tuần.
-                    </p>
-                    <div class="options">
-                      <h6>21.000.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Giant TCR Advanced"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all gravel"
-              data-category="gravel"
-              data-price="18200000"
-              data-name="Cannondale Topstone"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f8.png"
-                      alt="Xe đạp Cannondale Topstone"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Cannondale Topstone</h5>
-                    <p>
-                      Dòng gravel đa dụng, đi phố và đường hỗn hợp, lốp còn mới.
-                    </p>
-                    <div class="options">
-                      <h6>18.200.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Cannondale Topstone"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all city"
-              data-category="city"
-              data-price="7400000"
-              data-name="City Bike Touring"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f9.png"
-                      alt="Xe đạp City Bike Touring"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>City Bike Touring</h5>
-                    <p>
-                      Xe city nhẹ, tư thế ngồi thoải mái, có baga và chắn bùn
-                      đầy đủ.
-                    </p>
-                    <div class="options">
-                      <h6>7.400.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe City Bike Touring"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all mtb"
-              data-category="mtb"
-              data-price="10900000"
-              data-name="Specialized Rockhopper"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f3.png"
-                      alt="Xe đạp Specialized Rockhopper"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Specialized Rockhopper</h5>
-                    <p>
-                      MTB 29 inch, phanh đĩa thủy lực, phù hợp cung đường địa
-                      hình nhẹ.
-                    </p>
-                    <div class="options">
-                      <h6>10.900.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Specialized Rockhopper"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all road"
-              data-category="road"
-              data-price="16800000"
-              data-name="Merida Scultura"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f4.png"
-                      alt="Xe đạp Merida Scultura"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Merida Scultura</h5>
-                    <p>
-                      Road bike cũ chính hãng, groupset 105, phù hợp nâng cấp
-                      luyện tốc độ.
-                    </p>
-                    <div class="options">
-                      <h6>16.800.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Merida Scultura"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all folding"
-              data-category="folding"
-              data-price="6200000"
-              data-name="Dahon Route Mini"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f5.png"
-                      alt="Xe đạp Dahon Route Mini"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Dahon Route Mini</h5>
-                    <p>
-                      Xe gấp gọn, nhẹ, thích hợp di chuyển trong đô thị và đi
-                      làm hằng ngày.
-                    </p>
-                    <div class="options">
-                      <h6>6.200.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Dahon Route Mini"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all city"
-              data-category="city"
-              data-price="8900000"
-              data-name="Giant Escape City"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f2.png"
-                      alt="Xe đạp Giant Escape City"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Giant Escape City</h5>
-                    <p>
-                      Khung nhôm bền nhẹ, lốp còn mới, chạy phố êm và dễ kiểm
-                      soát.
-                    </p>
-                    <div class="options">
-                      <h6>8.900.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Giant Escape City"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div
-              class="col-sm-6 col-lg-4 all gravel"
-              data-category="gravel"
-              data-price="13900000"
-              data-name="Trinx Gravel 2.0"
-            >
-              <div class="box">
-                <div>
-                  <div class="img-box">
-                    <img
-                      src="../assets/images/f1.png"
-                      alt="Xe đạp Trinx Gravel 2.0"
-                    />
-                  </div>
-                  <div class="detail-box">
-                    <h5>Trinx Gravel 2.0</h5>
-                    <p>
-                      Dễ nâng cấp phụ kiện touring, phù hợp người mới bắt đầu đi
-                      gravel.
-                    </p>
-                    <div class="options">
-                      <h6>13.900.000đ</h6>
-                      <a
-                        href="./login.html"
-                        aria-label="Lưu xe Trinx Gravel 2.0"
-                      >
-                        <i class="fa fa-2x fa-heart" aria-hidden="true"></i>
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <!-- Các sản phẩm khác sẽ được load động từ API -->
           </div>
         </div>
 
@@ -757,7 +454,7 @@
           </div>
           <div class="col-md-6">
             <div class="detail-box">
-              <div class="heading_container">
+              <div class="heading_container text-white">
                 <h2>Tại sao chọn chúng tôi?</h2>
               </div>
               <p>
@@ -765,15 +462,15 @@
                 minh bạch tình trạng xe.
               </p>
               <p>
-                <i class="fa fa-check-circle" aria-hidden="true"></i> Dễ so sánh
+                <i class="fa-light fa-circle-check"></i> Dễ so sánh
                 giá theo thị trường thực tế.
               </p>
               <p>
-                <i class="fa fa-check-circle" aria-hidden="true"></i> Bộ lọc rõ
+                <i class="fa-light fa-circle-check"></i> Bộ lọc rõ
                 ràng theo loại xe và ngân sách.
               </p>
               <p>
-                <i class="fa fa-check-circle" aria-hidden="true"></i> Tăng độ an
+                <i class="fa-light fa-circle-check"></i> Tăng độ an
                 tâm trước khi gặp trực tiếp người bán.
               </p>
               <a href="#tim-kiem">Bắt đầu đăng tin</a>
@@ -790,59 +487,34 @@
             <div class="footer_contact">
               <h4>Liên hệ</h4>
               <div class="contact_link_box">
-                <a
-                  href="https://www.google.com/maps?q=TP.+Hồ+Chí+Minh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Địa chỉ hoạt động tại Thành phố Hồ Chí Minh"
-                >
-                  <i class="fa fa-map-marker" aria-hidden="true"></i>
-                  <span>TP. Hồ Chí Minh</span>
+                <a href="#">
+                  <i class="fa-light fa-location-dot"></i>
+                  <span> Quận 1, TP. Hồ Chí Minh </span>
                 </a>
-                <a href="tel:0900000000" aria-label="Gọi hotline 0900 000 000">
-                  <i class="fa fa-phone" aria-hidden="true"></i>
-                  <span>Hotline: 0900 000 000</span>
+                <a href="#">
+                  <i class="fa-light fa-phone"></i>
+                  <span> Hotline: 0900 000 000 </span>
                 </a>
-                <a
-                  href="mailto:support@bikemarket.vn"
-                  aria-label="Gửi email đến support@bikemarket.vn"
-                >
-                  <i class="fa fa-envelope" aria-hidden="true"></i>
-                  <span>support@bikemarket.vn</span>
+                <a href="#">
+                  <i class="fa-light fa-envelope"></i>
+                  <span> support@bikemarket.vn </span>
                 </a>
               </div>
             </div>
           </div>
 
-          <div class="col-md-4 footer-col">
+          <div class="col-md-4 footer-col text-center">
             <div class="footer_detail">
-              <a href="./index.html" class="footer-logo">Bike Marketplace</a>
+              <a href="./index.html" class="footer-logo">
+                Bike <span class="text-yellow">Market</span>
+              </a>
               <p>
-                Nền tảng mua bán xe đạp thể thao cũ tập trung vào giao dịch minh
-                bạch và tốc độ tìm kiếm.
+                Nền tảng mua bán xe đạp thể thao cũ chuyên nghiệp, minh bạch và an toàn nhất Việt Nam.
               </p>
               <div class="footer_social">
-                <a
-                  href="https://www.facebook.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  ><i class="fa fa-facebook" aria-hidden="true"></i
-                ></a>
-                <a
-                  href="https://x.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  ><i class="fa fa-twitter" aria-hidden="true"></i
-                ></a>
-                <a
-                  href="https://www.instagram.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  ><i class="fa fa-instagram" aria-hidden="true"></i
-                ></a>
+                <a href="#"><i class="fa-brands fa-facebook"></i></a>
+                <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#"><i class="fa-brands fa-instagram"></i></a>
               </div>
             </div>
           </div>
@@ -854,10 +526,9 @@
           </div>
         </div>
 
-        <div class="footer-info">
+        <div class="footer-info text-center">
           <p>
-            &copy; <span id="displayYear"></span> Bike Marketplace. All Rights
-            Reserved.
+            &copy; <span id="displayYear"></span> Bike Marketplace. All Rights Reserved.
           </p>
         </div>
       </div>
@@ -866,6 +537,7 @@
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/custom.js"></script>
-    <script src="../assets/js/index-product-links.js"></script>
+    <script src="../assets/js/api-client.js"></script>
+    <script src="../assets/js/index-products.js"></script>
   </body>
 </html>

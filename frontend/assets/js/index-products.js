@@ -3,68 +3,16 @@
 
   const BikeApi = window.BikeApi;
 
-  async function initLookups() {
-    const categorySelect = document.getElementById("filterCategory");
-    const brandSelect = document.getElementById("filterBrand");
-
-    try {
-      const [categories, brands] = await Promise.all([
-        BikeApi.getCategories(),
-        BikeApi.getBrands()
-      ]);
-
-      if (categorySelect) {
-        BikeApi.pickList(categories).forEach(cat => {
-          const opt = document.createElement("option");
-          opt.value = cat.id;
-          opt.textContent = cat.name;
-          categorySelect.appendChild(opt);
-        });
-      }
-
-      if (brandSelect) {
-        BikeApi.pickList(brands).forEach(brand => {
-          const opt = document.createElement("option");
-          opt.value = brand.id;
-          opt.textContent = brand.name;
-          brandSelect.appendChild(opt);
-        });
-      }
-
-      // Check URL for initial category
-      const urlParams = new URLSearchParams(window.location.search);
-      const initialCat = urlParams.get('category');
-      if (initialCat && categorySelect) {
-          categorySelect.value = initialCat;
-      }
-      
-      loadProducts();
-    } catch (error) {
-      console.error("Lỗi khi tải lookups:", error);
-    }
-  }
-
-  async function loadProducts() {
+  async function loadHomeProducts() {
     const grid = document.getElementById("productGrid");
     if (!grid) return;
 
-    const form = document.getElementById("productFilterForm");
-    const formData = new FormData(form);
-    const params = Object.fromEntries(formData.entries());
-
-    // Clean empty params
-    Object.keys(params).forEach(key => {
-        if (!params[key]) delete params[key];
-    });
-
     try {
-      grid.innerHTML = '<div class="col-12 text-center py-5"><p>Đang tải danh sách xe...</p></div>';
-      
-      const response = await BikeApi.getProducts(params);
+      const response = await BikeApi.getProducts({ limit: 6, sort: 'newest' });
       const products = BikeApi.pickList(response);
 
       if (products.length === 0) {
-        grid.innerHTML = '<div class="col-12 text-center py-5"><p>Không tìm thấy xe nào phù hợp với yêu cầu của bạn.</p></div>';
+        grid.innerHTML = '<div class="col-12 text-center py-5"><p>Hiện chưa có xe nào được đăng bán.</p></div>';
         return;
       }
 
@@ -74,8 +22,8 @@
         grid.appendChild(card);
       });
     } catch (error) {
-      console.error("Lỗi khi tải sản phẩm:", error);
-      grid.innerHTML = '<div class="col-12 text-center py-5 text-danger"><p>Lỗi kết nối. Vui lòng thử lại sau.</p></div>';
+      console.error("Lỗi khi tải sản phẩm trang chủ:", error);
+      grid.innerHTML = '<div class="col-12 text-center py-5 text-danger"><p>Không thể tải danh sách xe. Vui lòng thử lại sau.</p></div>';
     }
   }
 
@@ -109,7 +57,7 @@
           </p>
           <div class="mt-auto">
              <div class="d-flex justify-content-between align-items-center options">
-                <h6 class="mb-0 font-weight-bold">${price}</h6>
+                <h6 class="mb-0">${price}</h6>
                 <a href="./product-detail.html?id=${product.id}" class="btn-view-detail">Chi tiết</a>
              </div>
           </div>
@@ -144,14 +92,5 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    initLookups();
-    const filterForm = document.getElementById("productFilterForm");
-    if (filterForm) {
-      filterForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        loadProducts();
-      });
-    }
-  });
+  // document.addEventListener("DOMContentLoaded", loadHomeProducts);
 })();

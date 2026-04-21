@@ -1,185 +1,84 @@
-﻿(function () {
+(function () {
   "use strict";
 
-  if (!window.BikeApi) return;
-
-  var elements = {
-    message: document.getElementById("favoritesMessage"),
-    loading: document.getElementById("favoritesLoading"),
-    list: document.getElementById("favoritesList"),
-    empty: document.getElementById("favoritesEmpty"),
-  };
-
-  var state = {
-    items: [],
-  };
-
-  function showMessage(text, type) {
-    if (!elements.message) return;
-    elements.message.textContent = text;
-    elements.message.className =
-      "alert alert-" + (type === "success" ? "success" : "danger");
-  }
-
-  function hideMessage() {
-    if (!elements.message) return;
-    elements.message.textContent = "";
-    elements.message.className = "alert d-none";
-  }
-
-  function normalizeItem(item) {
-    return {
-      id: item.id || item.product_id || item.productId,
-      name: item.name || item.product_name || item.title || "Sản phẩm",
-      price: Number(item.price || 0),
-      category: item.category || item.type || "-",
-      status: item.status || "-",
-      image:
-        item.image_url ||
-        item.image ||
-        item.thumbnail ||
-        "../assets/images/f1.png",
-    };
-  }
-
-  function setLoading(visible) {
-    if (!elements.loading) return;
-    elements.loading.style.display = visible ? "block" : "none";
-  }
-
-  function setEmpty(visible) {
-    if (!elements.empty) return;
-    elements.empty.classList.toggle("d-none", !visible);
-  }
-
-  function clearList() {
-    if (!elements.list) return;
-    elements.list.innerHTML = "";
-  }
-
-  function removeItemFromState(productId) {
-    state.items = state.items.filter(function (item) {
-      return String(item.id) !== String(productId);
-    });
-  }
-
-  async function removeFavorite(productId) {
-    try {
-      await window.BikeApi.request("/favorites/" + productId, {
-        method: "DELETE",
-        auth: true,
-      });
-      return;
-    } catch (error) {
-      if (error.status !== 404 && error.status !== 405) {
-        throw error;
-      }
-    }
-
-    await window.BikeApi.request("/favorites", {
-      method: "POST",
-      auth: true,
-      body: { product_id: productId, action: "remove" },
-    });
-  }
-
-  function createCard(item) {
-    var col = document.createElement("div");
-    col.className = "col-md-4 mb-4";
-    col.setAttribute("data-product-id", String(item.id || ""));
-
-    col.innerHTML =
-      '<div class="card shadow border-0 h-100">' +
-      '<div class="img-card p-3 text-center">' +
-      '<img src="' +
-      item.image +
-      '" class="img-fluid" style="max-height: 160px" alt="Ảnh sản phẩm" />' +
-      "</div>" +
-      '<div class="card-body d-flex flex-column">' +
-      "<h5 class=\"card-title\">" +
-      item.name +
-      "</h5>" +
-      "<p class=\"mb-1\"><b>Giá:</b> " +
-      window.BikeApi.formatCurrency(item.price) +
-      "</p>" +
-      "<p class=\"mb-1\"><b>Loại:</b> " +
-      item.category +
-      "</p>" +
-      "<p class=\"mb-3\"><b>Trạng thái:</b> " +
-      item.status +
-      "</p>" +
-      '<div class="mt-auto d-flex justify-content-between">' +
-      '<a href="./product-detail.html?id=' +
-      encodeURIComponent(item.id || "") +
-      '" class="btn btn-outline-dark">Chi tiết</a>' +
-      '<button type="button" class="btn btn-outline-warning favorite-remove-btn">' +
-      '<span class="text-danger" aria-hidden="true">♥</span> Bỏ thích' +
-      "</button>" +
-      "</div>" +
-      "</div>" +
-      "</div>";
-
-    var removeBtn = col.querySelector(".favorite-remove-btn");
-    removeBtn.addEventListener("click", async function () {
-      removeBtn.disabled = true;
-      hideMessage();
-      try {
-        await removeFavorite(item.id);
-        removeItemFromState(item.id);
-        renderList();
-        showMessage("Đã bỏ sản phẩm khỏi danh sách yêu thích.", "success");
-      } catch (error) {
-        showMessage("Không thể bỏ yêu thích: " + error.message, "danger");
-      } finally {
-        removeBtn.disabled = false;
-      }
-    });
-
-    return col;
-  }
-
-  function renderList() {
-    if (!elements.list) return;
-    clearList();
-
-    if (!state.items.length) {
-      setEmpty(true);
-      return;
-    }
-
-    setEmpty(false);
-    state.items.forEach(function (item) {
-      elements.list.appendChild(createCard(item));
-    });
-  }
+  const BikeApi = window.BikeApi;
 
   async function loadFavorites() {
-    hideMessage();
-    setLoading(true);
-    setEmpty(false);
-    clearList();
+    const list = document.getElementById("favoritesList");
+    const loading = document.getElementById("favoritesLoading");
+    const empty = document.getElementById("favoritesEmpty");
 
-    if (!window.BikeApi.getAuthToken()) {
-      setLoading(false);
-      showMessage("Bạn cần đăng nhập để xem danh sách yêu thích.", "danger");
+    const token = BikeApi.getAuthToken();
+    if (!token) {
+      if (loading) loading.classList.add("d-none");
+      if (empty) {
+          empty.classList.remove("d-none");
+          empty.querySelector("p").textContent = "Vui lòng đăng nhập để xem danh sách yêu thích.";
+          empty.querySelector("a").textContent = "Đăng nhập ngay";
+          empty.querySelector("a").href = "./login.html";
+      }
       return;
     }
 
     try {
-      var payload = await window.BikeApi.request("/favorites", {
-        method: "GET",
-        auth: true,
+      const response = await BikeApi.getFavorites();
+      const products = BikeApi.pickList(response);
+
+      if (loading) loading.classList.add("d-none");
+
+      if (products.length === 0) {
+        if (empty) empty.classList.remove("d-none");
+        return;
+      }
+
+      list.innerHTML = "";
+      products.forEach(product => {
+        const card = createFavoriteCard(product);
+        list.appendChild(card);
       });
-      state.items = window.BikeApi.pickList(payload).map(normalizeItem);
-      renderList();
     } catch (error) {
-      state.items = [];
-      clearList();
-      setEmpty(false);
-      showMessage("Không thể tải danh sách yêu thích: " + error.message, "danger");
-    } finally {
-      setLoading(false);
+      console.error("Lỗi khi tải yêu thích:", error);
+      if (loading) loading.innerHTML = '<p class="text-danger">Không thể tải dữ liệu. Vui lòng thử lại sau.</p>';
     }
+  }
+
+  function createFavoriteCard(product) {
+    const col = document.createElement("div");
+    col.className = "col-sm-6 col-lg-4 mb-4";
+    
+    const imageUrl = BikeApi.resolveImageUrl(product.image_url);
+    const price = BikeApi.formatCurrency(product.price);
+    
+    col.innerHTML = `
+      <div class="box h-100 d-flex flex-column bg-white shadow-sm rounded">
+        <div class="img-box">
+          <img src="${imageUrl}" alt="${product.name}" class="img-fluid w-100 object-fit-cover" style="height: 250px;">
+        </div>
+        <div class="detail-box p-3 flex-grow-1 d-flex flex-column">
+          <h5>${product.name}</h5>
+          <h6 class="text-warning font-weight-bold mb-3">${price}</h6>
+          <div class="mt-auto d-flex justify-content-between">
+             <button class="btn btn-sm btn-outline-danger remove-btn"><i class="fa-light fa-trash"></i> Bỏ lưu</button>
+             <a href="./product-detail.html?id=${product.id}" class="btn btn-sm btn-dark">Chi tiết</a>
+          </div>
+        </div>
+      </div>
+    `;
+
+    col.querySelector(".remove-btn").onclick = async () => {
+        try {
+            await BikeApi.toggleFavorite(product.id);
+            col.remove();
+            const list = document.getElementById("favoritesList");
+            if (list.children.length === 0) {
+                document.getElementById("favoritesEmpty").classList.remove("d-none");
+            }
+        } catch (e) {
+            alert("Lỗi khi bỏ lưu: " + e.message);
+        }
+    };
+
+    return col;
   }
 
   document.addEventListener("DOMContentLoaded", loadFavorites);

@@ -3,69 +3,28 @@
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta
-      name="keywords"
-      content="favorite xe dap, san pham yeu thich"
-    />
-    <meta
-      name="description"
-      content="Danh sách sản phẩm yêu thích của bạn."
-    />
-    <meta name="author" content="Bike Marketplace" />
-    <link
-      rel="shortcut icon"
-      href="../assets/images/favicon.png"
-      type="image/png"
-    />
-    <title>Yêu thích - Bike Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Yêu thích - Bike Market</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
-    <link href="../assets/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/eliyantosarage/font-awesome-pro@main/fontawesome-pro-6.4.0-web/css/all.min.css" />
     <link href="../assets/css/style.css" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
   </head>
 
   <body class="sub_page">
     <div class="hero_area">
-      <div class="bg-box">
-        <img src="../assets/images/hero-bg.webp" alt="" />
-      </div>
-
-      <header class="header_section">
+      <header class="header_section bg-black">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand" href="./index.html">
-              <span>Bike Marketplace</span>
+              <span>Bike <span class="text-white">Market</span></span>
             </a>
-
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Mở menu điều hướng"
-            >
-              <span class=""></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                  <a class="nav-link" href="./index.html">Trang chủ</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="./create_product.html">Đăng bán</a>
-                </li>
-                <li class="nav-item active">
-                  <a class="nav-link" href="./favorites.html"
-                    >Yêu thích <span class="sr-only">(current)</span></a
-                  >
-                </li>
+            <div class="collapse navbar-collapse">
+               <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="./index.html">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="./products.html">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="./create_product.html">Đăng bán</a></li>
+                <li class="nav-item active"><a class="nav-link" href="./favorites.html">Yêu thích</a></li>
               </ul>
               <div class="user_option">
                 <a href="./login.html" class="user_link" aria-label="Tài khoản">
@@ -84,6 +43,39 @@
                     <path d="M20 21a8 8 0 0 0-16 0"></path>
                   </svg>
                 </a>
+                <a class="cart_link" href="./favorites.html" aria-label="Yêu thích">
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                </a>
+                <form class="form-inline ml-3">
+                  <button class="nav_search-btn" type="button" aria-label="Tìm kiếm">
+                    <svg
+                      viewBox="0 0 24 24"
+                      width="18"
+                      height="18"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      aria-hidden="true"
+                    >
+                      <circle cx="11" cy="11" r="7"></circle>
+                      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                  </button>
+                </form>
               </div>
             </div>
           </nav>
@@ -91,39 +83,99 @@
       </header>
     </div>
 
-    <section class="layout_padding">
+    <section class="layout_padding bg-light" style="min-height: 80vh;">
       <div class="container">
-        <div class="heading_container heading_center">
-          <h2>Sản phẩm yêu thích</h2>
+        <div class="heading_container mb-5">
+          <h2>Xe Đã <span>Lưu</span></h2>
+          <p>Danh sách các mẫu xe bạn đang quan tâm</p>
         </div>
 
-        <div id="favoritesMessage" class="alert d-none" role="alert"></div>
-        <div id="favoritesLoading" class="text-center text-muted">Đang tải danh sách yêu thích...</div>
+        <div id="favoritesLoading" class="text-center py-5">
+           <div class="spinner-border text-warning" role="status"></div>
+           <p class="mt-2 text-muted">Đang tải danh sách yêu thích...</p>
+        </div>
 
-        <div class="row mt-4" id="favoritesList"></div>
+        <div class="row" id="favoritesList"></div>
 
-        <div class="text-center mt-4 d-none" id="favoritesEmpty">
-          <svg
-            viewBox="0 0 24 24"
-            width="52"
-            height="52"
-            fill="none"
-            stroke="#6c757d"
-            stroke-width="1.8"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            aria-hidden="true"
-            class="mb-3"
-          >
-            <path d="M20.8 5.6a5 5 0 0 0-7.1 0L12 7.3l-1.7-1.7a5 5 0 0 0-7.1 7.1L5 14.6 12 21l7-6.4 1.8-1.9a5 5 0 0 0 0-7.1z"></path>
-          </svg>
-          <p class="text-muted">Chưa có sản phẩm yêu thích.</p>
+        <div id="favoritesEmpty" class="text-center py-5 d-none">
+           <i class="fa-light fa-heart fa-3x text-muted mb-3"></i>
+           <p class="text-muted">Bạn chưa lưu sản phẩm nào.</p>
+           <a href="./products.html" class="btn-premium mt-3">Khám phá xe ngay</a>
         </div>
       </div>
     </section>
 
     <footer class="footer_section">
       <div class="container">
+        <div class="row">
+          <div class="col-md-4 footer-col">
+            <div class="footer_contact">
+              <h4>Liên hệ</h4>
+              <div class="contact_link_box">
+                <a
+                  href="https://www.google.com/maps?q=TP.+Hồ+Chí+Minh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Địa chỉ hoạt động tại Thành phố Hồ Chí Minh"
+                >
+                  <i class="fa-light fa-location-dot"></i>
+                  <span>TP. Hồ Chí Minh</span>
+                </a>
+                <a href="tel:0900000000" aria-label="Gọi hotline 0900 000 000">
+                  <i class="fa-light fa-phone"></i>
+                  <span>Hotline: 0900 000 000</span>
+                </a>
+                <a
+                  href="mailto:support@bikemarket.vn"
+                  aria-label="Gửi email đến support@bikemarket.vn"
+                >
+                  <i class="fa-light fa-envelope"></i>
+                  <span>support@bikemarket.vn</span>
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 footer-col">
+            <div class="footer_detail">
+              <a href="./index.html" class="footer-logo">Bike Marketplace</a>
+              <p>
+                Nền tảng mua bán xe đạp thể thao cũ tập trung vào giao dịch minh
+                bạch và tốc độ tìm kiếm.
+              </p>
+              <div class="footer_social">
+                <a
+                  href="https://www.facebook.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  ><i class="fa-brands fa-facebook"></i
+                ></a>
+                <a
+                  href="https://x.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
+                  ><i class="fa-brands fa-twitter"></i
+                ></a>
+                <a
+                  href="https://www.instagram.com/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Instagram"
+                  ><i class="fa-brands fa-instagram"></i
+                ></a>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4 footer-col">
+            <h4>Giờ hỗ trợ</h4>
+            <p>Thứ 2 - Chủ nhật</p>
+            <p>08:00 - 22:00</p>
+          </div>
+        </div>
+
         <div class="footer-info">
           <p>
             &copy; <span id="displayYear"></span> Bike Marketplace. All Rights
@@ -135,8 +187,8 @@
 
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
-    <script src="../assets/js/custom.js"></script>
     <script src="../assets/js/api-client.js"></script>
     <script src="../assets/js/favorites.js"></script>
+    <script src="../assets/js/custom.js"></script>
   </body>
 </html>

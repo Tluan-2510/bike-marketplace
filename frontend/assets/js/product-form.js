@@ -1,251 +1,180 @@
 (function () {
   "use strict";
 
-  function trimSlashesRight(value) {
-    return String(value || "").replace(/\/+$/, "");
-  }
-
-  function resolveApiBaseUrl() {
-    var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
-    var fromStorage = "";
-
-    try {
-      fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
-    } catch (error) {
-      fromStorage = "";
-    }
-
-    if (fromWindow) return fromWindow;
-    if (fromStorage) return fromStorage;
-    return "http://localhost/api";
-  }
-
-  function buildApiUrl(path) {
-    var cleanPath = String(path || "");
-    if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
-    return resolveApiBaseUrl() + cleanPath;
-  }
-
-  var API = {
-    createProduct: buildApiUrl("/products"),
-  };
-
-  var STORAGE_KEYS = {
-    accessToken: "access_token",
-  };
-
-  function normalizeValue(value) {
-    return String(value || "").trim();
-  }
-
-  function getToken() {
-    return (
-      localStorage.getItem(STORAGE_KEYS.accessToken) ||
-      localStorage.getItem("token") ||
-      ""
-    );
-  }
-
-  function parseJSON(text) {
-    try {
-      return JSON.parse(text);
-    } catch (error) {
-      return {};
-    }
-  }
+  const BikeApi = window.BikeApi;
 
   function showMessage(messageBox, message, type) {
     if (!messageBox) return;
-    var alertType = type === "success" ? "success" : "danger";
+    const alertType = type === "success" ? "success" : "danger";
     messageBox.textContent = message;
     messageBox.className = "alert alert-" + alertType;
-  }
-
-  function hideMessage(messageBox) {
-    if (!messageBox) return;
-    messageBox.textContent = "";
-    messageBox.className = "alert d-none";
+    messageBox.classList.remove("d-none");
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   function setButtonLoading(button, loadingText) {
-    if (!button) return function () {};
-    var idleText = button.textContent;
+    if (!button) return () => {};
+    const idleText = button.textContent;
     button.disabled = true;
-    button.setAttribute("aria-busy", "true");
     button.textContent = loadingText;
-
-    return function restoreButton() {
+    return () => {
       button.disabled = false;
-      button.setAttribute("aria-busy", "false");
       button.textContent = idleText;
     };
   }
 
-  function normalizeApiError(payload, status) {
-    if (payload && typeof payload.message === "string" && payload.message.trim()) {
-      return payload.message;
-    }
+  async function initLookups() {
+    const categorySelect = document.getElementById("productCategory");
+    const brandSelect = document.getElementById("productBrand");
 
-    if (payload && payload.errors && typeof payload.errors === "object") {
-      var firstKey = Object.keys(payload.errors)[0];
-      if (firstKey) {
-        var firstError = payload.errors[firstKey];
-        if (Array.isArray(firstError) && firstError.length) return String(firstError[0]);
-        if (typeof firstError === "string") return firstError;
+    try {
+      const [categories, brands] = await Promise.all([
+        BikeApi.getCategories(),
+        BikeApi.getBrands()
+      ]);
+
+      if (categorySelect) {
+        categorySelect.innerHTML = '<option value="" disabled selected>Chọn loại xe</option>';
+        BikeApi.pickList(categories).forEach(cat => {
+          const opt = document.createElement("option");
+          opt.value = cat.id;
+          opt.textContent = cat.name;
+          categorySelect.appendChild(opt);
+        });
       }
-    }
 
-    if (status === 401) return "Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.";
-    if (status === 404) return "Backend chưa hỗ trợ API tạo sản phẩm (/products).";
-    if (status === 405) return "Sai phương thức gọi API. Kiểm tra backend routing.";
-    if (status >= 500) return "Hệ thống đang bận. Vui lòng thử lại sau.";
-    return "Không thể đăng sản phẩm. Vui lòng kiểm tra dữ liệu.";
+      if (brandSelect) {
+        brandSelect.innerHTML = '<option value="" disabled selected>Chọn thương hiệu</option>';
+        BikeApi.pickList(brands).forEach(brand => {
+          const opt = document.createElement("option");
+          opt.value = brand.id;
+          opt.textContent = brand.name;
+          brandSelect.appendChild(opt);
+        });
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải danh mục/thương hiệu:", error);
+    }
   }
 
-  function validatePayload(payload) {
-    if (
-      !payload.name ||
-      !payload.category ||
-      !payload.status ||
-      !payload.description
-    ) {
-      return "Vui lòng nhập đầy đủ thông tin bắt buộc.";
-    }
+  function initImagePreview() {
+    const dropZone = document.getElementById("dropZone");
+    const imageInput = document.getElementById("productImage");
+    const previewContainer = document.getElementById("imagePreviewContainer");
+    let selectedFiles = [];
 
-    if (!Number.isFinite(payload.price) || payload.price <= 0) {
-      return "Giá phải lớn hơn 0.";
-    }
+    if (!dropZone || !imageInput || !previewContainer) return;
 
-    if (!Number.isInteger(payload.quantity) || payload.quantity <= 0) {
-      return "Số lượng phải là số nguyên lớn hơn 0.";
-    }
+    // Trigger file input
+    dropZone.addEventListener("click", () => imageInput.click());
 
-    return "";
-  }
+    // Drag & Drop events
+    ["dragenter", "dragover"].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+    });
 
-  function buildPayload(form) {
-    var price = Number(form.querySelector('input[name="price"]').value);
-    var quantity = Number(form.querySelector('input[name="quantity"]').value);
+    ["dragleave", "drop"].forEach(eventName => {
+      dropZone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("dragover");
+      });
+    });
 
-    return {
-      name: normalizeValue(form.querySelector('input[name="name"]').value),
-      price: price,
-      category: normalizeValue(form.querySelector('select[name="category"]').value),
-      quantity: Number.isFinite(quantity) ? Math.trunc(quantity) : quantity,
-      status: normalizeValue(form.querySelector('select[name="status"]').value),
-      description: normalizeValue(form.querySelector('textarea[name="description"]').value),
-    };
-  }
+    dropZone.addEventListener("drop", (e) => {
+      const files = e.dataTransfer.files;
+      handleFiles(files);
+    });
 
-  function createRequestOptions(payload, imageFile, token) {
-    var headers = {
-      Accept: "application/json",
-      Authorization: "Bearer " + token,
-    };
+    imageInput.addEventListener("change", (e) => {
+      handleFiles(e.target.files);
+    });
 
-    if (imageFile) {
-      var formData = new FormData();
-      formData.append("name", payload.name);
-      formData.append("price", String(payload.price));
-      formData.append("category", payload.category);
-      formData.append("quantity", String(payload.quantity));
-      formData.append("status", payload.status);
-      formData.append("description", payload.description);
-      formData.append("image", imageFile);
-
-      return {
-        method: "POST",
-        headers: headers,
-        body: formData,
-      };
-    }
-
-    headers["Content-Type"] = "application/json";
-    return {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(payload),
-    };
-  }
-
-  function initImagePreview(imageInput, imagePreview) {
-    if (!imageInput || !imagePreview) return;
-
-    imageInput.addEventListener("change", function () {
-      var file = imageInput.files && imageInput.files[0];
-      if (!file) {
-        imagePreview.classList.add("d-none");
-        imagePreview.removeAttribute("src");
+    function handleFiles(files) {
+      const newFiles = Array.from(files);
+      if (selectedFiles.length + newFiles.length > 5) {
+        alert("Bạn chỉ có thể đăng tối đa 5 hình ảnh.");
         return;
       }
 
-      var objectUrl = URL.createObjectURL(file);
-      imagePreview.src = objectUrl;
-      imagePreview.classList.remove("d-none");
-      imagePreview.onload = function () {
-        URL.revokeObjectURL(objectUrl);
-      };
-    });
+      selectedFiles = [...selectedFiles, ...newFiles];
+      updatePreview();
+      syncInput();
+    }
+
+    function updatePreview() {
+      previewContainer.innerHTML = "";
+      selectedFiles.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const div = document.createElement("div");
+          div.className = "preview-item";
+          
+          div.innerHTML = `
+            <img src="${e.target.result}" alt="Preview">
+            <button type="button" class="remove-btn">&times;</button>
+          `;
+          
+          div.querySelector(".remove-btn").onclick = (event) => {
+            event.stopPropagation();
+            selectedFiles.splice(index, 1);
+            updatePreview();
+            syncInput();
+          };
+          
+          previewContainer.appendChild(div);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function syncInput() {
+      const dataTransfer = new DataTransfer();
+      selectedFiles.forEach(file => dataTransfer.items.add(file));
+      imageInput.files = dataTransfer.files;
+    }
   }
 
-  async function onSubmitCreateProduct(form, messageBox, submitButton, imageInput, imagePreview) {
-    hideMessage(messageBox);
+  async function onSubmit(event) {
+    event.preventDefault();
+    const form = event.target;
+    const messageBox = document.getElementById("productFormMessage");
+    const submitBtn = document.getElementById("submitProductButton");
+    
+    const formData = new FormData(form);
+    
+    // Log for debugging
+    console.log("Submitting form data...");
 
-    var token = getToken();
-    if (!token) {
-      showMessage(messageBox, "Bạn cần đăng nhập trước khi đăng sản phẩm.", "danger");
-      return;
-    }
-
-    var payload = buildPayload(form);
-    var validationMessage = validatePayload(payload);
-    if (validationMessage) {
-      showMessage(messageBox, validationMessage, "danger");
-      return;
-    }
-
-    var imageFile = imageInput && imageInput.files ? imageInput.files[0] : null;
-    var restoreButton = setButtonLoading(submitButton, "Đang đăng sản phẩm...");
+    const restoreBtn = setButtonLoading(submitBtn, "Đang đăng tin...");
 
     try {
-      var options = createRequestOptions(payload, imageFile, token);
-      var response = await fetch(API.createProduct, options);
-      var raw = await response.text();
-      var result = parseJSON(raw);
+      const response = await BikeApi.request("/products", {
+        method: "POST",
+        body: formData,
+        auth: true
+      });
 
-      if (!response.ok || result.success === false) {
-        throw new Error(normalizeApiError(result, response.status));
+      if (response.success) {
+        showMessage(messageBox, "Đăng tin bán xe thành công! Tin của bạn sẽ được hiển thị ngay.", "success");
+        form.reset();
+        document.getElementById("imagePreviewContainer").innerHTML = "";
+      } else {
+        throw new Error(response.message || "Đăng tin thất bại.");
       }
-
-      form.reset();
-      if (imagePreview) {
-        imagePreview.classList.add("d-none");
-        imagePreview.removeAttribute("src");
-      }
-      showMessage(messageBox, "Đăng sản phẩm thành công.", "success");
     } catch (error) {
-      showMessage(messageBox, error.message || "Đăng sản phẩm thất bại.", "danger");
+      showMessage(messageBox, error.message || "Không thể kết nối đến máy chủ.", "danger");
     } finally {
-      restoreButton();
+      restoreBtn();
     }
   }
 
-  function initCreateProductForm() {
-    var form = document.getElementById("createProductForm");
-    if (!form) return;
-
-    var messageBox = document.getElementById("productFormMessage");
-    var submitButton = document.getElementById("submitProductButton");
-    var imageInput = document.getElementById("productImage");
-    var imagePreview = document.getElementById("productImagePreview");
-
-    initImagePreview(imageInput, imagePreview);
-
-    form.addEventListener("submit", function (event) {
-      event.preventDefault();
-      onSubmitCreateProduct(form, messageBox, submitButton, imageInput, imagePreview);
-    });
-  }
-
-  document.addEventListener("DOMContentLoaded", initCreateProductForm);
+  document.addEventListener("DOMContentLoaded", () => {
+    initLookups();
+    initImagePreview();
+    const form = document.getElementById("createProductForm");
+    if (form) form.addEventListener("submit", onSubmit);
+  });
 })();
