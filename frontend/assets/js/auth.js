@@ -1,4 +1,4 @@
-﻿(function () {
+(function () {
   "use strict";
 
   function trimSlashesRight(value) {
@@ -264,13 +264,36 @@
 
     var restoreButton = setButtonLoading(submitButton, "Đang đăng nhập...");
 
+    // MOCK LOGIN FOR TESTING
+    if (payload.email === 'test@bikemarket.vn') {
+      setTimeout(function() {
+        persistAuthData({
+          access_token: 'mock_token_12345',
+          user: {
+            id: 999,
+            name: "Người Dùng Test",
+            username: "testuser",
+            email: "test@bikemarket.vn",
+            role: "seller",
+            phone: "0901234567",
+            address: "Quận 1, TP. HCM"
+          }
+        });
+        showMessage(messageBox, "Đăng nhập giả lập thành công. Đang chuyển hướng...", "success");
+        window.setTimeout(function () {
+          window.location.href = resolveRedirect(form, "./user.html");
+        }, 500);
+      }, 500);
+      return;
+    }
+
     try {
       var response = await requestJSON(API.login, payload);
       persistAuthData(response.data || response);
       showMessage(messageBox, "Đăng nhập thành công. Đang chuyển hướng...", "success");
 
       window.setTimeout(function () {
-        window.location.href = resolveRedirect(form, "./index.html");
+        window.location.href = resolveRedirect(form, "./user.html");
       }, 500);
     } catch (error) {
       showMessage(messageBox, error.message || "Đăng nhập thất bại.", "danger");

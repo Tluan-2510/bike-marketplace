@@ -1,88 +1,91 @@
-# 📝 TASK ASSIGNMENT
+# 📝 TASK ASSIGNMENT (CẬP NHẬT MỚI NHẤT)
 
 ---
 
 ## 🛑 QUY TẮC CHUNG (BẮT BUỘC)
 
-### 🐙 Git Workflow
-Mỗi người PHẢI làm trên 1 branch riêng:
-| Role | Branch |
-| --- | --- |
-| FE1 | FE1-Home |
-| FE2 | FE2-Form-detail |
-| BE1 | BE1-Auth |
-| BE2 | BE2-Product |
-| BE3 | BE3-BuyRequest |
-| BE4 | BE4-Database |
+### 🐙 Git Workflow & Phân Công
+Mỗi người PHẢI làm trên 1 branch riêng và điền tên vào bảng dưới đây:
+
+| Role | Branch | Thành viên phụ trách |
+| --- | --- | --- |
+| FE1 | FE1-Home-Profile | `Huỳnh Văn Khánh` |
+| FE2 | FE2-Form-Detail | `Nguyễn Hoàng Phương` |
+| BE1 | BE1-Auth-Fav | `Vạn Tường Ceasar` |
+| BE2 | BE2-Product-API | `Nguyễn Duy Ngọc` |
+| BE3 | BE3-BuyRequest | `Nguyễn Thành Luân` |
+| BE4 | BE4-Database | `Phạm Văn Hưng` |
 
 ### 🔄 Quy trình làm việc
-1. Pull code mới nhất
-2. Checkout branch của mình
-3. Code
-4. Commit
-5. Push
-6. Tạo Pull Request
+1. Pull code mới nhất từ nhánh `main`.
+2. Checkout branch của mình.
+3. Code tính năng được giao.
+4. Commit (Ghi rõ message nội dung đã làm).
+5. Push & Tạo Pull Request.
 
 ---
 
-## 🎨 FE1 - TRANG CHỦ (Homepage + Product List)
-**Mục tiêu:** Hiển thị danh sách sản phẩm xe đạp từ API.
+## 🎨 FE1: `Huỳnh Văn Khánh` - TRANG CHỦ, CÁ NHÂN & CẤU TRÚC PHP
+**Trạng thái:** Giao diện UI đã được chuẩn hóa (Logo SVG mới, Favicon, đồng bộ Header/Footer, Hover effects). 
 
-**Task phải làm:**
-1. Khởi tạo giao diện hiện đại (Modern UI) cho danh sách xe.
-2. Gọi API `GET /api/products`
-3. Gọi API `GET /api/categories` và `GET /api/brands` để làm bộ lọc.
-4. Render dữ liệu chi tiết xe (Tên, Giá, Ảnh chính, Tình trạng, Size bánh, Chất liệu).
-5. Search & Filter: Lọc theo Category, Brand, khoảng giá.
-
-**Yêu cầu:** Không hardcode data, UI responsive, thiết kế Premium.
-
----
-
-## 🎨 FE2 - FORM & DETAIL
-**Mục tiêu:** Xây dựng form đăng xe + chi tiết sản phẩm + yêu thích.
-
-**Task phải làm:**
-1. Login/Register Page (Gọi `POST /api/auth/...`)
-2. Create Product Page (Gọi `POST /api/products` với FormData để upload file).
-   - Form cần có: Tên, Giá, Danh mục, Thương hiệu, Khung, Kích cỡ bánh, Bộ đề, Phanh, Upload ảnh.
-3. Product Detail (Gọi `GET /api/products?id=...`). Hiển thị toàn bộ ảnh và thông số kỹ thuật.
-4. Favorite (Nút thả tim, gọi `POST /api/favorites`).
-5. Nút "Liên hệ mua" (Gọi `POST /api/buy-requests`).
+**Nhiệm vụ cụ thể:**
+1. **Chuyển đổi PHP Includes (Ưu tiên làm đầu tiên):** 
+   - Đổi đuôi toàn bộ các file `.html` sang `.php`.
+   - Cắt riêng `Header` và `Footer` thành `includes/header.php` và `includes/footer.php`.
+   - Sử dụng `<?php include 'includes/header.php'; ?>` để gọi lại trên các trang (`index.php`, `products.php`, v.v.).
+   - Sửa toàn bộ đường dẫn thẻ `<a>` từ `.html` sang `.php`.
+2. Mở khóa và tích hợp API `GET /api/products` vào hàm `loadHomeProducts()` trong `index-products.js` để tải danh sách xe thực tế.
+3. Đảm bảo tính năng Lọc (Filter theo Category, Brand) hoạt động chuẩn với Backend.
+4. Hoàn thiện trang `user.php`: Gọi API lấy danh sách "Xe đang bán" dựa trên `seller_id` của user hiện tại.
 
 ---
 
-## ⚙️ BE1 - AUTH & FAVORITE
-**Mục tiêu:** Xử lý đăng ký, đăng nhập và yêu thích.
+## 🎨 FE2: `Nguyễn Hoàng Phương` - FORM & CHI TIẾT SẢN PHẨM
+**Trạng thái:** Đã xong giao diện thẻ sản phẩm, logic mock login, sửa lỗi nút yêu thích (tim).
 
-**Task phải làm:**
-1. Cập nhật `AuthController` (mã hóa mật khẩu, lưu số điện thoại).
-2. Xử lý `FavoriteController` (Thêm/xóa yêu thích).
-
----
-
-## ⚙️ BE2 - PRODUCT & CATEGORY
-**Mục tiêu:** CRUD xe đạp với các thông số chuyên sâu + Upload ảnh.
-
-**Task phải làm:**
-1. `ProductController.php`: Xử lý `$_FILES` để lưu ảnh vào `backend/uploads/`.
-2. Truy vấn JOIN để lấy thông tin Danh mục & Thương hiệu.
-3. Hỗ trợ tìm kiếm theo `category_id`, `brand_id`.
+**Nhiệm vụ cụ thể:**
+1. Gỡ bỏ Mock Login (trong `auth.js`), kết nối chuẩn với `POST /api/auth/login` và `POST /api/auth/register`. Lưu JWT Token vào `localStorage`.
+2. Hoàn thiện form `create_product.php`: Gọi `POST /api/products` với `FormData` (xử lý upload ảnh nhiều file nếu có).
+3. Trang `product-detail.php`: Đọc tham số `id` từ URL (`?id=...`) và gọi `GET /api/products?id=...` để render toàn bộ thông số kỹ thuật xe.
+4. Bắt sự kiện nút "Liên hệ mua" để gọi `POST /api/buy-requests`.
 
 ---
 
-## ⚙️ BE3 - BUY REQUESTS (Thay thế Order)
-**Mục tiêu:** Tạo yêu cầu mua/thương lượng (không phải mua đứt).
+## ⚙️ BE1: `Vạn Tường Ceasar` - AUTH & FAVORITE
+**Mục tiêu:** Xử lý xác thực, người dùng và chức năng Yêu thích.
 
-**Task phải làm:**
-1. `BuyRequestController.php`: Lưu `buyer_id`, `product_id`, `message`.
-2. Trả về danh sách yêu cầu mua của một user (`GET /api/buy-requests?user_id=...`).
+**Nhiệm vụ cụ thể:**
+1. Cập nhật `AuthController`: Hỗ trợ lưu và mã hóa password, trả về JWT Token và thông tin User (`id`, `name`, `email`, `phone`).
+2. Hoàn thiện API `toggleFavorite` (`POST /api/favorites`): Thêm hoặc Xóa sản phẩm khỏi danh sách yêu thích của người dùng.
+3. Cung cấp API `GET /api/favorites` để Frontend hiển thị trong tab "Xe đã lưu".
 
 ---
 
-## 🗄️ BE4 - DATABASE
-**Mục tiêu:** Setup nền tảng hệ thống cơ sở dữ liệu chuyên biệt.
+## ⚙️ BE2: `Nguyễn Duy Ngọc` - PRODUCT & CATEGORY
+**Mục tiêu:** Quản lý xe đạp, danh mục, upload hình ảnh.
 
-**Task phải làm:**
-1. Bảng `users`, `categories`, `brands`, `products`, `product_images`, `buy_requests`, `favorites`.
-2. Viết file `database/schema.sql` và `DATABASE.md`.
+**Nhiệm vụ cụ thể:**
+1. `ProductController`: Xử lý lưu file ảnh vào `backend/uploads/` và lưu đường dẫn vào DB một cách an toàn.
+2. Bổ sung tham số lọc `seller_id` cho API `GET /api/products` để FE1 có thể hiển thị danh sách "Xe đang bán".
+3. Đảm bảo trường `description` trả về chuẩn text để FE có thể hiển thị cắt gọn 2 dòng (`line-clamp`).
+4. Truy vấn JOIN để kết hợp `category_name` và `brand_name` trả về cùng object Product.
+
+---
+
+## ⚙️ BE3: `Nguyễn Thành Luân` - BUY REQUESTS (Thương lượng mua)
+**Mục tiêu:** Hệ thống gửi yêu cầu mua/liên hệ thay vì giỏ hàng.
+
+**Nhiệm vụ cụ thể:**
+1. `BuyRequestController`: API `POST /api/buy-requests` lưu trữ `buyer_id`, `product_id`, và `message`.
+2. Cung cấp API `GET /api/buy-requests?user_id=...` để người bán xem các yêu cầu mua xe của mình.
+3. Cập nhật trạng thái yêu cầu (Chờ xử lý, Đã chốt, Đã hủy).
+
+---
+
+## 🗄️ BE4: `Phạm Văn Hưng` - DATABASE & DEPLOYMENT
+**Mục tiêu:** Nền tảng DB và Môi trường.
+
+**Nhiệm vụ cụ thể:**
+1. Chuẩn hóa Schema các bảng: `users`, `categories`, `brands`, `products`, `buy_requests`, `favorites`.
+2. Tạo dữ liệu mẫu (Seeders) cho Categories (Road, MTB, Touring...) và Brands (Trek, Giant, Specialized...).
+3. Hỗ trợ cấu hình Docker (nếu có) và biến môi trường `CORS` để Frontend gọi API không bị lỗi (Cross-Origin Resource Sharing).

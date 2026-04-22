@@ -10,9 +10,19 @@ Lưu trữ thông tin người dùng (người mua và người bán).
 - `username` (UNIQUE)
 - `email` (UNIQUE)
 - `password_hash`
-- `phone_number`: Số điện thoại liên hệ
 - `full_name`
-- `avatar_url`
+- `gender`: 'Nam', 'Nữ', 'Khác'
+- `birth_date`: DATE
+- `phone_number`: Số điện thoại liên hệ
+- `address`: Địa chỉ đường/phường
+- `city`: Tỉnh/Thành phố
+- `social_link`: Link Zalo/Facebook
+- `bio`: Giới thiệu ngắn
+- `avatar_url`: Đường dẫn ảnh đại diện
+- `identity_card`: CMND/CCCD
+- `is_verified`: boolean (Tích xanh uy tín)
+- `rating`: Điểm đánh giá trung bình (1.0 - 5.0)
+- `total_reviews`: Tổng số lượt đánh giá
 - `role`: 'user', 'admin'
 - `created_at`
 

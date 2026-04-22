@@ -10,9 +10,46 @@ Body (JSON):
   "email": "abc@gmail.com",
   "password": "123456",
   "phone_number": "0987654321",
-  "full_name": "Nguyễn Văn A"
+  "full_name": "Nguyễn Văn A",
+  "gender": "Nam",
+  "city": "Hà Nội"
 }
 ```
+
+---
+
+## 👤 USERS
+
+### GET /api/users?id={id}
+Trả về thông tin chi tiết của người dùng (Public Profile), dùng để hiển thị trên trang cá nhân hoặc chi tiết người bán.
+**Response (JSON):**
+```json
+{
+  "id": 1,
+  "full_name": "Nguyễn Văn A",
+  "avatar_url": "/uploads/avatar.jpg",
+  "gender": "Nam",
+  "city": "Hà Nội",
+  "bio": "Chuyên bán xe Road",
+  "is_verified": true,
+  "rating": 4.8,
+  "total_reviews": 15
+}
+```
+
+### POST /api/users/update
+Cập nhật thông tin cá nhân.
+**Body (FormData):**
+- `user_id` (int)
+- `full_name` (string)
+- `gender` (enum)
+- `birth_date` (date)
+- `address` (string)
+- `city` (string)
+- `social_link` (string)
+- `bio` (text)
+- `identity_card` (string)
+- `avatar` (file, optional)
 
 ### POST /api/auth/login
 Body (JSON):

@@ -8,7 +8,7 @@ Website kết nối mua bán xe đạp thể thao cũ (Specialized Bike Marketpl
 
 ## 🏗️ Kiến trúc hệ thống
 
-- **Frontend**: HTML / CSS / JavaScript thuần (Giao diện hiện đại, Dynamic)
+- **Frontend**: PHP (Includes) / HTML / CSS / JavaScript (Giao diện hiện đại, Tái sử dụng Component)
 - **Backend**: PHP thuần (RESTful API, Upload ảnh vật lý)
 - **Database**: MySQL (Thiết kế chuẩn hóa chuyên biệt cho xe đạp)
 
@@ -16,14 +16,14 @@ Website kết nối mua bán xe đạp thể thao cũ (Specialized Bike Marketpl
 
 ## 👥 Phân công
 
-| Role | Nhiệm vụ |
-| --- | --- |
-| FE1 | Trang chủ + Danh sách xe (gọi API Products, Categories, Brands) |
-| FE2 | Form đăng xe + Trang Chi tiết + Yêu thích |
-| BE1 | Auth (User) & Favorites |
-| BE2 | Product (Upload ảnh, Lọc xe) |
-| BE3 | Buy Requests (Yêu cầu mua/Thương lượng) |
-| BE4 | Database (Thiết kế schema, tối ưu hóa) |
+| Role | Thành viên | Nhiệm vụ |
+| --- | --- | --- |
+| FE1 | Huỳnh Văn Khánh | Trang chủ + Danh sách xe + Đổi Cấu trúc PHP Includes |
+| FE2 | Nguyễn Hoàng Phương | Form đăng xe + Trang Chi tiết + Mock Login & Yêu thích |
+| BE1 | Vạn Tường Ceasar | Auth (Xác thực, Phân quyền User) & Favorites |
+| BE2 | Nguyễn Duy Ngọc | Product (Xử lý thông số xe, Upload ảnh, Lọc xe theo seller_id) |
+| BE3 | Nguyễn Thành Luân | Buy Requests (Hệ thống yêu cầu mua/Thương lượng) |
+| BE4 | Phạm Văn Hưng | Database (Thiết kế schema, tối ưu hóa) & Setup Deployment |
 
 ---
 

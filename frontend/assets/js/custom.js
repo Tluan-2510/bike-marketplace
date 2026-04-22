@@ -261,11 +261,22 @@
     }
   }
 
+  function initFavBtnToggle() {
+    document.addEventListener("click", function(e) {
+      var btn = e.target.closest(".fav-btn");
+      if (!btn) return;
+      
+      e.preventDefault();
+      btn.classList.toggle("active");
+    });
+  }
+
   document.addEventListener("DOMContentLoaded", function () {
     // syncHeader();
     initHeaderSearchButton();
     setFooterYear();
     initSearchAndFilter();
     initSafeBootstrap();
+    initFavBtnToggle();
   });
 })();

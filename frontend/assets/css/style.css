@@ -902,6 +902,52 @@ a, a:hover, a:focus {
   color: inherit;
 }
 
+.fa {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.fa-user:before {
+  content: "\1F464";
+}
+
+.fa-search:before {
+  content: "\1F50D";
+}
+
+.fa-heart:before {
+  content: "\2665";
+}
+
+.fa-map-marker:before {
+  content: "\1F4CD";
+}
+
+.fa-phone:before {
+  content: "\260E";
+}
+
+.fa-envelope:before {
+  content: "\2709";
+}
+
+.fa-facebook:before {
+  content: "f";
+}
+
+.fa-twitter:before {
+  content: "x";
+}
+
+.fa-instagram:before {
+  content: "\25CE";
+}
+
+.fa-check-circle:before {
+  content: "\2714";
+}
+
 
 /* -------------------------------------------------------------------------- */
 /*                                PRODUCT CARDS                               */
@@ -1012,7 +1058,16 @@ a, a:hover, a:focus {
   transform: scale(1.1);
 }
 
+.box .img-box .fav-btn:focus {
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
 .box .img-box .fav-btn.active {
+  color: #ff4757;
+}
+
+.box .img-box .fav-btn.active i {
   color: #ff4757;
 }
 
