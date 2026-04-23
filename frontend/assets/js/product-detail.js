@@ -1,167 +1,86 @@
+/**
+ * Bike Market - Product Detail Logic
+ */
+
 (function () {
   "use strict";
 
-  const BikeApi = window.BikeApi;
-
-  async function loadProductDetail() {
+  async function initDetail() {
+    const api = window.BikeApi;
+    
     const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
-
-    if (!productId) {
-      window.location.href = "./products.html";
-      return;
-    }
-
-    if (productId === 'demo') {
-      renderProduct({
-        id: 'demo',
-        name: 'Specialized Tarmac SL7 Pro - 2023',
-        price: 145000000,
-        category_name: 'Road Bike',
-        description: 'Dòng xe đua đỉnh cao, khung carbon siêu nhẹ, bộ truyền động Shimano Ultegra Di2. Xe còn mới 99%.',
-        brand_name: 'Specialized',
-        frame_material: 'Carbon',
-        wheel_size: '700c',
-        groupset: 'Shimano Ultegra Di2',
-        brake_type: 'Disc',
-        condition_state: 'Like New',
-        seller_name: 'Bike Market Official',
-        location: 'TP. Hồ Chí Minh',
-        image_url: '../assets/images/demo-bike.png',
-        images: []
-      });
-      return;
-    }
+    const productId = urlParams.get("id");
+    if (!productId || productId === "demo") return;
 
     try {
-      const response = await BikeApi.getProduct(productId);
-      const product = response.data;
+      const res = await api.getProduct(productId);
+      const p = res.data;
+      if (!p) return;
 
-      if (!product) throw new Error("Sản phẩm không tồn tại.");
+      // Basic Info
+      document.getElementById("mainProductImg").src = api.resolveImageUrl(p.image_url);
+      document.title = p.name + " - Bike Market";
+      document.getElementById("breadcrumbName").textContent = p.name;
+      document.getElementById("productName").textContent = p.name;
+      document.getElementById("productPrice").textContent = api.formatCurrency(p.price);
+      document.getElementById("productBadge").textContent = p.category_name || "Xe đạp";
+      document.getElementById("productDesc").textContent = p.description;
 
-      renderProduct(product);
-    } catch (error) {
-      console.error("Lỗi khi tải chi tiết sản phẩm:", error);
-      alert("Không thể tải thông tin sản phẩm: " + error.message);
-    }
-  }
+      // Seller Info
+      document.getElementById("sellerName").textContent = p.seller_name || "Người bán";
+      document.getElementById("sellerLocation").textContent = p.seller_city || "Toàn quốc";
 
-  function renderProduct(product) {
-    document.title = product.name + " - Bike Market";
-    document.getElementById("breadcrumbName").textContent = product.name;
-    document.getElementById("productName").textContent = product.name;
-    document.getElementById("productPrice").textContent = BikeApi.formatCurrency(product.price);
-    document.getElementById("productBadge").textContent = product.category_name;
-    document.getElementById("productDesc").textContent = product.description || "Không có mô tả.";
+      // Specs
+      document.getElementById("specBrand").textContent = p.brand || "N/A";
+      document.getElementById("specFrame").textContent = p.frame || "N/A";
+      document.getElementById("specWheel").textContent = p.wheel || "N/A";
+      document.getElementById("specGroupset").textContent = p.groupset || "N/A";
+      document.getElementById("specBrake").textContent = p.brake || "N/A";
+      document.getElementById("specCondition").textContent = p.condition || "Đã qua sử dụng";
 
-    // Specs
-    document.getElementById("specBrand").textContent = product.brand_name || "N/A";
-    document.getElementById("specFrame").textContent = product.frame_material || "N/A";
-    document.getElementById("specWheel").textContent = product.wheel_size || "N/A";
-    document.getElementById("specGroupset").textContent = product.groupset || "N/A";
-    document.getElementById("specBrake").textContent = product.brake_type === 'Disc' ? 'Phanh đĩa' : 'Phanh vành';
-    document.getElementById("specCondition").textContent = translateCondition(product.condition_state);
-
-    // Seller
-    document.getElementById("sellerName").textContent = product.seller_name || "Người bán ẩn danh";
-    document.getElementById("sellerLocation").textContent = product.location || "Toàn quốc";
-
-    // Images
-    const mainImg = document.getElementById("mainProductImg");
-    const thumbContainer = document.getElementById("imageThumbnails");
-    
-    const allImages = product.images || [];
-    const firstImg = allImages.length > 0 ? allImages[0].image_url : product.image_url;
-    
-    mainImg.src = BikeApi.resolveImageUrl(firstImg);
-
-    if (allImages.length > 1) {
-      thumbContainer.innerHTML = "";
-      allImages.forEach(img => {
-        const t = document.createElement("img");
-        t.src = BikeApi.resolveImageUrl(img.image_url);
-        t.className = "img-thumbnail mr-2 mb-2 cursor-pointer";
-        t.style.width = "80px";
-        t.style.height = "80px";
-        t.style.objectFit = "cover";
-        t.onclick = () => { mainImg.src = t.src; };
-        thumbContainer.appendChild(t);
-      });
-    }
-
-    // Buttons
-    const btnBuy = document.getElementById("btnBuyRequest");
-    btnBuy.onclick = () => {
-      const token = BikeApi.getAuthToken();
-      if (!token) {
-        alert("Vui lòng đăng nhập để gửi yêu cầu mua xe.");
-        window.location.href = "./login.html";
-        return;
-      }
-      $('#buyRequestModal').modal('show');
-    };
-
-    const btnFav = document.getElementById("btnFavorite");
-    btnFav.onclick = () => toggleFavorite(product.id, btnFav);
-  }
-
-  function translateCondition(c) {
-    const map = { 'New': 'Mới 100%', 'Like New': 'Như mới', 'Good': 'Tốt', 'Fair': 'Khá' };
-    return map[c] || c;
-  }
-
-  async function toggleFavorite(productId, btn) {
-    try {
-      const response = await BikeApi.toggleFavorite(productId);
-      const icon = btn.querySelector("i");
-      if (response.message.includes("đã thêm")) {
-        icon.className = "fa-solid fa-heart text-danger";
-        btn.classList.add("bg-warning");
+      // Contact Actions
+      const phone = p.seller_phone || "";
+      if (phone) {
+          const btnCall = document.getElementById("btnCall");
+          const btnCallSticky = document.getElementById("btnCallSticky");
+          const btnZalo = document.getElementById("btnZalo");
+          
+          if (btnCall) btnCall.href = "tel:" + phone;
+          if (btnCallSticky) btnCallSticky.href = "tel:" + phone;
+          if (btnZalo) btnZalo.href = "https://zalo.me/" + phone;
       } else {
-        icon.className = "fa-light fa-heart";
-        btn.classList.remove("bg-warning");
+          document.querySelectorAll("#btnCall, #btnCallSticky, #btnZalo").forEach(el => el.classList.add("d-none"));
       }
-    } catch (error) {
-       if (error.status === 401) {
-          alert("Vui lòng đăng nhập để lưu sản phẩm yêu thích.");
-       } else {
-          console.error("Lỗi khi yêu thích:", error);
-       }
+
+      // Related Products (Mock for now or fetch by category)
+      loadRelatedProducts(p.category_id, productId);
+
+    } catch (e) {
+      console.error("Lỗi tải chi tiết sản phẩm:", e);
     }
   }
 
-  async function handleBuyRequest(e) {
-    e.preventDefault();
-    const urlParams = new URLSearchParams(window.location.search);
-    const productId = urlParams.get('id');
-    const form = e.target;
-    const messageBox = document.getElementById("modalMessage");
-    const message = form.querySelector('textarea[name="message"]').value;
+  async function loadRelatedProducts(categoryId, excludeId) {
+    const api = window.BikeApi;
+    const grid = document.getElementById("relatedProductsGrid");
+    if (!grid) return;
 
     try {
-      const response = await BikeApi.sendBuyRequest({
-        product_id: productId,
-        message: message
-      });
-
-      if (response.success) {
-        messageBox.textContent = "Gửi yêu cầu thành công! Người bán sẽ sớm liên hệ với bạn.";
-        messageBox.className = "alert alert-success";
-        messageBox.classList.remove("d-none");
-        setTimeout(() => {
-          $('#buyRequestModal').modal('hide');
-        }, 2000);
-      }
-    } catch (error) {
-      messageBox.textContent = error.message;
-      messageBox.className = "alert alert-danger";
-      messageBox.classList.remove("d-none");
+        const res = await api.getProducts({ category_id: categoryId, limit: 4 });
+        const items = api.pickList(res).filter(item => item.id != excludeId).slice(0, 3);
+        
+        if (items.length) {
+            grid.innerHTML = "";
+            items.forEach(item => {
+                grid.appendChild(window.renderProductCard(item));
+            });
+        } else {
+            grid.innerHTML = '<div class="col-12 text-center text-muted">Không có sản phẩm tương tự.</div>';
+        }
+    } catch (e) {
+        grid.innerHTML = "";
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    loadProductDetail();
-    const buyForm = document.getElementById("buyRequestForm");
-    if (buyForm) buyForm.addEventListener("submit", handleBuyRequest);
-  });
+  document.addEventListener("DOMContentLoaded", initDetail);
 })();

@@ -4,97 +4,287 @@
 
 @media (max-width: 992px) {
   .hero_area {
-    min-height: auto;
+    min-height: auto !important;
+    height: auto !important;
+  }
+
+  .header_section {
+    padding: 20px 0 !important;
+  }
+
+  .slider_section {
+    min-height: 550px !important; /* Doubled height for tablets */
+    height: 60vw !important; 
   }
 
   .custom_nav-container .navbar-nav {
     padding-top: 15px;
-padding-left: 0;
+    padding-left: 0;
     align-items: center;
   }
 
-  .user_option{
+  .user_option {
     justify-content: center;
     margin-top: 15px;
+    display: flex;
+    gap: 20px;
   }
+
+  .user_option i {
+    font-size: 1.5rem;
+  }
+
   .custom_nav-container .navbar-nav .nav-item .nav-link {
     padding: 5px 25px;
     margin: 5px 0;
   }
 
   .slider_section .carousel-indicators {
-    margin-top: 45px;
+    margin-top: 40px;
   }
 
-  .offer_section .box {
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
+  .navbar-collapse {
+    background-color: rgba(0, 0, 0, 0.95);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(255, 215, 0, 0.1);
   }
 
-  .offer_section .box .img-box {
-    margin-right: 0;
-    margin-bottom: 15px;
+  .slider_section .carousel-item {
+    padding-top: 130px;
+    align-items: flex-start;
   }
 
+  .slider_section .detail-box h1 {
+    font-size: 3rem;
+  }
+
+  .slider_section .detail-box p {
+    font-size: 1.1rem;
+    max-width: 100%;
+    margin-bottom: 25px;
+    display: block;
+  }
+
+  /* Product Detail Tablet Fixes */
+  .detail-gallery-container {
+    position: relative;
+    top: 0;
+    margin-bottom: 30px;
+  }
+
+  .main-img-wrapper {
+    height: 400px;
+  }
 }
 
 @media (max-width: 767px) {
-
-  .about_section .detail-box,
-  .book_section .form_container {
-    margin-bottom: 45px;
+  .detail-product-name {
+    font-size: 1.8rem;
   }
-
-  .about_section .row {
-    flex-direction: column-reverse;
+  
+  .detail-product-price {
+    font-size: 1.5rem;
   }
-
-  .offer_section .box {
-    flex-direction: row;
-    text-align: left;
-  }
-
-  .offer_section .box .img-box {
-    margin-right: 15px;
-    margin-bottom: 0;
-  }
-
 }
 
-@media (max-width: 576px) {}
+@media (max-width: 576px) {
+  .hero_area {
+    min-height: auto !important;
+    height: auto !important;
+  }
 
-@media (max-width: 480px) {}
+  .header_section {
+    padding: 15px 0 !important;
+  }
 
-@media (max-width: 430px) {
-  .offer_section .box {
+  .slider_section {
+    min-height: 440px !important; /* Doubled height for mobile */
+    height: 90vw !important; 
+  }
+
+  .slider_section .bg-box img {
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .slider_section .carousel-item {
+    padding-top: 110px; 
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .slider_section .detail-box h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    line-height: 1.1;
+  }
+
+  .slider_section .detail-box p {
+    display: block !important;
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+
+  .btn-box {
     flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .btn-box a {
+    width: 100%;
+    font-size: 14px;
+    padding: 12px 20px;
     text-align: center;
   }
 
-  .offer_section .box .img-box {
-    margin-right: 0;
-    margin-bottom: 15px;
+  /* Slider indicators adjustment */
+  .slider_section .carousel-indicators {
+    bottom: 20px;
+  }
+  .slider_section .carousel-indicators li {
+    width: 30px;
+    height: 5px;
   }
 
+  /* Product Detail Mobile Fixes */
+  .product-detail-section {
+    padding: 30px 0;
+  }
+
+  .detail-gallery-container {
+    padding: 10px;
+    border-radius: 15px;
+  }
+
+  .main-img-wrapper {
+    height: 300px;
+  }
+
+  .product-info-card {
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 20px;
+  }
+
+  .specs-grid {
+    grid-template-columns: 1fr;
+    padding: 15px;
+  }
+
+  .spec-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+
+  .spec-text {
+    font-size: 13px;
+    line-height: 1.3;
+    word-break: break-word;
+  }
+
+  .seller-profile-card {
+    padding: 15px;
+    gap: 15px;
+  }
+
+  .seller-avatar {
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+  }
+
+  /* Hide regular buttons on mobile because we have sticky bar */
+  .product-info-card .actions {
+    display: none;
+  }
+
+  .bg-white.p-5.rounded.shadow-sm {
+    padding: 25px !important;
+  }
+
+  /* Product Card Mobile Fixes - Index & Shop */
+  .box .btn-view-detail {
+    display: none !important;
+  }
+  .box .detail-box h5 {
+    font-size: 0.85rem !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+    overflow: hidden !important;
+    white-space: normal !important;
+    height: 2.5rem !important;
+    line-height: 1.25 !important;
+    margin-bottom: 5px !important;
+  }
+  .box .detail-box h6 {
+    width: 100% !important;
+    text-align: center !important;
+    border: none !important;
+  }
+  .options {
+    justify-content: center !important;
+  }
+
+  /* Category Section Mobile Fixes */
+  .category_section {
+    padding: 50px 0 !important;
+  }
+  .category-card {
+    height: 160px !important;
+    margin-bottom: 0 !important;
+  }
+  .category-detail {
+    padding: 15px !important;
+  }
+  .category-detail h5 {
+    font-size: 1rem !important;
+    margin-bottom: 0 !important;
+  }
+  .category-detail span {
+    display: none !important; /* Hide description to save space */
+  }
+
+  /* Footer Mobile Fixes */
+  .footer_section {
+    text-align: center !important;
+    padding: 60px 0 30px 0 !important;
+  }
+  .footer_section .footer-col {
+    margin-bottom: 40px;
+  }
+  .footer_section .footer-col h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .footer_section .contact_link_box {
+    align-items: center;
+  }
 }
+
+@media (max-width: 480px) {}
+
+@media (max-width: 430px) {}
 
 @media (max-width: 376px) {
   .slider_section .detail-box h1 {
-    font-size: 3rem;
+    font-size: 1.6rem; /* Slightly smaller for very narrow screens */
+  }
+  .slider_section {
+    min-height: 400px !important;
   }
 }
 
 @media (min-width: 1200px) {
   .container {
     max-width: 1170px;
-  }
-}
-
-
-@media (min-width:576px) and (max-width:991px) {
-  .rent_solution_container .col-md-4.col-sm-6 {
-    float: left;
-    width: 50%;
   }
 }
