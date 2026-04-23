@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="vi">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -164,9 +164,9 @@
                 <div class="row">
                   <div class="col-md-8 col-lg-7">
                     <div class="detail-box">
-                      <h1>Danh sách xe mới đăng mỗi ngày</h1>
+                      <h1>Xe mới đăng mỗi ngày</h1>
                       <p>
-                        Nhiều mẫu MTB, Road, Gravel, City và Folding được cập
+                        Nhiều mẫu MTB, Road, Touring, Fixed Gear và BMX được cập
                         nhật liên tục với giá, mô tả và tình trạng xe chi tiết.
                       </p>
                       <div class="btn-box mt-4">
@@ -250,13 +250,13 @@
                     <option value="all">Mọi loại xe</option>
                     <option value="mtb">MTB</option>
                     <option value="road">Road Bike</option>
-                    <option value="gravel">Gravel</option>
-                    <option value="city">City Bike</option>
-                    <option value="folding">Folding Bike</option>
+                    <option value="touring">Touring</option>
+                    <option value="fixed">Fixed Gear</option>
+                    <option value="bmx">BMX</option>
                   </select>
                 </div>
                 <div class="btn_box">
-                  <button id="searchButton" type="submit" class="btn-premium">Lọc kết quả</button>
+                  <button id="searchButton" type="submit" class="btn-premium search-submit-btn">Lọc kết quả</button>
                 </div>
               </form>
             </div>
@@ -279,8 +279,8 @@
                 </div>
                 <div class="detail-box">
                   <h5>MTB</h5>
-                  <h6><span>124</span> tin đang bán</h6>
-                  <a href="./products.html?category=1" class="text-yellow">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
+                  <h6>Xe địa hình</h6>
+                  <a href="./products.html?category=1">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
             </div>
@@ -297,7 +297,7 @@
                 </div>
                 <div class="detail-box">
                   <h5>Road Bike</h5>
-                  <h6><span>87</span> tin đang bán</h6>
+                  <h6>Xe đạp đua</h6>
                   <a href="./products.html?category=2">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
@@ -310,12 +310,12 @@
                   <img
                     src="../assets/images/f3.png"
                     class="img-fluid"
-                    alt="Danh mục xe Gravel"
+                    alt="Danh mục xe Touring"
                   />
                 </div>
                 <div class="detail-box">
-                  <h5>Gravel</h5>
-                  <h6><span>43</span> tin đang bán</h6>
+                  <h5>Touring</h5>
+                  <h6>Xe đi đường dài</h6>
                   <a href="./products.html?category=3">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
@@ -328,12 +328,12 @@
                   <img
                     class="img-fluid"
                     src="../assets/images/f4.png"
-                    alt="Danh mục xe City Bike"
+                    alt="Danh mục xe Fixed Gear"
                   />
                 </div>
                 <div class="detail-box">
-                  <h5>City Bike</h5>
-                  <h6><span>66</span> tin đang bán</h6>
+                  <h5>Fixed Gear</h5>
+                  <h6>Xe một líp</h6>
                   <a href="./products.html?category=4">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
@@ -346,12 +346,12 @@
                   <img
                     class="img-fluid"
                     src="../assets/images/f5.png"
-                    alt="Danh mục xe Folding Bike"
+                    alt="Danh mục xe BMX"
                   />
                 </div>
                 <div class="detail-box">
-                  <h5>Folding Bike</h5>
-                  <h6><span>29</span> tin đang bán</h6>
+                  <h5>BMX</h5>
+                  <h6>Xe biểu diễn</h6>
                   <a href="./products.html?category=5">Xem ngay <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
@@ -369,7 +369,7 @@
                 </div>
                 <div class="detail-box">
                   <h5>Tất cả xe</h5>
-                  <h6><span>349</span> tin đang bán</h6>
+                  <h6>Toàn bộ sản phẩm</h6>
                   <a href="./products.html">Khám phá <i class="fa-light fa-arrow-right"></i></a>
                 </div>
               </div>
@@ -389,45 +389,16 @@
           <li class="active" data-filter="*">Tất cả</li>
           <li data-filter=".mtb">MTB</li>
           <li data-filter=".road">Road</li>
-          <li data-filter=".gravel">Gravel</li>
-          <li data-filter=".city">City</li>
-          <li data-filter=".folding">Folding</li>
+          <li data-filter=".touring">Touring</li>
+          <li data-filter=".fixed">Fixed Gear</li>
+          <li data-filter=".bmx">BMX</li>
         </ul>
 
         <div class="filters-content">
           <div class="row grid" id="productGrid">
-            <!-- Sản phẩm tạm thời để xem trước -->
-            <div class="col-sm-6 col-lg-4">
-              <div class="box h-100 d-flex flex-column">
-                <div class="img-box position-relative">
-                  <a href="./product-detail.html?id=demo" class="d-block w-100 h-100">
-                    <img src="../assets/images/demo-bike.png" alt="Specialized Tarmac SL7" class="img-fluid">
-                  </a>
-                  <div class="position-absolute" style="top: 10px; left: 10px;">
-                     <span class="badge badge-warning px-2 py-1 small">Road Bike</span>
-                  </div>
-                  <button class="fav-btn" title="Yêu thích">
-                    <i class="fa-light fa-heart"></i>
-                  </button>
-                </div>
-                <div class="detail-box flex-grow-1 d-flex flex-column">
-                  <div class="mb-1 small text-uppercase font-weight-bold text-muted" style="letter-spacing: 1px;">
-                    Specialized
-                  </div>
-                  <h5><a href="./product-detail.html?id=demo" class="text-dark">Specialized Tarmac SL7 Pro - 2023</a></h5>
-                  <p class="text-muted small mb-3" style="height: 40px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; -webkit-box-orient: vertical;">
-                    Dòng xe đua đỉnh cao, khung carbon siêu nhẹ, bộ truyền động Shimano Ultegra Di2. Xe còn mới 99%.
-                  </p>
-                  <div class="mt-auto">
-                     <div class="d-flex justify-content-between align-items-center options">
-                        <h6 class="mb-0">145.000.000 ₫</h6>
-                        <a href="./product-detail.html?id=demo" class="btn-view-detail">Chi tiết</a>
-                     </div>
-                  </div>
-                </div>
-              </div>
+            <div class="col-12 text-center py-5">
+              <p>Đang tải danh sách sản phẩm...</p>
             </div>
-            <!-- Các sản phẩm khác sẽ được load động từ API -->
           </div>
         </div>
 
@@ -436,7 +407,7 @@
         </div>
 
         <div class="btn-box font-weight-bold">
-          <a href="#xe-noi-bat">Xem tất cả xe</a>
+          <a href="./products.html">Xem tất cả xe</a>
         </div>
       </div>
     </section>
@@ -473,7 +444,7 @@
                 <i class="fa-light fa-circle-check"></i> Tăng độ an
                 tâm trước khi gặp trực tiếp người bán.
               </p>
-              <a href="#tim-kiem">Bắt đầu đăng tin</a>
+              <a href="./create_product.html">Bắt đầu đăng tin</a>
             </div>
           </div>
         </div>
@@ -487,15 +458,20 @@
             <div class="footer_contact">
               <h4>Liên hệ</h4>
               <div class="contact_link_box">
-                <a href="#">
+                <a
+                  href="https://www.google.com/maps?q=Quận+1,+TP.+Hồ+Chí+Minh"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Xem địa chỉ trên Google Maps"
+                >
                   <i class="fa-light fa-location-dot"></i>
                   <span> Quận 1, TP. Hồ Chí Minh </span>
                 </a>
-                <a href="#">
+                <a href="tel:0900000000" aria-label="Gọi hotline 0900 000 000">
                   <i class="fa-light fa-phone"></i>
                   <span> Hotline: 0900 000 000 </span>
                 </a>
-                <a href="#">
+                <a href="mailto:support@bikemarket.vn" aria-label="Gửi email đến support@bikemarket.vn">
                   <i class="fa-light fa-envelope"></i>
                   <span> support@bikemarket.vn </span>
                 </a>
@@ -521,9 +497,9 @@
                 Nền tảng mua bán xe đạp thể thao cũ chuyên nghiệp, minh bạch và an toàn nhất Việt Nam.
               </p>
               <div class="footer_social">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-twitter"></i></a>
-                <a href="#"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Twitter"><i class="fa-brands fa-twitter"></i></a>
+                <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
               </div>
             </div>
           </div>

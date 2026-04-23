@@ -5,25 +5,42 @@
     return String(value || "").replace(/\/+$/, "");
   }
 
+  function isLegacyInvalidApiBaseUrl(value) {
+    return value === "http://localhost/api" || /\/backend\/api$/.test(value);
+  }
+
   function resolveApiBaseUrl() {
     var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
     var fromStorage = "";
 
     try {
       fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
+      if (isLegacyInvalidApiBaseUrl(fromStorage)) {
+        localStorage.removeItem("bike_api_base_url");
+        fromStorage = "";
+      }
     } catch (error) {
       fromStorage = "";
     }
 
     if (fromWindow) return fromWindow;
     if (fromStorage) return fromStorage;
-    return "http://localhost/bike-marketplace/backend/api";
+    return "http://localhost/bike-marketplace/backend/index.php?route=/api";
   }
 
   function buildApiUrl(path) {
     var cleanPath = String(path || "");
     if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
-    return resolveApiBaseUrl() + cleanPath;
+    var baseUrl = resolveApiBaseUrl();
+    if (baseUrl.indexOf("?") !== -1) {
+      var pathParts = cleanPath.split("?");
+      var url = baseUrl + pathParts[0];
+      if (pathParts[1]) {
+        url += "&" + pathParts[1];
+      }
+      return url;
+    }
+    return baseUrl + cleanPath;
   }
 
   function getAuthToken() {
@@ -36,6 +53,27 @@
     } catch (error) {
       return "";
     }
+  }
+
+  function getAuthUser() {
+    try {
+      return JSON.parse(localStorage.getItem("auth_user") || "null");
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function getAuthUserId() {
+    var user = getAuthUser();
+    return user ? (user.id || user.user_id || "") : "";
+  }
+
+  function requireAuthUserId() {
+    var userId = getAuthUserId();
+    if (!userId) {
+      throw new Error("Thiếu thông tin người dùng");
+    }
+    return userId;
   }
 
   function parseJSON(text) {
@@ -148,8 +186,14 @@
   function resolveImageUrl(path) {
     if (!path) return "../assets/images/placeholder-bike.png";
     if (path.startsWith("http")) return path;
+    if (path.startsWith("/backend/uploads/")) {
+      return "http://localhost/bike-marketplace" + path;
+    }
+    if (path.startsWith("/bike-marketplace/")) {
+      return "http://localhost" + path;
+    }
     // Assuming uploads are in the same parent dir as api
-    var baseUrl = resolveApiBaseUrl().replace("/api", "/uploads");
+    var baseUrl = "http://localhost/bike-marketplace/backend/uploads";
     return baseUrl + "/" + path;
   }
 
@@ -157,6 +201,9 @@
     resolveApiBaseUrl: resolveApiBaseUrl,
     buildApiUrl: buildApiUrl,
     getAuthToken: getAuthToken,
+    getAuthUser: getAuthUser,
+    getAuthUserId: getAuthUserId,
+    requireAuthUserId: requireAuthUserId,
     request: request,
     pickList: pickList,
     formatCurrency: formatCurrency,
@@ -173,16 +220,28 @@
     getProduct: (id) => request("/products?id=" + id),
     getCategories: () => request("/categories"),
     getBrands: () => request("/brands"),
-    sendBuyRequest: (data) => request("/buy-requests", {
-      method: "POST",
-      body: data,
-      auth: true
-    }),
-    getFavorites: () => request("/favorites", { auth: true }),
-    toggleFavorite: (productId) => request("/favorites", {
-      method: "POST",
-      body: { product_id: productId },
-      auth: true
-    })
+    sendBuyRequest: (data) => {
+      const payload = Object.assign({}, data || {}, { buyer_id: requireAuthUserId() });
+      return request("/buy-requests", {
+        method: "POST",
+        body: payload,
+        auth: true
+      });
+    },
+    getFavorites: () => {
+      const userId = requireAuthUserId();
+      return request("/favorites?user_id=" + encodeURIComponent(userId), { auth: true });
+    },
+    toggleFavorite: (productId, action) => {
+      return request("/favorites", {
+        method: "POST",
+        body: {
+          user_id: requireAuthUserId(),
+          product_id: productId,
+          action: action || "add"
+        },
+        auth: true
+      });
+    }
   };
 })();

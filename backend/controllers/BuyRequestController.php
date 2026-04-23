@@ -10,18 +10,18 @@ class BuyRequestController {
     }
 
     private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             "success" => $success,
             "data" => $data,
             "message" => $message
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit();
     }
 
     public function index() {
         if (!isset($_GET['user_id'])) {
-            $this->jsonResponse(false, null, "Missing user_id parameter");
+            $this->jsonResponse(false, null, "Thiếu tham số user_id");
         }
 
         $user_id = intval($_GET['user_id']);
@@ -34,7 +34,7 @@ class BuyRequestController {
         $input = json_decode($inputJSON, true);
 
         if (!$input) {
-            $this->jsonResponse(false, null, "Invalid input data");
+            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
         }
 
         $buyer_id = $input['buyer_id'] ?? null;
@@ -42,15 +42,15 @@ class BuyRequestController {
         $message = $input['message'] ?? '';
 
         if (!$buyer_id || !$product_id) {
-            $this->jsonResponse(false, null, "Missing required fields");
+            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
         }
 
         $request_id = $this->requestModel->create($buyer_id, $product_id, $message);
 
         if ($request_id) {
-            $this->jsonResponse(true, ["request_id" => $request_id], "Buy request created successfully");
+            $this->jsonResponse(true, ["request_id" => $request_id], "Tạo yêu cầu mua thành công");
         } else {
-            $this->jsonResponse(false, null, "Failed to create buy request");
+            $this->jsonResponse(false, null, "Không thể tạo yêu cầu mua");
         }
     }
 }

@@ -1,11 +1,9 @@
-<!-- kết nối DB -->
-
 <?php
 class Database {
-    private $host = "db";
+    private $host = "localhost";
     private $db_name = "bike_db";
     private $username = "root";
-    private $password = "root";
+    private $password = "";
 
     public function connect() {
         $conn = new mysqli(
@@ -16,10 +14,10 @@ class Database {
         );
 
         if ($conn->connect_error) {
-            die("Database error");
+            die("Lỗi kết nối cơ sở dữ liệu");
         }
 
-        $conn->set_charset("utf8");
+        $conn->set_charset("utf8mb4");
 
         return $conn;
     }

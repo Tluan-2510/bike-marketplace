@@ -6,16 +6,16 @@
   // Authentication Check
   function checkAuth() {
     const token = BikeApi ? BikeApi.getAuthToken() : localStorage.getItem('access_token');
-    if (!token) {
-      window.location.href = "./login.html";
-      return null;
-    }
-    
     let user = null;
     try {
       user = JSON.parse(localStorage.getItem("auth_user"));
     } catch (e) {
       console.error("Lỗi khi đọc thông tin user từ localStorage");
+    }
+
+    if (!token && !user) {
+      window.location.href = "./login.html";
+      return null;
     }
 
     if (!user) {
@@ -25,20 +25,29 @@
     return user;
   }
 
+  function getUserDisplayName(user) {
+    return user.full_name || user.name || user.username || "Người dùng";
+  }
+
+  function getUserPhone(user) {
+    return user.phone_number || user.phone || "";
+  }
+
   // Render User Information
   function renderUserInfo(user) {
-    document.getElementById("userName").textContent = user.name || user.username || "Người Dùng";
+    const displayName = getUserDisplayName(user);
+    document.getElementById("userName").textContent = displayName;
     document.getElementById("userEmail").textContent = user.email || "";
     
     // Avatar generation
-    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name || 'U')}&background=FFD700&color=000&size=150`;
+    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName || 'U')}&background=FFD700&color=000&size=150`;
     document.getElementById("userAvatar").src = avatarUrl;
 
     // Fill settings form
-    document.getElementById("inputName").value = user.name || user.username || "";
+    document.getElementById("inputName").value = displayName;
     document.getElementById("inputEmail").value = user.email || "";
     if (document.getElementById("inputPhone")) {
-       document.getElementById("inputPhone").value = user.phone || "";
+       document.getElementById("inputPhone").value = getUserPhone(user);
     }
   }
 
@@ -65,7 +74,8 @@
       
       // Filter products by this user's ID
       // If user.id is not matched, it returns empty array
-      const myProducts = allProducts.filter(p => p.seller_id === user.id);
+      const userId = String(user.id || user.user_id || "");
+      const myProducts = allProducts.filter(p => String(p.seller_id || "") === userId);
 
       document.getElementById("statListings").textContent = myProducts.length;
 
@@ -92,17 +102,13 @@
                 <a href="./product-detail.html?id=${product.id}" class="d-block w-100 h-100">
                   <img src="${imageUrl}" alt="${product.name}" class="img-fluid h-100 w-100" style="object-fit: contain;">
                 </a>
-                <div class="position-absolute" style="top: 10px; right: 10px;">
-                  <button class="btn btn-sm btn-light shadow-sm text-primary rounded-circle"><i class="fa-light fa-pen"></i></button>
-                  <button class="btn btn-sm btn-light shadow-sm text-danger rounded-circle ml-1"><i class="fa-light fa-trash"></i></button>
-                </div>
               </div>
               <div class="detail-box flex-grow-1 d-flex flex-column p-3">
                 <div class="mb-1 small text-muted">${product.category_name || 'Khác'}</div>
                 <h6 class="font-weight-bold mb-2 text-truncate">${product.name}</h6>
                 <div class="mt-auto d-flex justify-content-between align-items-center">
                    <span class="font-weight-bold text-dark">${price}</span>
-                   <span class="badge badge-success px-2 py-1">Đang bán</span>
+                   <a href="./product-detail.html?id=${product.id}" class="badge badge-warning px-2 py-1">Chi tiết</a>
                 </div>
               </div>
             </div>
@@ -127,7 +133,10 @@
       }).join("");
 
       recentContainer.innerHTML = recentHtml;
-      document.getElementById("recentListingsEmpty").classList.add("d-none");
+      const recentEmpty = document.getElementById("recentListingsEmpty");
+      if (recentEmpty) {
+        recentEmpty.classList.add("d-none");
+      }
 
     } catch (error) {
       console.error("Lỗi khi tải danh sách xe đang bán:", error);
@@ -170,6 +179,24 @@
         e.preventDefault();
         alert("Tính năng cập nhật thông tin đang được phát triển.");
       });
+    }
+
+    document.querySelectorAll("[data-profile-tab]").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        const tab = document.getElementById(link.getAttribute("data-profile-tab"));
+        if (tab && window.jQuery) {
+          window.jQuery(tab).tab("show");
+        }
+      });
+    });
+
+    const hash = window.location.hash;
+    if (hash) {
+      const tabLink = document.querySelector(`[data-toggle="pill"][href="${hash}"]`);
+      if (tabLink && window.jQuery) {
+        window.jQuery(tabLink).tab("show");
+      }
     }
   });
 

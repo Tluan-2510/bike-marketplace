@@ -10,12 +10,12 @@ class AuthController {
     }
 
     private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             "success" => $success,
             "data" => $data,
             "message" => $message
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit();
     }
 
@@ -24,7 +24,7 @@ class AuthController {
         $input = json_decode($inputJSON, true);
 
         if (!$input) {
-            $this->jsonResponse(false, null, "Invalid input data");
+            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
         }
 
         $username = $input['username'] ?? '';
@@ -34,12 +34,12 @@ class AuthController {
         $full_name = $input['full_name'] ?? '';
 
         if (empty($username) || empty($email) || empty($password) || empty($phone_number)) {
-            $this->jsonResponse(false, null, "Missing required fields");
+            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
         }
 
         $existingUser = $this->userModel->findByEmail($email);
         if ($existingUser) {
-            $this->jsonResponse(false, null, "Email already exists");
+            $this->jsonResponse(false, null, "Email đã tồn tại");
         }
 
         $password_hash = password_hash($password, PASSWORD_DEFAULT);
@@ -55,7 +55,7 @@ class AuthController {
             ];
             $this->jsonResponse(true, $data);
         } else {
-            $this->jsonResponse(false, null, "Failed to register user");
+            $this->jsonResponse(false, null, "Không thể đăng ký người dùng");
         }
     }
 
@@ -64,14 +64,14 @@ class AuthController {
         $input = json_decode($inputJSON, true);
 
         if (!$input) {
-            $this->jsonResponse(false, null, "Invalid input data");
+            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
         }
 
         $email = $input['email'] ?? '';
         $password = $input['password'] ?? '';
 
         if (empty($email) || empty($password)) {
-            $this->jsonResponse(false, null, "Missing email or password");
+            $this->jsonResponse(false, null, "Thiếu email hoặc mật khẩu");
         }
 
         $user = $this->userModel->findByEmail($email);
@@ -80,7 +80,7 @@ class AuthController {
             unset($user['password_hash']); // Don't return hash to client
             $this->jsonResponse(true, $user);
         } else {
-            $this->jsonResponse(false, null, "Invalid email or password");
+            $this->jsonResponse(false, null, "Email hoặc mật khẩu không đúng");
         }
     }
 }

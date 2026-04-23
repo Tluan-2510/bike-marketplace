@@ -9,7 +9,8 @@
     const empty = document.getElementById("favoritesEmpty");
 
     const token = BikeApi.getAuthToken();
-    if (!token) {
+    const user = BikeApi.getAuthUser ? BikeApi.getAuthUser() : null;
+    if (!token && !user) {
       if (loading) loading.classList.add("d-none");
       if (empty) {
           empty.classList.remove("d-none");
@@ -67,7 +68,7 @@
 
     col.querySelector(".remove-btn").onclick = async () => {
         try {
-            await BikeApi.toggleFavorite(product.id);
+            await BikeApi.toggleFavorite(product.id, "remove");
             col.remove();
             const list = document.getElementById("favoritesList");
             if (list.children.length === 0) {

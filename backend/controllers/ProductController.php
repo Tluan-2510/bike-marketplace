@@ -10,12 +10,12 @@ class ProductController {
     }
 
     private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             "success" => $success,
             "data" => $data,
             "message" => $message
-        ]);
+        ], JSON_UNESCAPED_UNICODE);
         exit();
     }
 
@@ -26,7 +26,7 @@ class ProductController {
                 $this->jsonResponse(true, $product);
             } else {
                 http_response_code(404);
-                $this->jsonResponse(false, null, "Product not found");
+                $this->jsonResponse(false, null, "Không tìm thấy sản phẩm");
             }
         } else {
             $products = $this->productModel->getAll();
@@ -41,7 +41,7 @@ class ProductController {
         $seller_id = $_POST['seller_id'] ?? null;
         $category_id = $_POST['category_id'] ?? null;
         $brand_id = $_POST['brand_id'] ?? null;
-        $title = $_POST['title'] ?? '';
+        $title = $_POST['title'] ?? ($_POST['name'] ?? '');
         $description = $_POST['description'] ?? '';
         $price = $_POST['price'] ?? 0;
         $condition_state = $_POST['condition_state'] ?? 'Sử dụng tốt';
@@ -53,7 +53,7 @@ class ProductController {
         $delivery_type = $_POST['delivery_type'] ?? '';
 
         if (!$seller_id || empty($title) || empty($price)) {
-            $this->jsonResponse(false, null, "Missing required fields");
+            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
         }
 
         $product_id = $this->productModel->create(
@@ -94,9 +94,9 @@ class ProductController {
                 }
             }
             
-            $this->jsonResponse(true, ["product_id" => $product_id], "Product created successfully");
+            $this->jsonResponse(true, ["product_id" => $product_id], "Tạo sản phẩm thành công");
         } else {
-            $this->jsonResponse(false, null, "Failed to create product");
+            $this->jsonResponse(false, null, "Không thể tạo sản phẩm");
         }
     }
 }

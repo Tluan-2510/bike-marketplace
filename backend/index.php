@@ -1,5 +1,3 @@
-<!-- entry point -->
-
 <?php
 header("Content-Type: application/json");
 

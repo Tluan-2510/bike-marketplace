@@ -144,6 +144,17 @@
     const submitBtn = document.getElementById("submitProductButton");
     
     const formData = new FormData(form);
+    const userId = BikeApi.getAuthUserId ? BikeApi.getAuthUserId() : "";
+
+    if (!userId) {
+      showMessage(messageBox, "Vui lòng đăng nhập để đăng bán xe.", "danger");
+      return;
+    }
+
+    formData.set("seller_id", userId);
+    if (!formData.get("title") && formData.get("name")) {
+      formData.set("title", formData.get("name"));
+    }
     
     // Log for debugging
     console.log("Submitting form data...");

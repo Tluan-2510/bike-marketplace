@@ -9,14 +9,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
-require_once "../controllers/ProductController.php";
-require_once "../controllers/AuthController.php";
-require_once "../controllers/BuyRequestController.php";
-require_once "../controllers/FavoriteController.php";
-require_once "../controllers/CategoryController.php";
-require_once "../controllers/BrandController.php";
+require_once __DIR__ . "/../controllers/ProductController.php";
+require_once __DIR__ . "/../controllers/AuthController.php";
+require_once __DIR__ . "/../controllers/BuyRequestController.php";
+require_once __DIR__ . "/../controllers/FavoriteController.php";
+require_once __DIR__ . "/../controllers/CategoryController.php";
+require_once __DIR__ . "/../controllers/BrandController.php";
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = $_GET['route'] ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 /* ================= CATEGORIES & BRANDS ================= */
@@ -71,5 +71,5 @@ if ($uri == "/api/favorites" && $method == "POST") {
 
 // 404 Fallback
 http_response_code(404);
-echo json_encode(["success" => false, "message" => "API endpoint not found"]);
+echo json_encode(["success" => false, "message" => "Không tìm thấy API"], JSON_UNESCAPED_UNICODE);
 exit();

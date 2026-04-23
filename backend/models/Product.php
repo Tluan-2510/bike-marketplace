@@ -12,7 +12,7 @@ class Product {
 
     public function getAll() {
         $query = "
-            SELECT p.*, c.name as category_name, b.name as brand_name, pi.image_url as primary_image
+            SELECT p.*, p.title as name, c.name as category_name, b.name as brand_name, pi.image_url as image_url
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id
@@ -31,7 +31,7 @@ class Product {
 
     public function findById($id) {
         $query = "
-            SELECT p.*, c.name as category_name, b.name as brand_name, u.full_name as seller_name, u.phone_number as seller_phone
+            SELECT p.*, p.title as name, c.name as category_name, b.name as brand_name, u.full_name as seller_name, u.phone_number as seller_phone
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id

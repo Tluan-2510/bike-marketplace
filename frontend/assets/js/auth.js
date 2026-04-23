@@ -5,25 +5,40 @@
     return String(value || "").replace(/\/+$/, "");
   }
 
+  function isLegacyInvalidApiBaseUrl(value) {
+    return value === "http://localhost/api" || /\/backend\/api$/.test(value);
+  }
+
   function resolveApiBaseUrl() {
     var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
     var fromStorage = "";
 
     try {
       fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
+      if (isLegacyInvalidApiBaseUrl(fromStorage)) {
+        localStorage.removeItem("bike_api_base_url");
+        fromStorage = "";
+      }
     } catch (error) {
       fromStorage = "";
     }
 
     if (fromWindow) return fromWindow;
     if (fromStorage) return fromStorage;
-    return "http://localhost/api";
+    if (window.BikeApi && typeof window.BikeApi.resolveApiBaseUrl === "function") {
+      return window.BikeApi.resolveApiBaseUrl();
+    }
+    return "http://localhost/bike-marketplace/backend/index.php?route=/api";
   }
 
   function buildApiUrl(path) {
     var cleanPath = String(path || "");
     if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
-    return resolveApiBaseUrl() + cleanPath;
+    var baseUrl = resolveApiBaseUrl();
+    if (baseUrl.indexOf("?") !== -1) {
+      return baseUrl + cleanPath;
+    }
+    return baseUrl + cleanPath;
   }
 
   var API = {
@@ -99,17 +114,15 @@
 
   function validateRegisterInput(payload) {
     if (
-      !payload.username ||
+      !payload.fullName ||
       !payload.email ||
       !payload.password ||
-      !payload.confirmPassword ||
-      !payload.role ||
       !payload.phone
     ) {
       return "Vui lòng điền đầy đủ tất cả thông tin đăng ký.";
     }
 
-    if (payload.username.length < 2) {
+    if (payload.fullName.length < 2) {
       return "Tên người dùng phải có ít nhất 2 ký tự.";
     }
 
@@ -119,14 +132,6 @@
 
     if (payload.password.length < 6) {
       return "Mật khẩu phải có ít nhất 6 ký tự.";
-    }
-
-    if (payload.password !== payload.confirmPassword) {
-      return "Mật khẩu xác nhận không khớp.";
-    }
-
-    if (payload.role !== "user" && payload.role !== "seller") {
-      return "Loại tài khoản không hợp lệ.";
     }
 
     if (!isValidPhone(payload.phone)) {
@@ -226,8 +231,13 @@
     var refreshToken = source.refresh_token || tokens.refresh_token || "";
     var user = source.user || source;
 
+    if (!accessToken && user && (user.id || user.user_id || user.email)) {
+      accessToken = "local_session_" + (user.id || user.user_id || user.email);
+    }
+
     if (accessToken) {
       localStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
+      localStorage.setItem("token", accessToken);
     }
     if (refreshToken) {
       localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
@@ -306,11 +316,9 @@
     var submitButton = form.querySelector('button[type="submit"]');
 
     var payload = {
-      username: normalizeValue(form.querySelector('input[name="username"]').value),
+      fullName: normalizeValue(form.querySelector('input[name="full_name"]').value),
       email: normalizeValue(form.querySelector('input[name="email"]').value).toLowerCase(),
       password: String(form.querySelector('input[name="password"]').value || ""),
-      confirmPassword: String(form.querySelector('input[name="confirmPassword"]').value || ""),
-      role: normalizeValue(form.querySelector('select[name="role"]').value),
       phone: normalizeValue(form.querySelector('input[name="phone"]').value),
     };
 
@@ -326,13 +334,12 @@
 
     try {
       var requestBody = {
-        username: payload.username,
-        name: payload.username,
+        username: payload.email,
+        full_name: payload.fullName,
+        name: payload.fullName,
         email: payload.email,
         password: payload.password,
-        password_confirmation: payload.confirmPassword,
-        role: payload.role,
-        phone: payload.phone,
+        phone_number: payload.phone,
       };
 
       var response = await requestJSON(API.register, requestBody);

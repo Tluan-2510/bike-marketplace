@@ -32,7 +32,6 @@ backend/uploads/*
 # ========================
 # DATABASE FILES
 # ========================
-*.sql
 database/data/
 mysql_data/
 

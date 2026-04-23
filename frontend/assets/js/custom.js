@@ -128,7 +128,7 @@
     });
 
     if (emptyState) {
-      emptyState.style.display = visibleCount === 0 ? "block" : "none";
+      emptyState.style.display = cards.length > 0 && visibleCount === 0 ? "block" : "none";
     }
   }
 
@@ -189,12 +189,7 @@
 
   function initSearchAndFilter() {
     var filterMenu = document.querySelector(".filters_menu");
-    var cards = Array.prototype.slice.call(
-      document.querySelectorAll("#productGrid > [data-name]")
-    );
     var searchForm = document.getElementById("bikeSearchForm");
-
-    if (!cards.length) return;
 
     var emptyState = document.getElementById("searchEmptyState");
     var keywordInput = document.getElementById("searchKeyword");
@@ -204,6 +199,12 @@
     var baseButtonText = searchButton ? searchButton.textContent : "";
 
     var state = createState();
+
+    function getCards() {
+      return Array.prototype.slice.call(
+        document.querySelectorAll("#productGrid > [data-name]")
+      );
+    }
 
     if (filterMenu) {
       filterMenu.addEventListener("click", function (event) {
@@ -215,7 +216,7 @@
           if (typeInput) typeInput.value = state.type;
         }
         setFilterActiveItem(filterMenu, target);
-        applyProductFilters(state, cards, emptyState);
+        applyProductFilters(state, getCards(), emptyState);
       });
     }
 
@@ -243,13 +244,13 @@
 
         var restore = withButtonLoading(searchButton, "Đang lọc...", baseButtonText);
         window.setTimeout(function () {
-          applyProductFilters(state, cards, emptyState);
+          applyProductFilters(state, getCards(), emptyState);
           restore();
         }, 220);
       });
     }
 
-    applyProductFilters(state, cards, emptyState);
+    applyProductFilters(state, getCards(), emptyState);
   }
 
   function initSafeBootstrap() {
@@ -265,6 +266,7 @@
     document.addEventListener("click", function(e) {
       var btn = e.target.closest(".fav-btn");
       if (!btn) return;
+      if (btn.hasAttribute("data-id")) return;
       
       e.preventDefault();
       btn.classList.toggle("active");
