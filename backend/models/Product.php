@@ -77,4 +77,78 @@ class Product {
         $stmt->bind_param("isi", $product_id, $image_url, $is_primary);
         return $stmt->execute();
     }
+
+    // ham moi them
+    public function getAdvanced($params) {
+    $page = isset($params['page']) ? (int)$params['page'] : 1;
+    $limit = isset($params['limit']) ? (int)$params['limit'] : 12;
+    $offset = ($page - 1) * $limit;
+
+    // 1. Xây dựng câu lệnh WHERE để lọc
+    $conditions = ["1=1"];
+    $bind_params = [];
+    $types = "";
+
+    if (!empty($params['min_price'])) {
+        $conditions[] = "p.price >= ?";
+        $bind_params[] = $params['min_price'];
+        $types .= "d";
+    }
+    if (!empty($params['max_price'])) {
+        $conditions[] = "p.price <= ?";
+        $bind_params[] = $params['max_price'];
+        $types .= "d";
+    }
+    if (!empty($params['category_id'])) {
+        $conditions[] = "p.category_id = ?";
+        $bind_params[] = $params['category_id'];
+        $types .= "i";
+    }
+    if (!empty($params['keyword'])) {
+        $conditions[] = "p.title LIKE ?";
+        $bind_params[] = "%" . $params['keyword'] . "%";
+        $types .= "s";
+    }
+
+    $whereSql = implode(" AND ", $conditions);
+
+    // 2. Query đếm tổng số mục (để tính total_pages)
+    $countQuery = "SELECT COUNT(*) as total FROM products p WHERE $whereSql";
+    $stmtCount = $this->conn->prepare($countQuery);
+    if (!empty($types)) $stmtCount->bind_param($types, ...$bind_params);
+    $stmtCount->execute();
+    $total_items = $stmtCount->get_result()->fetch_assoc()['total'];
+
+    // 3. Query lấy dữ liệu (Sử dụng LEFT JOIN như yêu cầu)
+    $query = "
+        SELECT p.*, c.name as category_name, b.name as brand_name, pi.image_url as primary_image
+        FROM products p
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN brands b ON p.brand_id = b.id
+        LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+        WHERE $whereSql
+        ORDER BY p.created_at DESC
+        LIMIT ? OFFSET ?
+    ";
+
+    $stmt = $this->conn->prepare($query);
+    $types .= "ii";
+    $bind_params[] = $limit;
+    $bind_params[] = $offset;
+    $stmt->bind_param($types, ...$bind_params);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $data = [];
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return [
+        "data" => $data,
+        "total_items" => (int)$total_items,
+        "current_page" => $page,
+        "total_pages" => ceil($total_items / $limit)
+    ];
+}
 }
