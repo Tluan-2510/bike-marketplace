@@ -1,203 +1,258 @@
+/**
+ * Bike Market - User profile and product creation.
+ */
+
 (function () {
   "use strict";
 
-  const BikeApi = window.BikeApi;
+  function getDisplayName(user) {
+    return user.full_name || user.name || user.username || "Nguoi dung";
+  }
 
-  // Authentication Check
-  function checkAuth() {
-    const token = BikeApi ? BikeApi.getAuthToken() : localStorage.getItem('access_token');
-    let user = null;
-    try {
-      user = JSON.parse(localStorage.getItem("auth_user"));
-    } catch (e) {
-      console.error("Lỗi khi đọc thông tin user từ localStorage");
-    }
+  function getPhone(user) {
+    return user.phone_number || user.phone || "";
+  }
 
-    if (!token && !user) {
+  function requireUser() {
+    var user = window.BikeApi.getAuthUser();
+    var token = window.BikeApi.getAuthToken();
+
+    if (!user && !token) {
       window.location.href = "./login.html";
       return null;
     }
 
-    if (!user) {
-      // Fallback mock user if missing but token exists
-      user = { id: 1, name: "Người dùng mới", email: "user@example.com", phone: "", address: "" };
-    }
-    return user;
+    return user || { id: 1, full_name: "Nguoi dung", email: "", phone_number: "" };
   }
 
-  function getUserDisplayName(user) {
-    return user.full_name || user.name || user.username || "Người dùng";
-  }
-
-  function getUserPhone(user) {
-    return user.phone_number || user.phone || "";
-  }
-
-  // Render User Information
   function renderUserInfo(user) {
-    const displayName = getUserDisplayName(user);
-    document.getElementById("userName").textContent = displayName;
-    document.getElementById("userEmail").textContent = user.email || "";
-    
-    // Avatar generation
-    const avatarUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName || 'U')}&background=FFD700&color=000&size=150`;
-    document.getElementById("userAvatar").src = avatarUrl;
+    var name = getDisplayName(user);
+    var avatarUrl = "https://ui-avatars.com/api/?name=" + encodeURIComponent(name) + "&background=FFD700&color=000&size=150";
 
-    // Fill settings form
-    document.getElementById("inputName").value = displayName;
-    document.getElementById("inputEmail").value = user.email || "";
-    if (document.getElementById("inputPhone")) {
-       document.getElementById("inputPhone").value = getUserPhone(user);
-    }
+    if (document.getElementById("userName")) document.getElementById("userName").textContent = name;
+    if (document.getElementById("userEmail")) document.getElementById("userEmail").textContent = user.email || "";
+    if (document.getElementById("userAvatar")) document.getElementById("userAvatar").src = avatarUrl;
+    if (document.getElementById("formAvatarPreview")) document.getElementById("formAvatarPreview").src = avatarUrl;
+    if (document.getElementById("inputName")) document.getElementById("inputName").value = name;
+    if (document.getElementById("inputEmail")) document.getElementById("inputEmail").value = user.email || "";
+    if (document.getElementById("inputPhone")) document.getElementById("inputPhone").value = getPhone(user);
   }
 
-  // Handle Logout
-  function handleLogout() {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("token");
-    localStorage.removeItem("auth_user");
-    window.location.href = "./login.html";
-  }
-
-  // Load User Listings (Mock logic since API might not have getMyListings yet)
   async function loadUserListings(user) {
-    const container = document.getElementById("myListingsContainer");
-    const recentContainer = document.getElementById("recentListingsContainer");
-    
+    var container = document.getElementById("myListingsContainer");
+    var recentContainer = document.getElementById("recentListingsContainer");
+    if (!container) return;
+
     try {
-      // Fetch all products, assuming backend might support filtering by seller_id later
-      // For now, if no API, we just show empty state
-      if (!BikeApi) throw new Error("API Client không khả dụng");
-      
-      const res = await BikeApi.getProducts();
-      const allProducts = res.data || [];
-      
-      // Filter products by this user's ID
-      // If user.id is not matched, it returns empty array
-      const userId = String(user.id || user.user_id || "");
-      const myProducts = allProducts.filter(p => String(p.seller_id || "") === userId);
+      var userId = String(user.id || user.user_id || "");
+      var response = await window.BikeApi.getProducts(userId ? { seller_id: userId, limit: 100 } : {});
+      var products = window.BikeApi.pickList(response).filter(function (product) {
+        return !userId || String(product.seller_id || "") === userId;
+      });
 
-      document.getElementById("statListings").textContent = myProducts.length;
+      if (document.getElementById("statListings")) {
+        document.getElementById("statListings").textContent = String(products.length);
+      }
 
-      if (myProducts.length === 0) {
+      if (!products.length) {
         container.innerHTML = `
           <div class="col-12 text-center py-5">
-            <i class="fa-light fa-box-open fa-3x text-muted mb-3"></i>
-            <p class="text-muted">Bạn chưa đăng bán sản phẩm nào.</p>
-            <a href="./create_product.html" class="btn-premium mt-2">Đăng bán xe ngay</a>
+            <i class="fa-solid fa-box-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">Ban chua dang ban san pham nao.</p>
+            <a href="./create_product.html" class="explore-link-premium mt-2">Dang ban xe ngay</a>
           </div>
         `;
         return;
       }
 
-      let html = "";
-      myProducts.forEach(product => {
-        const imageUrl = BikeApi.resolveImageUrl(product.image_url);
-        const price = BikeApi.formatCurrency(product.price);
-        
-        html += `
-          <div class="col-sm-6 col-md-4 mb-4">
-            <div class="box h-100 d-flex flex-column">
-              <div class="img-box position-relative" style="height: 200px;">
-                <a href="./product-detail.html?id=${product.id}" class="d-block w-100 h-100">
-                  <img src="${imageUrl}" alt="${product.name}" class="img-fluid h-100 w-100" style="object-fit: contain;">
-                </a>
-              </div>
-              <div class="detail-box flex-grow-1 d-flex flex-column p-3">
-                <div class="mb-1 small text-muted">${product.category_name || 'Khác'}</div>
-                <h6 class="font-weight-bold mb-2 text-truncate">${product.name}</h6>
-                <div class="mt-auto d-flex justify-content-between align-items-center">
-                   <span class="font-weight-bold text-dark">${price}</span>
-                   <a href="./product-detail.html?id=${product.id}" class="badge badge-warning px-2 py-1">Chi tiết</a>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+      container.innerHTML = "";
+      products.forEach(function (product) {
+        container.appendChild(window.renderProductCard(product));
       });
 
-      container.innerHTML = html;
-      
-      // Update recent listings on Dashboard tab
-      const recentHtml = myProducts.slice(0, 3).map(product => {
-         return `
-          <div class="col-md-4 mb-3">
-            <div class="card shadow-sm border-0 h-100">
-              <div class="card-body p-3">
-                <div class="font-weight-bold text-truncate mb-1">${product.name}</div>
-                <div class="text-muted small">${BikeApi.formatCurrency(product.price)}</div>
-              </div>
-            </div>
-          </div>
-         `;
-      }).join("");
-
-      recentContainer.innerHTML = recentHtml;
-      const recentEmpty = document.getElementById("recentListingsEmpty");
-      if (recentEmpty) {
-        recentEmpty.classList.add("d-none");
+      if (recentContainer) {
+        recentContainer.innerHTML = "";
+        products.slice(0, 3).forEach(function (product) {
+          recentContainer.appendChild(window.renderProductCard(product));
+        });
       }
 
+      var recentEmpty = document.getElementById("recentListingsEmpty");
+      if (recentEmpty) recentEmpty.classList.add("d-none");
     } catch (error) {
-      console.error("Lỗi khi tải danh sách xe đang bán:", error);
-      container.innerHTML = `<div class="col-12 text-center py-4 text-danger">Không thể tải danh sách sản phẩm.</div>`;
+      container.innerHTML = '<div class="col-12 text-center py-4 text-danger">Khong the tai danh sach san pham.</div>';
     }
   }
 
-  // Load User Favorites Count
   async function loadFavoritesCount() {
+    if (!document.getElementById("statFavorites")) return;
+
     try {
-      if (!BikeApi) return;
-      const res = await BikeApi.getFavorites();
-      const count = (res.data || []).length;
-      document.getElementById("statFavorites").textContent = count;
+      var response = await window.BikeApi.getFavorites();
+      document.getElementById("statFavorites").textContent = String(window.BikeApi.pickList(response).length);
     } catch (error) {
-      console.error("Lỗi khi tải số lượng yêu thích:", error);
+      document.getElementById("statFavorites").textContent = "0";
     }
   }
 
-  document.addEventListener("DOMContentLoaded", () => {
-    const user = checkAuth();
-    if (!user) return; // Will redirect
+  async function loadLookups() {
+    var categorySelect = document.getElementById("productCategory");
+    var brandSelect = document.getElementById("productBrand");
+    if (!categorySelect && !brandSelect) return;
+
+    try {
+      var results = await Promise.all([window.BikeApi.getCategories(), window.BikeApi.getBrands()]);
+      var categories = window.BikeApi.pickList(results[0]);
+      var brands = window.BikeApi.pickList(results[1]);
+
+      if (categorySelect) {
+        categorySelect.innerHTML = '<option value="">-- Chon loai xe --</option>';
+        categories.forEach(function (category) {
+          var option = document.createElement("option");
+          option.value = category.id;
+          option.textContent = category.name;
+          categorySelect.appendChild(option);
+        });
+      }
+
+      if (brandSelect) {
+        brandSelect.innerHTML = '<option value="">-- Chon thuong hieu --</option>';
+        brands.forEach(function (brand) {
+          var option = document.createElement("option");
+          option.value = brand.id;
+          option.textContent = brand.name;
+          brandSelect.appendChild(option);
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function initImagePreview() {
+    var dropZone = document.getElementById("dropZone");
+    var imageInput = document.getElementById("productImage");
+    var previewContainer = document.getElementById("imagePreviewContainer");
+    var selectedFiles = [];
+
+    if (!dropZone || !imageInput || !previewContainer) return;
+
+    dropZone.addEventListener("click", function () {
+      imageInput.click();
+    });
+
+    ["dragenter", "dragover"].forEach(function (eventName) {
+      dropZone.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        dropZone.classList.add("dragover");
+      });
+    });
+
+    ["dragleave", "drop"].forEach(function (eventName) {
+      dropZone.addEventListener(eventName, function (event) {
+        event.preventDefault();
+        dropZone.classList.remove("dragover");
+      });
+    });
+
+    dropZone.addEventListener("drop", function (event) {
+      handleFiles(event.dataTransfer.files);
+    });
+
+    imageInput.addEventListener("change", function (event) {
+      handleFiles(event.target.files);
+    });
+
+    function handleFiles(files) {
+      var newFiles = Array.from(files || []);
+      if (selectedFiles.length + newFiles.length > 5) {
+        alert("Chi duoc dang toi da 5 hinh anh.");
+        return;
+      }
+
+      selectedFiles = selectedFiles.concat(newFiles);
+      renderPreview();
+      syncInput();
+    }
+
+    function renderPreview() {
+      previewContainer.innerHTML = "";
+      selectedFiles.forEach(function (file, index) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          var item = document.createElement("div");
+          item.className = "preview-item";
+          item.innerHTML = '<img src="' + event.target.result + '" alt="Preview"><button type="button" class="remove-btn">&times;</button>';
+          item.querySelector(".remove-btn").addEventListener("click", function (clickEvent) {
+            clickEvent.stopPropagation();
+            selectedFiles.splice(index, 1);
+            renderPreview();
+            syncInput();
+          });
+          previewContainer.appendChild(item);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function syncInput() {
+      var dataTransfer = new DataTransfer();
+      selectedFiles.forEach(function (file) {
+        dataTransfer.items.add(file);
+      });
+      imageInput.files = dataTransfer.files;
+    }
+  }
+
+  function initProductForm() {
+    var form = document.getElementById("productForm") || document.getElementById("createProductForm");
+    if (!form) return;
+
+    form.addEventListener("submit", async function (event) {
+      event.preventDefault();
+
+      try {
+        var userId = window.BikeApi.requireAuthUserId();
+        var formData = new FormData(form);
+
+        formData.set("seller_id", userId);
+        if (!formData.get("title") && formData.get("name")) formData.set("title", formData.get("name"));
+        if (!formData.get("wheel_size") && formData.get("size")) formData.set("wheel_size", formData.get("size"));
+
+        await window.BikeApi.createProduct(formData);
+        alert("Dang ban thanh cong.");
+        form.reset();
+        var preview = document.getElementById("imagePreviewContainer");
+        if (preview) preview.innerHTML = "";
+        window.location.href = "./user.html";
+      } catch (error) {
+        alert(error.message || "Dang ban that bai.");
+      }
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var productForm = document.getElementById("productForm") || document.getElementById("createProductForm");
+    if (productForm) {
+      loadLookups();
+      initImagePreview();
+      initProductForm();
+      return;
+    }
+
+    var user = requireUser();
+    if (!user) return;
 
     renderUserInfo(user);
     loadUserListings(user);
     loadFavoritesCount();
 
-    // Event Listeners
-    const btnLogout = document.getElementById("btnLogout");
-    if (btnLogout) {
-      btnLogout.addEventListener("click", (e) => {
-        e.preventDefault();
-        handleLogout();
-      });
-    }
-
-    const profileForm = document.getElementById("profileForm");
+    var profileForm = document.getElementById("profileForm");
     if (profileForm) {
-      profileForm.addEventListener("submit", (e) => {
-        e.preventDefault();
-        alert("Tính năng cập nhật thông tin đang được phát triển.");
-      });
-    }
-
-    document.querySelectorAll("[data-profile-tab]").forEach((link) => {
-      link.addEventListener("click", (event) => {
+      profileForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        const tab = document.getElementById(link.getAttribute("data-profile-tab"));
-        if (tab && window.jQuery) {
-          window.jQuery(tab).tab("show");
-        }
+        alert("Tinh nang cap nhat thong tin dang duoc phat trien.");
       });
-    });
-
-    const hash = window.location.hash;
-    if (hash) {
-      const tabLink = document.querySelector(`[data-toggle="pill"][href="${hash}"]`);
-      if (tabLink && window.jQuery) {
-        window.jQuery(tabLink).tab("show");
-      }
     }
   });
-
 })();

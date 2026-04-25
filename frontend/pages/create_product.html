@@ -1,129 +1,99 @@
 <!doctype html>
-<html>
+<html lang="vi">
   <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta
-      name="keywords"
-      content="xe dap cu, xe dap the thao, mua ban xe dap"
-    />
-    <meta
-      name="description"
-      content="Nền tảng mua bán xe đạp thể thao cũ minh bạch, lọc nhanh theo nhu cầu và ngân sách."
-    />
-    <meta name="author" content="Bike Marketplace" />
-    <title>Đăng bán sản phẩm - Bike Marketplace</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <title>Đăng bán xe - Bike Market</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/eliyantosarage/font-awesome-pro@main/fontawesome-pro-6.4.0-web/css/all.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="../assets/css/style.css" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
-      <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+    <style>
+      .upload-dropzone {
+        border: 2px dashed #ddd;
+        border-radius: 12px;
+        padding: 40px;
+        text-align: center;
+        background: #fcfcfc;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .upload-dropzone:hover, .upload-dropzone.dragover {
+        border-color: var(--primary);
+        background: #fff9e6;
+      }
+      .upload-dropzone i {
+        font-size: 40px;
+        color: var(--primary);
+        margin-bottom: 15px;
+      }
+      .preview-item {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        overflow: hidden;
+        margin: 5px;
+        position: relative;
+        border: 1px solid #eee;
+      }
+      .preview-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .preview-item .remove-btn {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: rgba(0,0,0,0.5);
+        color: white;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+    </style>
   </head>
 
   <body class="sub_page">
     <div class="hero_area">
-      <div class="bg-box">
-        <img src="../assets/images/hero-bg.jpg" alt="" />
-      </div>
-
-      <header class="header_section">
+      <header class="header_section bg-black">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
               <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44">
-              <div class="d-flex flex-column justify-content-center">
-                <span class="text-white" style="font-size: 24px; font-weight: 900; line-height: 1; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
-                <span style="color: #adb5bd; font-size: 11px; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-top: 2px;">Premium</span>
-              </div>
+              <span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
             </a>
 
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Mở menu điều hướng"
-            >
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent">
               <span class=""></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mx-auto">
+               <ul class="navbar-nav mx-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="./index.html">Trang chủ</a>
+                  <a class="nav-link" href="./index.html"><i class="fa-solid fa-house mr-1"></i> Trang chủ</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="./index.html#xe-noi-bat">Sản phẩm</a>
+                  <a class="nav-link" href="./products.html"><i class="fa-solid fa-bicycle mr-1"></i> Sản phẩm</a>
                 </li>
                 <li class="nav-item active">
-                  <a class="nav-link" href="./create_product.html"
-                    >Đăng bán <span class="sr-only">(current)</span></a
-                  >
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="favorites.html">Yêu thích</a>
+                  <a class="nav-link" href="./create_product.html"><i class="fa-solid fa-circle-plus mr-1"></i> Đăng bán</a>
                 </li>
               </ul>
               <div class="user_option">
+                <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">
+                  <i class="fa-solid fa-heart fa-lg text-white"></i>
+                </a>
                 <a href="./user.html" class="user_link" aria-label="Tài khoản">
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="18"
-                    height="18"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <circle cx="12" cy="7" r="4"></circle>
-                    <path d="M20 21a8 8 0 0 0-16 0"></path>
-                  </svg>
+                  <i class="fa-solid fa-circle-user fa-lg"></i>
                 </a>
-                <a class="cart_link" href="./favorites.html" aria-label="Yêu thích">
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="22"
-                    height="22"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    aria-hidden="true"
-                  >
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                  </svg>
-                </a>
-                <form class="form-inline ml-3">
-                  <button
-                    class="nav_search-btn"
-                    type="button"
-                    aria-label="Tìm kiếm"
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="22"
-                      height="22"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      aria-hidden="true"
-                    >
-                      <circle cx="11" cy="11" r="8"></circle>
-                      <path d="m21 21-4.35-4.35"></path>
-                    </svg>
-                  </button>
-                </form>
               </div>
             </div>
           </nav>
@@ -133,57 +103,41 @@
 
     <section class="layout_padding">
       <div class="container">
-        <div class="heading_container heading_center">
-          <h2>Đăng bán xe</h2>
-          <p>Nhập thông tin sản phẩm để đăng bán</p>
+        <div class="heading_container heading_center mb-5">
+          <h2>Đăng bán chiếc xe <span>Của Bạn</span></h2>
+          <p class="sub-heading">Điền đầy đủ thông tin bên dưới để tiếp cận hàng ngàn người mua tiềm năng.</p>
         </div>
 
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <div class="shadow-lg p-4 rounded mt-3">
-              <div
-                id="productFormMessage"
-                class="alert d-none"
-                role="alert"
-                aria-live="polite"
-              ></div>
-              <form id="createProductForm">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <div class="bg-white p-4 p-md-5 rounded shadow-sm border">
+              <form id="productForm">
                 <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="productName"><b>Tên xe</b></label>
+                  <div class="col-md-12 mb-3">
+                    <label for="productName"><b>Tiêu đề tin đăng</b> <span class="text-danger">*</span></label>
                     <input
-                      id="productName"
-                      name="name"
                       type="text"
+                      id="productName"
+                      name="title"
                       class="form-control"
-                      placeholder="VD: Specialized Tarmac SL7"
+                      placeholder="VD: Specialized Tarmac SL7 - Size 52 - Group Ultegra Di2"
                       required
                     />
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="productBrand"><b>Thương hiệu</b></label>
-                    <select id="productBrand" name="brand_id" class="form-control" required>
-                      <option value="" disabled selected>Đang tải thương hiệu...</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="productCategory"><b>Loại xe</b></label>
+                    <label for="productCategory"><b>Loại xe</b> <span class="text-danger">*</span></label>
                     <select id="productCategory" name="category_id" class="form-control" required>
-                      <option value="" disabled selected>Đang tải danh mục...</option>
+                      <option value="">-- Đang tải loại xe --</option>
                     </select>
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="productPrice"><b>Giá (VND)</b></label>
+                    <label for="productPrice"><b>Giá bán (VNĐ)</b> <span class="text-danger">*</span></label>
                     <input
+                      type="number"
                       id="productPrice"
                       name="price"
-                      type="number"
                       class="form-control"
                       placeholder="VD: 45000000"
-                      min="0"
                       required
                     />
                   </div>
@@ -191,67 +145,53 @@
 
                 <div class="row">
                   <div class="col-md-6 mb-3">
-                    <label for="frameMaterial"><b>Chất liệu khung</b></label>
-                    <select id="frameMaterial" name="frame_material" class="form-control" required>
-                      <option value="" disabled selected>Chọn chất liệu</option>
-                      <option value="Aluminum">Nhôm (Aluminum)</option>
+                    <label for="productBrand"><b>Hãng sản xuất</b></label>
+                    <select id="productBrand" name="brand_id" class="form-control">
+                      <option value="">-- Đang tải thương hiệu --</option>
+                    </select>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="productCondition"><b>Tình trạng xe</b></label>
+                    <select id="productCondition" name="condition_state" class="form-control">
+                      <option value="Mới">Mới</option>
+                      <option value="Như mới (99%)">Như mới (99%)</option>
+                      <option value="Đã qua sử dụng">Đã qua sử dụng</option>
+                      <option value="Cũ (đã sửa chữa)">Cũ (đã sửa chữa)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <h5 class="font-weight-bold mt-4 mb-3 border-bottom pb-2">Thông số kỹ thuật</h5>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label for="productFrame"><b>Chất liệu khung</b></label>
+                    <select id="productFrame" name="frame_material" class="form-control">
+                      <option value="">-- Chọn chất liệu --</option>
                       <option value="Carbon">Carbon</option>
-                      <option value="Steel">Thép (Steel)</option>
-                      <option value="Titanium">Titanium</option>
+                      <option value="Nhôm (Alloy)">Nhôm (Alloy)</option>
+                      <option value="Thép (Steel)">Thép (Steel)</option>
+                      <option value="Titan">Titan</option>
+                    </select>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="productSize"><b>Kích cỡ (Size)</b></label>
+                    <input type="text" id="productSize" name="size" class="form-control" placeholder="VD: 52, S, M...">
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label for="productBrake"><b>Hệ thống phanh</b></label>
+                    <select id="productBrake" name="brake_type" class="form-control">
+                      <option value="">-- Chọn hệ phanh --</option>
+                      <option value="Phanh đĩa (Disc Brake)">Phanh đĩa (Disc Brake)</option>
+                      <option value="Phanh vành (Rim Brake)">Phanh vành (Rim Brake)</option>
                     </select>
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="wheelSize"><b>Kích cỡ bánh</b></label>
-                    <select id="wheelSize" name="wheel_size" class="form-control" required>
-                      <option value="" disabled selected>Chọn kích cỡ</option>
-                      <option value="700c">700c</option>
-                      <option value="29\"">29 inch</option>
-                      <option value="27.5\"">27.5 inch</option>
-                      <option value="26\"">26 inch</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="groupset"><b>Bộ truyền động (Groupset)</b></label>
-                    <input
-                      id="groupset"
-                      name="groupset"
-                      type="text"
-                      class="form-control"
-                      placeholder="VD: Shimano 105 R7000"
-                    />
+                    <label for="productGroupset"><b>Bộ truyền động (Groupset)</b></label>
+                    <input type="text" id="productGroupset" name="groupset" class="form-control" placeholder="VD: Shimano Ultegra R8000...">
                   </div>
                   <div class="col-md-6 mb-3">
-                    <label for="brakeType"><b>Loại phanh</b></label>
-                    <select id="brakeType" name="brake_type" class="form-control" required>
-                      <option value="Disc">Phanh đĩa (Disc)</option>
-                      <option value="Rim">Phanh vành (Rim)</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="row">
-                  <div class="col-md-6 mb-3">
-                    <label for="conditionState"><b>Tình trạng</b></label>
-                    <select id="conditionState" name="condition_state" class="form-control" required>
-                      <option value="New">Mới 100%</option>
-                      <option value="Like New">Như mới (99%)</option>
-                      <option value="Good">Tốt (>90%)</option>
-                      <option value="Fair">Khá (>70%)</option>
-                    </select>
-                  </div>
-                  <div class="col-md-6 mb-3">
-                    <label for="location"><b>Khu vực (Tỉnh/Thành)</b></label>
-                    <input
-                      id="location"
-                      name="location"
-                      type="text"
-                      class="form-control"
-                      placeholder="VD: TP. Hồ Chí Minh"
-                      required
-                    />
+                    <label for="productWheel"><b>Kích thước bánh</b></label>
+                    <input type="text" id="productWheel" name="wheel_size" class="form-control" placeholder="VD: 700c, 29 inch...">
                   </div>
                 </div>
 
@@ -270,7 +210,7 @@
                 <div class="mb-4">
                   <label class="form-label"><b>Hình ảnh thực tế</b></label>
                   <div id="dropZone" class="upload-dropzone">
-                    <i class="fa-light fa-cloud-arrow-up"></i>
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
                     <p class="mb-1 font-weight-bold">Kéo thả hình ảnh vào đây hoặc nhấp để chọn</p>
                     <p class="small text-muted">Hỗ trợ JPG, PNG, WEBP (Tối đa 5 ảnh)</p>
                     <input
@@ -289,9 +229,9 @@
                   <button
                     id="submitProductButton"
                     type="submit"
-                    class="btn btn-warning px-5 py-2 text-white"
+                    class="explore-link-premium border-0"
                   >
-                    Đăng sản phẩm
+                    Đăng sản phẩm ngay <i class="fa-solid fa-paper-plane ml-2"></i>
                   </button>
                 </div>
               </form>
@@ -308,94 +248,32 @@
             <div class="footer_contact">
               <h4>Liên hệ</h4>
               <div class="contact_link_box">
-                <a
-                  href="https://www.google.com/maps?q=TP.+Hồ+Chí+Minh"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Địa chỉ hoạt động tại Thành phố Hồ Chí Minh"
-                >
-                  <i class="fa-light fa-location-dot"></i>
-                  <span>TP. Hồ Chí Minh</span>
-                </a>
-                <a href="tel:0900000000" aria-label="Gọi hotline 0900 000 000">
-                  <i class="fa-light fa-phone"></i>
-                  <span>Hotline: 0900 000 000</span>
-                </a>
-                <a
-                  href="mailto:support@bikemarket.vn"
-                  aria-label="Gửi email đến support@bikemarket.vn"
-                >
-                  <i class="fa-light fa-envelope"></i>
-                  <span>support@bikemarket.vn</span>
-                </a>
+                <a href="#"><i class="fa-solid fa-location-dot"></i> <span>Quận 1, TP. Hồ Chí Minh</span></a>
+                <a href="#"><i class="fa-solid fa-phone"></i> <span>0900 000 000</span></a>
+                <a href="#"><i class="fa-solid fa-envelope"></i> <span>support@bikemarket.vn</span></a>
               </div>
             </div>
           </div>
-
-          <div class="col-md-4 footer-col">
+          <div class="col-md-4 footer-col text-center">
             <div class="footer_detail">
-                            <a href="./index.html" class="footer-logo d-flex align-items-center mb-3" style="gap: 10px; text-decoration: none;">
-                <svg width="32" height="32" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="16" cy="44" r="12" stroke="#FFD700" stroke-width="4"/>
-                  <circle cx="16" cy="44" r="3" fill="#FFD700"/>
-                  <circle cx="48" cy="44" r="12" stroke="#FFD700" stroke-width="4"/>
-                  <circle cx="48" cy="44" r="3" fill="#FFD700"/>
-                  <path d="M16 44 L28 24 L44 24 L48 44 M28 24 L32 44" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                  <path d="M24 20 L32 20" stroke="#FFD700" stroke-width="4" stroke-linecap="round"/>
-                  <path d="M40 20 L44 24 L48 18" stroke="#FFD700" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <span class="text-white" style="font-size: 20px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
+              <a href="./index.html" class="footer-logo d-flex align-items-center mb-3 justify-content-center">
+                <span class="text-white" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
               </a>
-              <p>
-                Nền tảng mua bán xe đạp thể thao cũ tập trung vào giao dịch minh
-                bạch và tốc độ tìm kiếm.
-              </p>
-              <div class="footer_social">
-                <a
-                  href="https://www.facebook.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook"
-                  ><i class="fa-brands fa-facebook"></i
-                ></a>
-                <a
-                  href="https://x.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  ><i class="fa-brands fa-twitter"></i
-                ></a>
-                <a
-                  href="https://www.instagram.com/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram"
-                  ><i class="fa-brands fa-instagram"></i
-                ></a>
-              </div>
+              <p>Nền tảng mua bán xe đạp thể thao cũ uy tín hàng đầu.</p>
             </div>
           </div>
-
-          <div class="col-md-4 footer-col">
-            <h4>Giờ hỗ trợ</h4>
-            <p>Thứ 2 - Chủ nhật</p>
-            <p>08:00 - 22:00</p>
+          <div class="col-md-4 footer-col text-md-right">
+            <h4>Hỗ trợ 24/7</h4>
+            <p>08:00 - 22:00 hàng ngày</p>
+            <p>Tư vấn kỹ thuật miễn phí</p>
           </div>
-        </div>
-
-        <div class="footer-info">
-          <p>
-            &copy; <span id="displayYear"></span> Bike Marketplace. All Rights
-            Reserved.
-          </p>
         </div>
       </div>
     </footer>
 
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
-    <script src="../assets/js/custom.js"></script>
-    <script src="../assets/js/api-client.js"></script>
-    <script src="../assets/js/product-form.js"></script>
+    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/user.js"></script>
   </body>
 </html>
