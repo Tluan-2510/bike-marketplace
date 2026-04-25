@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReBike Market - Chợ Xe Đạp Professional</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <nav class="navbar">
+        <!-- Logo & Brand -->
+        <div class="navbar-brand">
+            <a href="index.html" class="logo-link">
+                <span class="logo-icon">🚴</span>
+                <div class="brand-info">
+                    <h1>ReBike Market</h1>
+                    <p>Chợ Xe Đạp</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="navbar-search">
+            <div class="search-wrapper navbar-search-wrapper">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm xe đạp...">
+                <button onclick="searchProduct()" class="btn-search-icon">🔍</button>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+        </div>
+
+        <!-- Phần bên phải: Giới thiệu, Liên hệ, Phân loại, Đăng nhập, Giỏ hàng -->
+        <div class="navbar-right">
+            <!-- Nút Giới thiệu -->
+            <a href="#about" class="btn-nav-link"> Giới thiệu</a>
+
+            <!-- Nút Liên hệ -->
+            <a href="contact.html" class="btn-nav-link"> Liên hệ</a>
+
+            <!-- Đăng nhập -->
+            <button onclick="toggleLoginModal()" class="btn-login-nav"> Đăng nhập</button>
+
+            <!-- Giỏ hàng -->
+            <div class="cart-icon-nav" onclick="toggleCart()">
+                <span class="cart-icon">🛒</span>
+                <span id="cartCount" class="cart-badge">0</span>
+            </div>
+        </div>
+
+        <!-- Menu toggle cho mobile -->
+        <button class="navbar-toggle" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-search">
+            <input type="text" id="searchInputMobile" placeholder="Tìm kiếm...">
+            <button onclick="searchProduct()">🔍</button>
+        </div>
+        <a href="index.html"> Trang chủ</a>
+        <a href="#about"> Giới thiệu</a>
+        <a href="contact.html"> Liên hệ</a>
+        <a href="#" onclick="toggleLoginModal()">👤 Đăng nhập</a>
+    </div>
+</header>
+
+<!-- Giỏ hàng slide -->
+<div id="cartSlide" class="cart-slide">
+    <!-- Phần Giỏ Hàng -->
+    <div id="cartView" class="cart-view">
+        <div class="cart-header">
+            <h2>Giỏ hàng</h2>
+            <span onclick="toggleCart()" class="close-btn">&times;</span>
+        </div>
+        <div id="cartItems" class="cart-items">
+            <p class="empty-cart">Giỏ hàng trống</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Tổng cộng:</strong> <span id="cartTotal">0</span> VNĐ
+            </div>
+            <button class="btn-checkout" onclick="showCheckoutInCart()">Thanh toán</button>
+        </div>
+    </div>
+
+    <!-- Phần Thanh Toán -->
+    <div id="checkoutView" class="checkout-view" style="display: none;">
+        <div class="checkout-header">
+            <button onclick="backToCart()" class="btn-back">← Quay lại</button>
+            <h2>📦 Thanh Toán</h2>
+            <span onclick="toggleCart()" class="close-btn">&times;</span>
+        </div>
+        <div class="checkout-content-grid">
+            <!-- Cột 1: Form Giao Hàng -->
+            <div class="checkout-form-col">
+                <h3>📋 Thông Tin Giao Hàng</h3>
+                <form id="cartCheckoutForm" class="cart-checkout-form">
+                    <!-- Họ và Tên -->
+                    <div class="form-group">
+                        <label for="cartFullName">Họ và Tên *</label>
+                        <input type="text" id="cartFullName" name="fullName" placeholder="Nhập họ và tên" required>
+                    </div>
+
+                    <!-- Số Điện Thoại -->
+                    <div class="form-group">
+                        <label for="cartPhone">Số Điện Thoại *</label>
+                        <input type="tel" id="cartPhone" name="phone" placeholder="0901234567" required>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="form-group">
+                        <label for="cartEmail">Email *</label>
+                        <input type="email" id="cartEmail" name="email" placeholder="email@example.com" required>
+                    </div>
+
+                    <!-- Địa Chỉ -->
+                    <div class="form-group">
+                        <label for="cartAddress">Địa Chỉ *</label>
+                        <input type="text" id="cartAddress" name="address" placeholder="Nhập địa chỉ chi tiết" required>
+                    </div>
+
+                    <!-- Tỉnh/Thành Phố -->
+                    <div class="form-group">
+                        <label for="cartCity">Tỉnh/Thành Phố *</label>
+                        <select id="cartCity" name="city" required>
+                            <option value="">-- Chọn Tỉnh/Thành Phố --</option>
+                            <option value="TP.HCM">TP.HCM</option>
+                            <option value="Hà Nội">Hà Nội</option>
+                            <option value="Đà Nẵng">Đà Nẵng</option>
+                            <option value="Hải Phòng">Hải Phòng</option>
+                            <option value="Cần Thơ">Cần Thơ</option>
+                            <option value="Bình Dương">Bình Dương</option>
+                            <option value="Đồng Nai">Đồng Nai</option>
+                            <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                            <option value="Long An">Long An</option>
+                            <option value="Tiền Giang">Tiền Giang</option>
+                        </select>
+                    </div>
+
+                    <!-- Ghi Chú -->
+                    <div class="form-group">
+                        <label for="cartNotes">Ghi Chú</label>
+                        <textarea id="cartNotes" name="notes" placeholder="Ghi chú thêm (không bắt buộc)" rows="2"></textarea>
+                    </div>
+
+                    <!-- Nút Đặt Hàng -->
+                    <button type="submit" class="btn-place-order-cart">🛍️ Đặt Hàng</button>
+                </form>
+            </div>
+
+            <!-- Cột 2: Đơn Hàng -->
+            <div class="checkout-order-col">
+                <div class="order-header-top">
+                    <h3>📦 Đơn Hàng Của Bạn</h3>
+                    <a href="index.html" class="btn-continue-shopping-slide">Tiếp tục mua sắm →</a>
+                </div>
+                
+                <div id="cartCheckoutItems" class="cart-checkout-items">
+                    <!-- Sản phẩm sẽ hiển thị tại đây -->
+                </div>
+
+                <div class="checkout-order-summary">
+                    <div class="summary-row">
+                        <span>Tạm tính:</span>
+                        <span id="cartCheckoutSubtotal">0 VNĐ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí vận chuyển:</span>
+                        <span>50,000 VNĐ</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Tổng tiền:</span>
+                        <span id="cartCheckoutTotal">0 VNĐ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Demo Banner -->
+<section class="home-banner" aria-label="Banner chính">
+    <div class="banner-frame">
+        <img src="../images/banner14.jpg" alt="Banner ReBike" class="banner-image-full">
+    </div>
+</section>
+
+<!-- ========== CATEGORIES ========== -->
+<section class="categories" id="categories">
+    <div class="container">
+        <h2 class="section-title">🏆 Danh Mục Sản Phẩm</h2>
+        <p class="section-subtitle">Chọn loại xe đạp yêu thích của bạn</p>
+        
+        <div class="category-grid">
+            <!-- Category Card 1 -->
+            <a class="category-card" href="shop.html?cat=xc">
+                <img src="../images/Cross Country.jpg" alt="Cross Country">
+                <div class="category-overlay">
+                    <h3>Xe Đạp XC Cross Country</h3>
+                    <p>Xe đạp báng đồng, nhẹ & nhanh</p>
+                    <span class="category-link">Xem ngay →</span>
+                </div>
+            </a>
+            <!-- Category Card 2 -->
+            <a class="category-card" href="shop.html?cat=downhill">
+                <img src="../images/Downhill.jpg" alt="Downhill">
+                <div class="category-overlay">
+                    <h3>Xe Đạp Downhill</h3>
+                    <p>Chuyên dụng lao xuống tốc độ cao</p>
+                    <span class="category-link">Xem ngay →</span>
+                </div>
+            </a>
+            <!-- Category Card 3 -->
+            <a class="category-card" href="shop.html?cat=enduro">
+                <img src="../images/Mountain.jpg" alt="Mountain">
+                <div class="category-overlay">
+                    <h3>Xe Đạp Mountain</h3>
+                    <p>Xử lý địa hình kỹ thuật phức tạp</p>
+                    <span class="category-link">Xem ngay →</span>
+                </div>
+            </a>
+            <!-- Category Card 4 -->
+            <a class="category-card" href="shop.html?cat=trail">
+               <img src="../images/Trail.jpg" alt="Trail"> 
+               <div class="category-overlay">
+                   <h3>Xe Đạp Trail</h3>
+                   <p>Đa năng, tốt cho mọi địa hình</p>
+                   <span class="category-link">Xem ngay →</span>
+               </div>
+            </a>
+        </div>
+         <p class="demo-desc">Hơn 1000+ sản phẩm | Giá tốt nhất | Giao hàng nhanh | Bảo hành chính hãng</p>
+    </div>
+</section>
+
+<!-- Demo Banner Giới Thiệu -->
+<section class="demo-banner">
+    <div class="demo-content">
+        <h2>✨ Sản Phẩm Nổi Bật</h2>
+        <p>Khám phá các dòng xe đạp nổi tiếng từ những thương hiệu hàng đầu thế giới có các sản phẩm xe nổi bật</p>
+        <div class="featured-products" id="featuredProducts" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin: 30px 0;">
+            <!-- Sản phẩm XC -->
+            <div class="featured-product-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;" onclick="openModal(2)">
+                <img src="../images/Cross Country.jpg" alt="Xe XC" style="width: 100%; height: 220px; object-fit: cover;">
+                <div style="padding: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Xe Đạp XC</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px;">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span style="font-weight: 600;">4.6</span>
+                        <span style="color: #999;">(189)</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display: block; font-size: 18px; font-weight: 700; color: #e74c3c; margin-bottom: 5px;">22,000,000 VNĐ</span>
+                        <span style="display: block; font-size: 12px; color: #666;">💳 Trả góp: 1,833,333/tháng</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); addToCartFromCard(2)">🛒 Giỏ hàng</button>
+                        <button style="flex: 1; padding: 8px; background: #f0f0f0; color: #333; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); likeProduct(2)">👍 Đánh giá</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sản phẩm Downhill -->
+            <div class="featured-product-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;" onclick="openModal(14)">
+                <img src="../images/Downhill.jpg" alt="Xe Downhill" style="width: 100%; height: 220px; object-fit: cover;">
+                <div style="padding: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Xe Đạp Downhill</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px;">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span style="font-weight: 600;">4.8</span>
+                        <span style="color: #999;">(156)</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display: block; font-size: 18px; font-weight: 700; color: #e74c3c; margin-bottom: 5px;">62,000,000 VNĐ</span>
+                        <span style="display: block; font-size: 12px; color: #666;">💳 Trả góp: 5,166,667/tháng</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); addToCartFromCard(14)">🛒 Giỏ hàng</button>
+                        <button style="flex: 1; padding: 8px; background: #f0f0f0; color: #333; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); likeProduct(14)">👍 Đánh giá</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sản phẩm Enduro -->
+            <div class="featured-product-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;" onclick="openModal(20)">
+                <img src="../images/Mountain.jpg" alt="Xe Enduro" style="width: 100%; height: 220px; object-fit: cover;">
+                <div style="padding: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Xe Đạp Enduro</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px;">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span style="font-weight: 600;">4.7</span>
+                        <span style="color: #999;">(162)</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display: block; font-size: 18px; font-weight: 700; color: #e74c3c; margin-bottom: 5px;">48,000,000 VNĐ</span>
+                        <span style="display: block; font-size: 12px; color: #666;">💳 Trả góp: 4,000,000/tháng</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); addToCartFromCard(20)">🛒 Giỏ hàng</button>
+                        <button style="flex: 1; padding: 8px; background: #f0f0f0; color: #333; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); likeProduct(20)">👍 Đánh giá</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sản phẩm Trail -->
+            <div class="featured-product-card" style="background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer;" onclick="openModal(23)">
+                <img src="../images/Trail.jpg" alt="Xe Trail" style="width: 100%; height: 220px; object-fit: cover;">
+                <div style="padding: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 8px;">Xe Đạp Trail</h3>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 13px;">
+                        <span>⭐⭐⭐⭐⭐</span>
+                        <span style="font-weight: 600;">4.7</span>
+                        <span style="color: #999;">(158)</span>
+                    </div>
+                    <div style="margin-bottom: 10px;">
+                        <span style="display: block; font-size: 18px; font-weight: 700; color: #e74c3c; margin-bottom: 5px;">32,000,000 VNĐ</span>
+                        <span style="display: block; font-size: 12px; color: #666;">💳 Trả góp: 2,666,667/tháng</span>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="flex: 1; padding: 8px; background: #667eea; color: white; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); addToCartFromCard(23)">🛒 Giỏ hàng</button>
+                        <button style="flex: 1; padding: 8px; background: #f0f0f0; color: #333; border: none; border-radius: 5px; font-size: 12px; font-weight: 600; cursor: pointer;" onclick="event.stopPropagation(); likeProduct(23)">👍 Đánh giá</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <p class="demo-desc-detail">Chất lượng hàng đầu | Giá cạnh tranh | Dịch vụ tốt | Bảo hành chính hãng</p>
+    </div>
+</section>
+
+<!-- Danh mục sản phẩm -->
+<section class="product-list" id="productList">
+    <!-- JS render -->
+</section>
+
+<!-- Modal chi tiết sản phẩm -->
+<div id="modal" class="modal">
+    <div class="modal-content modal-detail">
+        <span onclick="closeModal()" class="close">&times;</span>
+        <div id="modalBody"></div>
+    </div>
+</div>
+
+<!-- Modal Đặt Hàng -->
+<div id="orderCheckoutModal" class="modal" style="z-index: 1001;">
+    <div class="modal-content" style="width: 95%; max-width: 1100px; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 15px;">
+        <span onclick="closeOrderCheckoutModal()" class="close" style="font-size: 32px; top: 15px; right: 20px;">&times;</span>
+        <div id="orderCheckoutContent"></div>
+    </div>
+</div>
+
+<!-- Test Button (Debug) -->
+<div id="testBtn" style="display: none; position: fixed; bottom: 20px; right: 20px; background: red; color: white; padding: 10px 20px; cursor: pointer; border-radius: 5px; z-index: 2000;" onclick="openOrderCheckoutModal()">
+    Test Modal
+</div>
+
+<!-- Modal Đăng nhập Admin -->
+<div id="loginModal" class="modal">
+    <div class="modal-content admin-login">
+        <span onclick="closeLoginModal()" class="close">&times;</span>
+        <h2>🔐 Đăng nhập </h2>
+        <form onsubmit="handleAdminLogin(event)">
+            <input type="text" id="adminUser" placeholder="Tên đăng nhập" required>
+            <input type="password" id="adminPass" placeholder="Mật khẩu" required>
+            <button type="submit" class="btn-login-submit">Đăng nhập</button>
+        </form>
+        <p class="login-hint">Demo: user = admin, pass = 123456</p>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="footer-content">
+        <div class="footer-col">
+            <h3>Về ReBike Market</h3>
+            <p>Marketplace hàng đầu bán xe đạp chất lượng cao</p>
+        </div>
+        <div class="footer-col">
+            <h3>Liên hệ</h3>
+            <p>📞 1900-xxxx | 📧 info@rebike.vn</p>
+        </div>
+        <div class="footer-col">
+            <h3>Theo dõi</h3>
+            <p>Facebook | Instagram | YouTube</p>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2024 ReBike Market. Tất cả quyền được bảo lưu.</p>
+    </div>
+</footer>
+
+<script src="../js/script.js"></script>
+</body>
+</html>

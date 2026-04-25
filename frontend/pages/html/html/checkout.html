@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán - ReBike Market</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/checkout.css">
+</head>
+<body>
+
+<!-- Header -->
+<header>
+    <nav class="navbar">
+        <!-- Logo & Brand -->
+        <div class="navbar-brand">
+            <a href="index.html" class="logo-link">
+                <span class="logo-icon">🚴</span>
+                <div class="brand-info">
+                    <h1>ReBike Market</h1>
+                    <p>Chợ Xe Đạp</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Thanh tìm kiếm -->
+        <div class="navbar-search">
+            <div class="search-wrapper navbar-search-wrapper">
+                <input type="text" id="searchInput" placeholder="Tìm kiếm xe đạp...">
+                <button onclick="searchProduct()" class="btn-search-icon">🔍</button>
+                <div class="search-suggestions" id="searchSuggestions"></div>
+            </div>
+        </div>
+
+        <!-- Phần bên phải: Liên hệ, Đăng nhập -->
+        <div class="navbar-right">
+            <!-- Nút Giới thiệu -->
+            <a href="index.html" class="btn-nav-link"> Trang Chủ</a>
+
+            <!-- Đăng nhập -->
+            <button onclick="toggleLoginModal()" class="btn-login-nav"> Đăng nhập</button>
+        </div>
+
+        <!-- Menu toggle cho mobile -->
+        <button class="navbar-toggle" onclick="toggleMobileMenu()">☰</button>
+    </nav>
+
+    <!-- Mobile menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <a href="index.html"> Trang chủ</a>
+        <a href="#" onclick="toggleLoginModal()">👤 Đăng nhập</a>
+    </div>
+</header>
+
+<!-- Main Checkout Container -->
+<main class="checkout-container">
+    <div class="checkout-wrapper">
+        <!-- Phần 1: Form Thông Tin Giao Hàng -->
+        <div class="checkout-form-section">
+            <h2 class="section-title">📦 Thông Tin Giao Hàng</h2>
+            
+            <form id="checkoutForm" class="checkout-form">
+                <!-- Họ và Tên -->
+                <div class="form-group">
+                    <label for="fullName">Họ và Tên *</label>
+                    <input type="text" id="fullName" name="fullName" placeholder="Nhập họ và tên" required>
+                </div>
+
+                <!-- Số Điện Thoại -->
+                <div class="form-group">
+                    <label for="phone">Số Điện Thoại *</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email *</label>
+                    <input type="email" id="email" name="email" placeholder="Nhập email" required>
+                </div>
+
+                <!-- Địa Chỉ Giao Hàng -->
+                <div class="form-group">
+                    <label for="address">Địa Chỉ Giao Hàng *</label>
+                    <input type="text" id="address" name="address" placeholder="Nhập địa chỉ chi tiết" required>
+                </div>
+
+                <!-- Tỉnh/Thành Phố -->
+                <div class="form-group">
+                    <label for="city">Tỉnh/Thành Phố *</label>
+                    <select id="city" name="city" required>
+                        <option value="">-- Chọn Tỉnh/Thành Phố --</option>
+                        <option value="TP.HCM">TP.HCM</option>
+                        <option value="Hà Nội">Hà Nội</option>
+                        <option value="Đà Nẵng">Đà Nẵng</option>
+                        <option value="Hải Phòng">Hải Phòng</option>
+                        <option value="Cần Thơ">Cần Thơ</option>
+                        <option value="Bình Dương">Bình Dương</option>
+                        <option value="Đồng Nai">Đồng Nai</option>
+                        <option value="Bà Rịa - Vũng Tàu">Bà Rịa - Vũng Tàu</option>
+                        <option value="Long An">Long An</option>
+                        <option value="Tiền Giang">Tiền Giang</option>
+                        <option value="Vĩnh Long">Vĩnh Long</option>
+                        <option value="Sóc Trăng">Sóc Trăng</option>
+                        <option value="Cà Mau">Cà Mau</option>
+                        <option value="Khánh Hòa">Khánh Hòa</option>
+                        <option value="Lâm Đồng">Lâm Đồng</option>
+                        <option value="Ninh Thuận">Ninh Thuận</option>
+                        <option value="Bình Thuận">Bình Thuận</option>
+                        <option value="Gia Lai">Gia Lai</option>
+                        <option value="Đắk Lắk">Đắk Lắk</option>
+                        <option value="Đắk Nông">Đắk Nông</option>
+                        <option value="Quảng Ngãi">Quảng Ngãi</option>
+                        <option value="Quảng Nam">Quảng Nam</option>
+                        <option value="Quảng Bình">Quảng Bình</option>
+                        <option value="Quảng Trị">Quảng Trị</option>
+                        <option value="Thừa Thiên Huế">Thừa Thiên Huế</option>
+                        <option value="Thanh Hóa">Thanh Hóa</option>
+                        <option value="Nghệ An">Nghệ An</option>
+                        <option value="Hà Tĩnh">Hà Tĩnh</option>
+                        <option value="Hương Sơn">Hương Sơn</option>
+                        <option value="Sơn La">Sơn La</option>
+                        <option value="Điện Biên">Điện Biên</option>
+                        <option value="Lai Châu">Lai Châu</option>
+                        <option value="Lào Cai">Lào Cai</option>
+                        <option value="Yên Bái">Yên Bái</option>
+                        <option value="Tuyên Quang">Tuyên Quang</option>
+                        <option value="Hà Giang">Hà Giang</option>
+                        <option value="Cao Bằng">Cao Bằng</option>
+                        <option value="Bắc Kạn">Bắc Kạn</option>
+                        <option value="Thái Nguyên">Thái Nguyên</option>
+                        <option value="Bắc Giang">Bắc Giang</option>
+                        <option value="Quảng Ninh">Quảng Ninh</option>
+                        <option value="Bắc Ninh">Bắc Ninh</option>
+                        <option value="Hải Dương">Hải Dương</option>
+                        <option value="Hưng Yên">Hưng Yên</option>
+                        <option value="Thái Bình">Thái Bình</option>
+                        <option value="Hà Nam">Hà Nam</option>
+                        <option value="Nam Định">Nam Định</option>
+                        <option value="Ninh Bình">Ninh Bình</option>
+                    </select>
+                </div>
+
+                <!-- Ghi Chú Đơn Hàng -->
+                <div class="form-group">
+                    <label for="notes">Ghi Chú Đơn Hàng</label>
+                    <textarea id="notes" name="notes" placeholder="Nhập ghi chú thêm (không bắt buộc)" rows="3"></textarea>
+                </div>
+
+                <!-- Nút Đặt Hàng -->
+                <button type="submit" class="btn-place-order">🛍️ Đặt Hàng</button>
+            </form>
+        </div>
+
+        <!-- Phần 2: Đơn Hàng Của Bạn -->
+        <div class="order-summary-section">
+            <div class="order-summary-header">
+                <h2>📋 Đơn Hàng Của Bạn</h2>
+                <a href="index.html" class="btn-continue-shopping">Tiếp tục mua sắm →</a>
+            </div>
+
+            <div id="orderItems" class="order-items">
+                <!-- Các sản phẩm sẽ được thêm tại đây -->
+            </div>
+
+            <div class="order-summary-footer">
+                <div class="summary-row">
+                    <span>Tạm tính:</span>
+                    <span id="subtotal">0 VNĐ</span>
+                </div>
+                <div class="summary-row">
+                    <span>Phí vận chuyển:</span>
+                    <span id="shippingFee">50,000 VNĐ</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Tổng tiền cần thanh toán:</span>
+                    <span id="totalAmount">0 VNĐ</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-content">
+        <p>&copy; 2024 ReBike Market. Tất cả quyền được bảo lưu.</p>
+        <p>Email: support@rebike.com | Hotline: 1800-1234</p>
+    </div>
+</footer>
+
+<!-- Script -->
+<script src="../js/script.js"></script>
+<script src="../js/checkout.js"></script>
+</body>
+</html>
