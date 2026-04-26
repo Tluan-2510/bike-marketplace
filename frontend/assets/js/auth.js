@@ -1,72 +1,9 @@
-﻿(function () {
+/**
+ * Bike Market - Auth Logic
+ */
+
+(function () {
   "use strict";
-
-  function trimSlashesRight(value) {
-    return String(value || "").replace(/\/+$/, "");
-  }
-
-  function resolveApiBaseUrl() {
-    var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
-    var fromStorage = "";
-
-    try {
-      fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
-    } catch (error) {
-      fromStorage = "";
-    }
-
-    if (fromWindow) return fromWindow;
-    if (fromStorage) return fromStorage;
-    return "http://localhost/api";
-  }
-
-  function buildApiUrl(path) {
-    var cleanPath = String(path || "");
-    if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
-    return resolveApiBaseUrl() + cleanPath;
-  }
-
-  var API = {
-    login: buildApiUrl("/auth/login"),
-    register: buildApiUrl("/auth/register"),
-  };
-
-  var STORAGE_KEYS = {
-    accessToken: "access_token",
-    refreshToken: "refresh_token",
-    user: "auth_user",
-  };
-
-  function getMessageBox(form) {
-    return form.querySelector("#formMessage") || document.getElementById("formMessage");
-  }
-
-  function showMessage(messageBox, message, type) {
-    if (!messageBox) return;
-    var alertType = type === "success" ? "success" : "danger";
-    messageBox.textContent = message;
-    messageBox.className = "alert alert-" + alertType;
-  }
-
-  function hideMessage(messageBox) {
-    if (!messageBox) return;
-    messageBox.textContent = "";
-    messageBox.className = "alert d-none";
-  }
-
-  function setButtonLoading(button, loadingText) {
-    if (!button) return function () {};
-    var idleText = button.textContent;
-    button.disabled = true;
-    button.setAttribute("aria-busy", "true");
-    button.textContent = loadingText;
-
-    return function restoreButton() {
-      button.disabled = false;
-      button.setAttribute("aria-busy", "false");
-      button.textContent = idleText;
-    };
-  }
 
   function normalizeValue(value) {
     return String(value || "").trim();
@@ -76,273 +13,122 @@
     return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
   }
 
-  function isValidPhone(phone) {
-    var digits = String(phone || "").replace(/\D/g, "");
-    return digits.length >= 9 && digits.length <= 11;
-  }
-
-  function validateLoginInput(payload) {
-    if (!payload.email || !payload.password) {
-      return "Vui lòng nhập đầy đủ email và mật khẩu.";
-    }
-
-    if (!isValidEmail(payload.email)) {
-      return "Email không đúng định dạng.";
-    }
-
-    if (payload.password.length < 6) {
-      return "Mật khẩu phải có ít nhất 6 ký tự.";
-    }
-
-    return "";
-  }
-
-  function validateRegisterInput(payload) {
-    if (
-      !payload.username ||
-      !payload.email ||
-      !payload.password ||
-      !payload.confirmPassword ||
-      !payload.role ||
-      !payload.phone
-    ) {
-      return "Vui lòng điền đầy đủ tất cả thông tin đăng ký.";
-    }
-
-    if (payload.username.length < 2) {
-      return "Tên người dùng phải có ít nhất 2 ký tự.";
-    }
-
-    if (!isValidEmail(payload.email)) {
-      return "Email không đúng định dạng.";
-    }
-
-    if (payload.password.length < 6) {
-      return "Mật khẩu phải có ít nhất 6 ký tự.";
-    }
-
-    if (payload.password !== payload.confirmPassword) {
-      return "Mật khẩu xác nhận không khớp.";
-    }
-
-    if (payload.role !== "user" && payload.role !== "seller") {
-      return "Loại tài khoản không hợp lệ.";
-    }
-
-    if (!isValidPhone(payload.phone)) {
-      return "Số điện thoại không hợp lệ.";
-    }
-
-    return "";
-  }
-
-  function parseJSON(text) {
-    try {
-      return JSON.parse(text);
-    } catch (error) {
-      return {};
-    }
-  }
-
-  function normalizeApiError(payload, status) {
-    if (payload && typeof payload.message === "string" && payload.message.trim()) {
-      return payload.message;
-    }
-
-    if (payload && payload.errors && typeof payload.errors === "object") {
-      var firstKey = Object.keys(payload.errors)[0];
-      if (firstKey) {
-        var firstError = payload.errors[firstKey];
-        if (Array.isArray(firstError) && firstError.length) {
-          return String(firstError[0]);
-        }
-        if (typeof firstError === "string") {
-          return firstError;
-        }
-      }
-    }
-
-    if (status >= 500) {
-      return "Hệ thống đang bận. Vui lòng thử lại sau.";
-    }
-
-    if (status === 404) {
-      return "Không tìm thấy API xác thực. Kiểm tra backend base URL.";
-    }
-
-    if (status === 405) {
-      return "Sai phương thức gọi API. Kiểm tra backend routing.";
-    }
-
-    if (status === 401) {
-      return "Thông tin đăng nhập không chính xác.";
-    }
-
-    return "Không thể xử lý yêu cầu. Vui lòng thử lại.";
-  }
-
-  async function requestJSON(url, body) {
-    var controller = new AbortController();
-    var timeout = window.setTimeout(function () {
-      controller.abort();
-    }, 12000);
-
-    try {
-      var response = await fetch(url, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify(body),
-        signal: controller.signal,
-      });
-
-      var raw = await response.text();
-      var payload = parseJSON(raw);
-
-      if (!response.ok || payload.success === false) {
-        throw new Error(normalizeApiError(payload, response.status));
-      }
-
-      return payload;
-    } catch (error) {
-      if (error.name === "AbortError") {
-        throw new Error("Kết nối quá thời gian. Vui lòng thử lại.");
-      }
-      if (error instanceof TypeError) {
-        throw new Error("Không thể kết nối đến máy chủ.");
-      }
-      throw error;
-    } finally {
-      window.clearTimeout(timeout);
-    }
+  function setLoading(button, text) {
+    if (!button) return function () {};
+    var oldText = button.textContent;
+    button.disabled = true;
+    button.textContent = text;
+    return function restore() {
+      button.disabled = false;
+      button.textContent = oldText;
+    };
   }
 
   function persistAuthData(data) {
     var source = data || {};
     var tokens = source.tokens || {};
-    var accessToken = source.access_token || source.token || tokens.access_token || "";
-    var refreshToken = source.refresh_token || tokens.refresh_token || "";
     var user = source.user || source;
+    var accessToken = source.access_token || source.token || tokens.access_token || "";
+
+    if (!accessToken && user && (user.id || user.user_id || user.email)) {
+      accessToken = "local_session_" + (user.id || user.user_id || user.email);
+    }
 
     if (accessToken) {
-      localStorage.setItem(STORAGE_KEYS.accessToken, accessToken);
-    }
-    if (refreshToken) {
-      localStorage.setItem(STORAGE_KEYS.refreshToken, refreshToken);
+      localStorage.setItem("access_token", accessToken);
+      localStorage.setItem("token", accessToken);
     }
 
-    try {
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
-    } catch (error) {
-      localStorage.removeItem(STORAGE_KEYS.user);
-    }
+    localStorage.setItem("auth_user", JSON.stringify(user));
   }
 
   function resolveRedirect(form, fallback) {
-    var target = normalizeValue(form.getAttribute("data-redirect"));
-    return target || fallback;
+    return normalizeValue(form.getAttribute("data-redirect")) || fallback;
   }
 
-  async function onSubmitLogin(form) {
-    var messageBox = getMessageBox(form);
-    var submitButton = form.querySelector('button[type="submit"]');
-
-    var payload = {
-      email: normalizeValue(form.querySelector('input[name="email"]').value).toLowerCase(),
-      password: String(form.querySelector('input[name="password"]').value || ""),
-    };
-
-    var validationMessage = validateLoginInput(payload);
-    hideMessage(messageBox);
-
-    if (validationMessage) {
-      showMessage(messageBox, validationMessage, "danger");
-      return;
-    }
-
-    var restoreButton = setButtonLoading(submitButton, "Đang đăng nhập...");
+  async function handleLogin(form) {
+    var button = form.querySelector('button[type="submit"]');
+    var restore = setLoading(button, "Đang đăng nhập...");
 
     try {
-      var response = await requestJSON(API.login, payload);
-      persistAuthData(response.data || response);
-      showMessage(messageBox, "Đăng nhập thành công. Đang chuyển hướng...", "success");
-
-      window.setTimeout(function () {
-        window.location.href = resolveRedirect(form, "./index.html");
-      }, 500);
-    } catch (error) {
-      showMessage(messageBox, error.message || "Đăng nhập thất bại.", "danger");
-      restoreButton();
-    }
-  }
-
-  async function onSubmitRegister(form) {
-    var messageBox = getMessageBox(form);
-    var submitButton = form.querySelector('button[type="submit"]');
-
-    var payload = {
-      username: normalizeValue(form.querySelector('input[name="username"]').value),
-      email: normalizeValue(form.querySelector('input[name="email"]').value).toLowerCase(),
-      password: String(form.querySelector('input[name="password"]').value || ""),
-      confirmPassword: String(form.querySelector('input[name="confirmPassword"]').value || ""),
-      role: normalizeValue(form.querySelector('select[name="role"]').value),
-      phone: normalizeValue(form.querySelector('input[name="phone"]').value),
-    };
-
-    var validationMessage = validateRegisterInput(payload);
-    hideMessage(messageBox);
-
-    if (validationMessage) {
-      showMessage(messageBox, validationMessage, "danger");
-      return;
-    }
-
-    var restoreButton = setButtonLoading(submitButton, "Đang đăng ký...");
-
-    try {
-      var requestBody = {
-        username: payload.username,
-        name: payload.username,
-        email: payload.email,
-        password: payload.password,
-        password_confirmation: payload.confirmPassword,
-        role: payload.role,
-        phone: payload.phone,
+      var payload = {
+        email: normalizeValue(form.querySelector('[name="email"]').value).toLowerCase(),
+        password: String(form.querySelector('[name="password"]').value || "")
       };
 
-      var response = await requestJSON(API.register, requestBody);
-      persistAuthData(response.data || {});
-      showMessage(messageBox, "Đăng ký thành công. Đang chuyển hướng...", "success");
+      if (!isValidEmail(payload.email) || payload.password.length < 6) {
+        throw new Error("Email hoặc mật khẩu không hợp lệ.");
+      }
+
+      var response = await window.BikeApi.login(payload);
+      persistAuthData(response.data || response);
+
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show("Đăng nhập thành công!", "success");
+      }
 
       window.setTimeout(function () {
-        window.location.href = resolveRedirect(form, "./login.html");
-      }, 700);
+        window.location.href = resolveRedirect(form, "./user.html");
+      }, 1200);
     } catch (error) {
-      showMessage(messageBox, error.message || "Đăng ký thất bại.", "danger");
-      restoreButton();
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show(error.message || "Đăng nhập thất bại.", "error");
+      }
+      restore();
     }
   }
 
-  function attachSubmitHandlers() {
-    var loginForm = document.getElementById("loginForm");
-    var registerForm = document.getElementById("registerForm");
+  async function handleRegister(form) {
+    var button = form.querySelector('button[type="submit"]');
+    var restore = setLoading(button, "Đang đăng ký...");
 
+    try {
+      var fullName = normalizeValue(form.querySelector('[name="full_name"]').value);
+      var email = normalizeValue(form.querySelector('[name="email"]').value).toLowerCase();
+      var phone = normalizeValue(form.querySelector('[name="phone"]').value);
+      var password = String(form.querySelector('[name="password"]').value || "");
+
+      if (!fullName || !isValidEmail(email) || !phone || password.length < 6) {
+        throw new Error("Thông tin đăng ký không hợp lệ.");
+      }
+
+      await window.BikeApi.register({
+        username: email,
+        full_name: fullName,
+        email: email,
+        phone_number: phone,
+        password: password
+      });
+
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show("Đăng ký thành công!", "success");
+      }
+      window.setTimeout(function () {
+        window.location.href = resolveRedirect(form, "./login.html");
+      }, 1200);
+    } catch (error) {
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show(error.message || "Đăng ký thất bại.", "error");
+      }
+      restore();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    var loginForm = document.getElementById("loginForm");
     if (loginForm) {
       loginForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        onSubmitLogin(loginForm);
+        handleLogin(loginForm);
       });
     }
 
+    var registerForm = document.getElementById("registerForm");
     if (registerForm) {
       registerForm.addEventListener("submit", function (event) {
         event.preventDefault();
-        onSubmitRegister(registerForm);
+        handleRegister(registerForm);
       });
     }
-  }
-
-  document.addEventListener("DOMContentLoaded", attachSubmitHandlers);
+  });
 })();

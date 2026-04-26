@@ -1,0 +1,51 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+
+:root {
+  --font-family-base: "Inter", "Be Vietnam Pro", "Roboto", Arial, sans-serif;
+  --color-primary: #FFD700;
+  --color-primary-hover: #E6C200;
+  --color-success: #16803c;
+  --color-error: #c92a2a;
+  --color-info: #495057;
+  --color-surface: #FFFFFF;
+  --color-surface-muted: #F8F9FA;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --shadow-soft: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --shadow-soft-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --black: #000000;
+  --dark-gray: #121212;
+  --light-gray: #F5F5F5;
+  --text-white: #FFFFFF;
+  --text-dark: #1A1A1A;
+  --accent: #FF4E00;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --shadow: var(--shadow-soft);
+  --shadow-lg: var(--shadow-soft-lg);
+}
+
+html {
+  font-family: var(--font-family-base);
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+body {
+  color: var(--text-dark);
+  background-color: var(--light-gray);
+  overflow-x: hidden;
+  line-height: 1.6;
+}
+
+a, a:hover, a:focus {
+  text-decoration: none !important;
+}
