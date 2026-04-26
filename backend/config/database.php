@@ -1,5 +1,3 @@
-<!-- kết nối DB -->
-
 <?php
 class Database {
     private $host = "db";
