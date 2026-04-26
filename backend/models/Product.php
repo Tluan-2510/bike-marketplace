@@ -188,4 +188,26 @@ class Product {
         $stmt->bind_param("isi", $product_id, $image_url, $is_primary);
         return $stmt->execute();
     }
+    public function getSimilar($product_id, $category_id, $limit = 4) {
+        $query = "
+            SELECT p.*, c.name as category_name, b.name as brand_name, pi.image_url as primary_image
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN brands b ON p.brand_id = b.id
+            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+            WHERE p.category_id = ? AND p.id != ?
+            ORDER BY RAND()
+            LIMIT ?
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->bind_param("iii", $category_id, $product_id, $limit);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $products = [];
+        while ($row = $result->fetch_assoc()) {
+            $products[] = $row;
+        }
+        return $products;
+    }
 }
