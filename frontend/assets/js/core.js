@@ -219,7 +219,7 @@
 
   function getHeartIconMarkup() {
     return [
-      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
+      '<svg viewBox="0 0 24 24" fill="white" stroke="#ccc" stroke-width="1" aria-hidden="true" focusable="false">',
       '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>',
       '</svg>'
     ].join("");
@@ -281,40 +281,61 @@
     button.setAttribute("aria-label", isActive ? "Bỏ yêu thích" : "Yêu thích");
   }
 
-  window.renderProductCard = function (product) {
-    var title = product.title || product.name || "Xe đạp";
-    var imageUrl = resolveImageUrl(
-      product.image_url ||
-      product.primary_image ||
-      (product.images && product.images[0] && product.images[0].image_url)
-    );
-    var price = formatCurrency(product.price);
-
-    var isFavorite = Boolean(product.is_favorite || product.isFavorite || product.favorite_id);
-    var column = document.createElement("div");
-    column.className = "col-6 col-md-6 col-lg-4 mb-4";
-    column.innerHTML = `
-      <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden">
-        <div class="img-box product-card-media">
-          <a href="./product-detail.html?id=${product.id}" class="product-card-link">
-            <img src="${imageUrl}" alt="${title}" class="img-fluid product-card-image">
-          </a>
-          <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${product.id}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
-            <span class="fav-btn-icon" aria-hidden="true">${getHeartIconMarkup()}</span>
-          </button>
-        </div>
-        <div class="detail-box flex-grow-1 d-flex flex-column p-3">
-          <div class="small text-muted text-truncate mb-1">${product.brand_name || "Thương hiệu"}</div>
-          <h6 class="mb-1 text-truncate"><a href="./product-detail.html?id=${product.id}" class="text-dark font-weight-bold">${title}</a></h6>
-          <div class="mt-auto pt-2 border-top">
-            <h6 class="mb-0 font-weight-bold text-warning product-card-price">${price}</h6>
+    window.renderProductCard = function (product) {
+      var title = product.title || product.name || "Xe đạp";
+      var imageUrl = resolveImageUrl(
+        product.image_url ||
+        product.primary_image ||
+        (product.images && product.images[0] && product.images[0].image_url)
+      );
+      var price = formatCurrency(product.price);
+      var brand = product.brand_name || product.brand || "Xe đạp";
+      var location = product.location || "Toàn quốc";
+      var condition = product.condition || "Đã sử dụng";
+      var category = product.category_name || "Thể thao";
+  
+      var isFavorite = Boolean(product.is_favorite || product.isFavorite || product.favorite_id);
+      var column = document.createElement("div");
+      column.className = "col-6 col-md-6 col-lg-4 mb-4";
+      column.innerHTML = `
+        <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden product-card-modern">
+          <div class="img-box product-card-media">
+            <a href="./product-detail.html?id=${product.id}" class="product-card-link">
+              <img src="${imageUrl}" alt="${title}" class="img-fluid product-card-image">
+            </a>
+            <div class="card-badges">
+              <span class="badge badge-primary badge-brand">${brand}</span>
+            </div>
+            <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${product.id}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
+              <span class="fav-btn-icon" aria-hidden="true">${getHeartIconMarkup()}</span>
+            </button>
+          </div>
+          <div class="detail-box flex-grow-1 d-flex flex-column p-3 bg-white">
+            <div class="product-category-small mb-1">${category}</div>
+            <h6 class="product-title-modern mb-2 font-weight-bold">
+              <a href="./product-detail.html?id=${product.id}" class="text-dark" style="text-decoration: none;">${title}</a>
+            </h6>
+            
+            <div class="product-meta-row d-flex align-items-center mb-1">
+              <span class="product-location-tag"><i class="fa fa-map-marker mr-1"></i> ${location}</span>
+            </div>
+            <div class="product-meta-row d-flex align-items-center mb-3">
+              <span class="product-condition-tag">${condition}</span>
+            </div>
+  
+            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+              <div class="price-wrapper">
+                <span class="price-label small text-muted d-block">Giá bán</span>
+                <h5 class="mb-0 font-weight-bold text-dark product-price-modern">${price.replace('đ', '')} <span class="currency-symbol">đ</span></h5>
+              </div>
+              <a href="./product-detail.html?id=${product.id}" class="btn-detail-link"><i class="fa fa-arrow-right"></i></a>
+            </div>
           </div>
         </div>
-      </div>
-    `;
-
-    return column;
-  };
+      `;
+  
+      return column;
+    };
 
   document.addEventListener("DOMContentLoaded", initGlobalUI);
 })();

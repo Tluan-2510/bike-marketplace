@@ -6,6 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
         <title>Sản phẩm - Bike Market</title>
         <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
         <link href="../assets/css/style.css" rel="stylesheet" />
         <link href="../assets/css/responsive.css" rel="stylesheet" />
         <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
@@ -19,7 +20,7 @@
                     <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
                       <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44"><span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
         
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"><span class=""></span></button>
+                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"><i class="fa fa-bars" style="color: white;"></i></button>
         
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                        <ul class="navbar-nav mx-auto">
@@ -34,8 +35,14 @@
                         </li>
                       </ul>
                       <div class="user_option">
-                        <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">Yêu thích</a>
-                        <a href="./user.html" class="user_link" aria-label="Tài khoản">Tài khoản</a>
+                        <a class="cart_link mr-3 d-flex align-items-center" href="./favorites.html" aria-label="Yêu thích">
+                          <i class="fa fa-heart mr-1" aria-hidden="true"></i>
+                          <span>Yêu thích</span>
+                        </a>
+                        <a href="./user.html" class="user_link d-flex align-items-center" aria-label="Tài khoản">
+                          <i class="fa fa-user mr-1" aria-hidden="true"></i>
+                          <span>Tài khoản</span>
+                        </a>
                       </div>
                     </div>
                   </nav>
@@ -107,9 +114,18 @@
                         <div class="footer_contact">
                             <h4>Liên hệ</h4>
                             <div class="contact_link_box">
-                                <a href="#"><span>Quận 1, TP. Hồ Chí Minh</span></a>
-                                <a href="#"><span>0900 000 000</span></a>
-                                <a href="#"><span>support@bikemarket.vn</span></a>
+                                <a href="#" class="d-flex align-items-center mb-2">
+                                    <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
+                                    <span>Quận 1, TP. Hồ Chí Minh</span>
+                                </a>
+                                <a href="#" class="d-flex align-items-center mb-2">
+                                    <i class="fa fa-phone mr-2" aria-hidden="true"></i>
+                                    <span>0900 000 000</span>
+                                </a>
+                                <a href="#" class="d-flex align-items-center mb-2">
+                                    <i class="fa fa-envelope mr-2" aria-hidden="true"></i>
+                                    <span>support@bikemarket.vn</span>
+                                </a>
                             </div>
                         </div>
                     </div>

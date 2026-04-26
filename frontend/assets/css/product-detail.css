@@ -372,4 +372,8 @@
   .detail-desc-box {
     padding: 1.5rem !important;
   }
+  .detail-product-name {
+    font-size: 1.6rem;
+    text-align: left !important;
+  }
 }

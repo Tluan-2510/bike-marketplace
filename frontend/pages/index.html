@@ -12,9 +12,13 @@
       content="xe dap cu, xe dap the thao, mua ban xe dap"
     />
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      rel="stylesheet"
+    />
     <link href="../assets/css/style.css" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
-      <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
   </head>
 
   <body>
@@ -22,8 +26,27 @@
       <header class="header_section bg-black">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
-            <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
-              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44"><span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
+            <a
+              class="navbar-brand d-flex align-items-center"
+              href="./index.html"
+              style="gap: 10px; text-decoration: none"
+            >
+              <img
+                src="../assets/images/favicon.svg"
+                alt="BikeMarket Logo"
+                width="44"
+                height="44"
+              /><span
+                class="text-white ml-1"
+                style="
+                  font-size: 24px;
+                  font-weight: 900;
+                  letter-spacing: 1px;
+                  text-transform: uppercase;
+                "
+                >Bike<span style="color: #ffd700">Market</span></span
+              ></a
+            >
 
             <button
               class="navbar-toggler"
@@ -33,7 +56,9 @@
               aria-controls="navbarSupportedContent"
               aria-expanded="false"
               aria-label="Mở menu điều hướng"
-            ><span class=""></span></button>
+            >
+              <i class="fa fa-bars" style="color: white"></i>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-auto">
@@ -48,8 +73,22 @@
                 </li>
               </ul>
               <div class="user_option">
-                <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">Yêu thích</a>
-                <a href="./user.html" class="user_link" aria-label="Tài khoản">Tài khoản</a>
+                <a
+                  class="cart_link mr-3 d-flex align-items-center"
+                  href="./favorites.html"
+                  aria-label="Yêu thích"
+                >
+                  <i class="fa fa-heart mr-1" aria-hidden="true"></i>
+                  <span>Yêu thích</span>
+                </a>
+                <a
+                  href="./user.html"
+                  class="user_link d-flex align-items-center"
+                  aria-label="Tài khoản"
+                >
+                  <i class="fa fa-user mr-1" aria-hidden="true"></i>
+                  <span>Tài khoản</span>
+                </a>
               </div>
             </div>
           </nav>
@@ -57,7 +96,12 @@
       </header>
 
       <section class="slider_section">
-        <div id="customCarousel1" class="carousel slide" data-ride="carousel" data-interval="3000">
+        <div
+          id="customCarousel1"
+          class="carousel slide"
+          data-ride="carousel"
+          data-interval="3000"
+        >
           <div class="carousel-inner">
             <!-- Slide 1 -->
             <div class="carousel-item active">
@@ -69,10 +113,20 @@
                   <div class="col-md-8 col-lg-7">
                     <div class="detail-box">
                       <h1>Mua bán xe đạp thể thao cũ</h1>
-                      <p>Nền tảng kết nối người mua and người bán xe đạp cũ minh bạch. Tìm đúng mẫu xe phù hợp ngân sách and nhu cầu tập luyện của bạn chỉ trong vài phút.</p>
+                      <p>
+                        Nền tảng kết nối người mua và người bán xe đạp cũ minh
+                        bạch. Tìm đúng mẫu xe phù hợp ngân sách và nhu cầu tập
+                        luyện của bạn chỉ trong vài phút.
+                      </p>
                       <div class="btn-box mt-4">
-                        <a href="#xe-noi-bat" class="btn-premium">Tìm xe ngay</a>
-                        <a href="./create_product.html" class="btn-outline-premium">Đăng bán xe</a>
+                        <a href="#xe-noi-bat" class="btn-premium"
+                          >Tìm xe ngay</a
+                        >
+                        <a
+                          href="./create_product.html"
+                          class="btn-outline-premium"
+                          >Đăng bán xe</a
+                        >
                       </div>
                     </div>
                   </div>
@@ -82,17 +136,31 @@
             <!-- Slide 2 -->
             <div class="carousel-item">
               <div class="bg-box">
-                <img src="../assets/images/hero-bg-2.jpg" alt="Slide 2" class="img-flipped" />
+                <img
+                  src="../assets/images/hero-bg-2.jpg"
+                  alt="Slide 2"
+                  class="img-flipped"
+                />
               </div>
               <div class="container">
                 <div class="row">
                   <div class="col-md-8 col-lg-7">
                     <div class="detail-box">
                       <h1>Nâng tầm trải nghiệm đạp xe</h1>
-                      <p>Khám phá các dòng xe Road, MTB cao cấp từ những thương hiệu hàng đầu thế giới như Giant, Trek, Specialized với mức giá không thể tốt hơn.</p>
+                      <p>
+                        Khám phá các dòng xe Road, MTB cao cấp từ những thương
+                        hiệu hàng đầu thế giới như Giant, Trek, Specialized với
+                        mức giá không thể tốt hơn.
+                      </p>
                       <div class="btn-box mt-4">
-                        <a href="./products.html" class="btn-premium">Xem sản phẩm</a>
-                        <a href="./create_product.html" class="btn-outline-premium">Đăng tin ngay</a>
+                        <a href="./products.html" class="btn-premium"
+                          >Xem sản phẩm</a
+                        >
+                        <a
+                          href="./create_product.html"
+                          class="btn-outline-premium"
+                          >Đăng tin ngay</a
+                        >
                       </div>
                     </div>
                   </div>
@@ -109,10 +177,18 @@
                   <div class="col-md-8 col-lg-7">
                     <div class="detail-box">
                       <h1>Cộng đồng yêu xe đạp uy tín</h1>
-                      <p>Mọi tin đăng đều được kiểm duyệt minh bạch. Kết nối trực tiếp giữa người mua and người bán, đảm bảo giao dịch an toàn and tin cậy.</p>
+                      <p>
+                        Mọi tin đăng đều được kiểm duyệt minh bạch. Kết nối trực
+                        tiếp giữa người mua và người bán, đảm bảo giao dịch an
+                        toàn và tin cậy.
+                      </p>
                       <div class="btn-box mt-4">
-                        <a href="#xe-noi-bat" class="btn-premium">Khám phá ngay</a>
-                        <a href="./register.html" class="btn-outline-premium">Tham gia ngay</a>
+                        <a href="#xe-noi-bat" class="btn-premium"
+                          >Khám phá ngay</a
+                        >
+                        <a href="./register.html" class="btn-outline-premium"
+                          >Tham gia ngay</a
+                        >
                       </div>
                     </div>
                   </div>
@@ -121,7 +197,11 @@
             </div>
           </div>
           <ol class="carousel-indicators">
-            <li data-target="#customCarousel1" data-slide-to="0" class="active"></li>
+            <li
+              data-target="#customCarousel1"
+              data-slide-to="0"
+              class="active"
+            ></li>
             <li data-target="#customCarousel1" data-slide-to="1"></li>
             <li data-target="#customCarousel1" data-slide-to="2"></li>
           </ol>
@@ -133,15 +213,24 @@
       <div class="container">
         <div class="heading_container heading_center">
           <h2>Tìm kiếm xe đạp nhanh</h2>
-          <p class="sub-heading">Lọc theo từ khóa, khoảng giá and loại xe để tìm đúng mẫu phù hợp.</p>
+          <p class="sub-heading">
+            Lọc theo từ khóa, khoảng giá và loại xe để tìm đúng mẫu phù hợp.
+          </p>
         </div>
         <div class="row justify-content-center">
           <div class="col-lg-10">
             <div class="search-card">
               <form id="bikeSearchForm" class="search-form-premium" novalidate>
-                <div class="search-input-group"> <input id="searchKeyword" type="text" class="search-input" placeholder="Bạn đang tìm xe gì? (Hãng, tên xe...)" />
+                <div class="search-input-group">
+                  <input
+                    id="searchKeyword"
+                    type="text"
+                    class="search-input"
+                    placeholder="Bạn đang tìm xe gì? (Hãng, tên xe...)"
+                  />
                 </div>
-                <div class="search-input-group"> <select id="searchPrice" class="search-select">
+                <div class="search-input-group">
+                  <select id="searchPrice" class="search-select">
                     <option value="all">Tất cả mức giá</option>
                     <option value="0-10">Dưới 10 triệu</option>
                     <option value="10-30">10 - 30 triệu</option>
@@ -149,7 +238,8 @@
                     <option value="70-999">Trên 70 triệu</option>
                   </select>
                 </div>
-                <div class="search-input-group"> <select id="searchType" class="search-select">
+                <div class="search-input-group">
+                  <select id="searchType" class="search-select">
                     <option value="all">Tất cả loại xe</option>
                     <option value="road">Road Bike</option>
                     <option value="mtb">MTB</option>
@@ -161,7 +251,13 @@
                     <option value="triathlon">Triathlon / TT</option>
                   </select>
                 </div>
-                <button id="searchButton" type="submit" class="btn-search-premium">TÌM KIẾM</button>
+                <button
+                  id="searchButton"
+                  type="submit"
+                  class="btn-search-premium"
+                >
+                  TÌM KIẾM
+                </button>
               </form>
             </div>
           </div>
@@ -173,72 +269,91 @@
       <div class="container">
         <div class="heading_container heading_center mb-5">
           <h2>Khám phá theo <span>Danh mục</span></h2>
-          <p class="sub-heading">Chọn dòng xe phù hợp với nhu cầu and phong cách của bạn</p>
+          <p class="sub-heading">
+            Chọn dòng xe phù hợp với nhu cầu và phong cách của bạn
+          </p>
         </div>
         <div class="row justify-content-center">
           <!-- Road Bike -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=road" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_road.png" alt="Road Bike">
+                <img src="../assets/images/category_road.png" alt="Road Bike" />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">Road Bike</h5>
-              </div></a>
+              </div></a
+            >
           </div>
           <!-- MTB -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=mtb" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_mtb.png" alt="MTB">
+                <img src="../assets/images/category_mtb.png" alt="MTB" />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">MTB</h5>
-              </div></a>
+              </div></a
+            >
           </div>
           <!-- Touring -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=touring" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_touring.png" alt="Touring">
+                <img
+                  src="../assets/images/category_touring.png"
+                  alt="Touring"
+                />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">Touring</h5>
-              </div></a>
+              </div></a
+            >
           </div>
           <!-- City Bike -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=city" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_city.png" alt="City Bike">
+                <img src="../assets/images/category_city.png" alt="City Bike" />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">Hybrid</h5>
-              </div></a>
+              </div></a
+            >
           </div>
           <!-- Fixed Gear -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=fixed" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_fixed.png" alt="Fixed Gear">
+                <img
+                  src="../assets/images/category_fixed.png"
+                  alt="Fixed Gear"
+                />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">Fixed Gear</h5>
-              </div></a>
+              </div></a
+            >
           </div>
           <!-- Gravel -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
             <a href="./products.html?category=gravel" class="category-card">
               <div class="category-img-box">
-                <img src="../assets/images/category_gravel.png" alt="Gravel Bike">
+                <img
+                  src="../assets/images/category_gravel.png"
+                  alt="Gravel Bike"
+                />
               </div>
               <div class="category-detail text-center">
                 <h5 class="mb-0">Gravel</h5>
-              </div></a>
+              </div></a
+            >
           </div>
         </div>
         <div class="text-center mt-3">
-          <a href="./products.html" class="explore-link-premium">Khám phá tất cả các dòng xe</a>
+          <a href="./products.html" class="explore-link-premium"
+            >Khám phá tất cả các dòng xe</a
+          >
         </div>
       </div>
     </section>
@@ -251,15 +366,19 @@
 
         <div class="filters-content">
           <div class="row grid" id="productGrid">
+            <!-- Các sản phẩm sẽ được tải động từ API -->
+
             <div class="col-12 text-center py-5" id="productGridLoader">
-               <div class="spinner-border text-warning" role="status"></div>
-               <p class="mt-3 text-muted">Đang kết nối đến kho xe...</p>
+              <div class="spinner-border text-warning" role="status"></div>
+              <p class="mt-3 text-muted">Đang kết nối đến kho xe...</p>
             </div>
           </div>
         </div>
 
         <div class="text-center mt-4">
-          <a href="./products.html" class="explore-link-premium">Xem tất cả xe</a>
+          <a href="./products.html" class="explore-link-premium"
+            >Xem tất cả xe</a
+          >
         </div>
       </div>
     </section>
@@ -271,15 +390,37 @@
             <div class="footer_contact">
               <h4>Liên hệ</h4>
               <div class="contact_link_box">
-                <a href="#"><span>Quận 1, TP. Hồ Chí Minh</span></a>
-                <a href="#"><span>0900 000 000</span></a>
-                <a href="#"><span>support@bikemarket.vn</span></a>
+                <a href="#" class="d-flex align-items-center mb-2">
+                  <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
+                  <span>Quận 1, TP. Hồ Chí Minh</span>
+                </a>
+                <a href="#" class="d-flex align-items-center mb-2">
+                  <i class="fa fa-phone mr-2" aria-hidden="true"></i>
+                  <span>0900 000 000</span>
+                </a>
+                <a href="#" class="d-flex align-items-center mb-2">
+                  <i class="fa fa-envelope mr-2" aria-hidden="true"></i>
+                  <span>support@bikemarket.vn</span>
+                </a>
               </div>
             </div>
           </div>
           <div class="col-md-4 footer-col text-center">
             <div class="footer_detail">
-              <a href="./index.html" class="footer-logo d-flex align-items-center mb-3 justify-content-center"><span class="text-white" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
+              <a
+                href="./index.html"
+                class="footer-logo d-flex align-items-center mb-3 justify-content-center"
+                ><span
+                  class="text-white"
+                  style="
+                    font-size: 24px;
+                    font-weight: 900;
+                    letter-spacing: 1px;
+                    text-transform: uppercase;
+                  "
+                  >Bike<span style="color: #ffd700">Market</span></span
+                ></a
+              >
               <p>Nền tảng mua bán xe đạp thể thao cũ uy tín hàng đầu.</p>
             </div>
           </div>
@@ -294,9 +435,7 @@
 
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
-    
-    
-    
+
     <script src="../assets/js/toast.js"></script>
     <script src="../assets/js/core.js"></script>
     <script src="../assets/js/products.js"></script>
