@@ -121,15 +121,26 @@
     }
 
     // Favorites Page
-    const favGrid = document.getElementById("favoritesGrid");
+    const favGrid = document.getElementById("favoritesGrid") || document.getElementById("favoritesList");
     if (favGrid) {
+      const loading = document.getElementById("favLoader") || document.getElementById("favoritesLoading");
+      const empty = document.getElementById("favEmpty") || document.getElementById("favoritesEmpty");
+
       try {
         const res = await api.getFavorites();
         const items = api.pickList(res);
-        favGrid.innerHTML = items.length ? "" : '<div class="col-12 text-center py-5">Danh sách yêu thích trống.</div>';
+        favGrid.innerHTML = "";
+        if (empty) empty.classList.toggle("d-none", Boolean(items.length));
         items.forEach(p => favGrid.appendChild(render(p)));
-        document.getElementById("favLoader")?.classList.add("d-none");
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        if (empty) empty.classList.add("d-none");
+        favGrid.innerHTML = '<div class="col-12 text-center py-5 text-danger">Không thể tải danh sách yêu thích.</div>';
+        if (window.BikeApi && typeof window.BikeApi.showToast === "function") {
+          window.BikeApi.showToast("Không thể tải danh sách yêu thích.", "error");
+        }
+      } finally {
+        if (loading) loading.classList.add("d-none");
+      }
     }
   }
 

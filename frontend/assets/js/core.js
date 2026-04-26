@@ -71,8 +71,15 @@
 
   function requireAuthUserId() {
     var userId = getAuthUserId();
-    if (!userId) throw new Error("Thieu thong tin nguoi dung");
+    if (!userId) throw new Error("Thiếu thông tin người dùng");
     return userId;
+  }
+
+  function showToast(message, type) {
+    if (window.BikeToast && typeof window.BikeToast.show === "function") {
+      return window.BikeToast.show(message, type);
+    }
+    return null;
   }
 
   function parseJSON(text) {
@@ -88,11 +95,11 @@
       return payload.message;
     }
 
-    if (status === 401) return "Ban can dang nhap de tiep tuc.";
-    if (status === 404) return "API khong ton tai tren backend hien tai.";
-    if (status === 405) return "Sai phuong thuc goi API.";
-    if (status >= 500) return "Backend dang loi hoac chua ket noi database.";
-    return "Yeu cau khong thanh cong.";
+    if (status === 401) return "Bạn cần đăng nhập để tiếp tục.";
+    if (status === 404) return "API không tồn tại trên backend hiện tại.";
+    if (status === 405) return "Sai phương thức gọi API.";
+    if (status >= 500) return "Backend đang lỗi hoặc chưa kết nối database.";
+    return "Yêu cầu không thành công.";
   }
 
   async function request(path, options) {
@@ -112,7 +119,7 @@
 
       if (auth) {
         var token = getAuthToken();
-        if (!token) throw new Error("Ban can dang nhap de tiep tuc.");
+        if (!token) throw new Error("Bạn cần đăng nhập để tiếp tục.");
         headers.Authorization = "Bearer " + token;
       }
 
@@ -143,8 +150,8 @@
 
       return payload;
     } catch (error) {
-      if (error.name === "AbortError") throw new Error("Ket noi qua thoi gian.");
-      if (error instanceof TypeError) throw new Error("Khong the ket noi den backend API.");
+      if (error.name === "AbortError") throw new Error("Kết nối quá thời gian.");
+      if (error instanceof TypeError) throw new Error("Không thể kết nối đến backend API.");
       throw error;
     } finally {
       window.clearTimeout(timer);
@@ -185,8 +192,10 @@
     pickList,
     formatCurrency,
     resolveImageUrl,
+    showToast,
     getProducts: (params) => request("/products" + (params ? "?" + new URLSearchParams(params).toString() : "")),
     getProduct: (id) => request("/products?id=" + encodeURIComponent(id)),
+    getUser: (id) => request("/users?id=" + encodeURIComponent(id)),
     getCategories: () => request("/categories"),
     getBrands: () => request("/brands"),
     login: (data) => request("/auth/login", { method: "POST", body: data }),
@@ -207,6 +216,14 @@
       auth: true
     })
   };
+
+  function getHeartIconMarkup() {
+    return [
+      '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">',
+      '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>',
+      '</svg>'
+    ].join("");
+  }
 
   function initGlobalUI() {
     document.querySelectorAll(".nav_search-btn").forEach((button) => {
@@ -238,28 +255,34 @@
       var productId = button.dataset.id;
       if (!productId) return;
 
-      try {
-        var isActive = button.classList.contains("active");
-        await window.BikeApi.toggleFavorite(productId, isActive ? "remove" : "add");
-        button.classList.toggle("active", !isActive);
+      var userId = getAuthUserId();
+      if (!userId) {
+        showToast("Phiên đăng nhập hết hạn", "error");
+        return;
+      }
 
-        var icon = button.querySelector("i");
-        if (icon) {
-          icon.className = !isActive ? "fa-solid fa-heart text-danger" : "fa-regular fa-heart";
-        }
+      var previousActive = button.classList.contains("active");
+      var nextActive = !previousActive;
+      updateFavoriteCardButton(button, nextActive);
+
+      try {
+        await window.BikeApi.toggleFavorite(productId, nextActive ? "add" : "remove");
+        showToast(nextActive ? "Đã lưu vào yêu thích" : "Đã bỏ khỏi yêu thích", "success");
       } catch (error) {
-        if (error.status === 401 || /dang nhap/i.test(error.message)) {
-          alert("Vui long dang nhap de luu tin.");
-          window.location.href = "./login.html";
-        } else {
-          alert(error.message);
-        }
+        updateFavoriteCardButton(button, previousActive);
+        showToast("Không thể cập nhật yêu thích lúc này.", "error");
       }
     });
   }
 
+  function updateFavoriteCardButton(button, isActive) {
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+    button.setAttribute("aria-label", isActive ? "Bỏ yêu thích" : "Yêu thích");
+  }
+
   window.renderProductCard = function (product) {
-    var title = product.title || product.name || "Xe dap";
+    var title = product.title || product.name || "Xe đạp";
     var imageUrl = resolveImageUrl(
       product.image_url ||
       product.primary_image ||
@@ -267,21 +290,24 @@
     );
     var price = formatCurrency(product.price);
 
+    var isFavorite = Boolean(product.is_favorite || product.isFavorite || product.favorite_id);
     var column = document.createElement("div");
     column.className = "col-6 col-md-6 col-lg-4 mb-4";
     column.innerHTML = `
       <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden">
-        <div class="img-box position-relative" style="height: 200px; overflow: hidden;">
-          <a href="./product-detail.html?id=${product.id}" class="d-block w-100 h-100">
-            <img src="${imageUrl}" alt="${title}" class="img-fluid w-100 h-100" style="object-fit: cover;">
+        <div class="img-box product-card-media">
+          <a href="./product-detail.html?id=${product.id}" class="product-card-link">
+            <img src="${imageUrl}" alt="${title}" class="img-fluid product-card-image">
           </a>
-          <button class="fav-btn" data-id="${product.id}" style="position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.8); border: none; border-radius: 50%; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center;"><i class="fa-regular fa-heart"></i></button>
+          <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${product.id}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
+            <span class="fav-btn-icon" aria-hidden="true">${getHeartIconMarkup()}</span>
+          </button>
         </div>
         <div class="detail-box flex-grow-1 d-flex flex-column p-3">
-          <div class="small text-muted text-truncate mb-1">${product.brand_name || "Thuong hieu"}</div>
+          <div class="small text-muted text-truncate mb-1">${product.brand_name || "Thương hiệu"}</div>
           <h6 class="mb-1 text-truncate"><a href="./product-detail.html?id=${product.id}" class="text-dark font-weight-bold">${title}</a></h6>
           <div class="mt-auto pt-2 border-top">
-            <h6 class="mb-0 font-weight-bold text-warning">${price}</h6>
+            <h6 class="mb-0 font-weight-bold text-warning product-card-price">${price}</h6>
           </div>
         </div>
       </div>

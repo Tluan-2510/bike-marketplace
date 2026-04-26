@@ -14,8 +14,8 @@
   font-size: 3rem;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: -1px;
-  line-height: 1;
+  letter-spacing: 0;
+  line-height: 1.18;
   margin-bottom: 15px;
   color: var(--black);
 }
@@ -25,8 +25,10 @@
 }
 
 .heading_container h2 span {
+  display: inline-block;
   color: var(--primary);
-  -webkit-text-stroke: 0.5px var(--black);
+  -webkit-text-stroke: 0;
+  text-shadow: none;
 }
 
 .heading_container.heading_center {
@@ -108,14 +110,14 @@
 .user_option a {
   margin: 0 10px;
   color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
 }
 
 .user_option a:hover,
 .user_option .active {
-  color: var(--primary) !important;
-}
-
-.user_option .cart_link.active i {
   color: var(--primary) !important;
 }
 
@@ -195,10 +197,6 @@
   color: #ffffff;
 }
 
-.footer_section .footer_contact .contact_link_box a i {
-  margin-right: 5px;
-}
-
 .footer_section .footer_contact .contact_link_box a:hover {
   color: var(--primary);
 }
@@ -209,4 +207,77 @@
   font-size: 38px;
   line-height: 1;
   color: #ffffff;
+}
+
+/* Toast Notifications */
+.bike-toast-container {
+  position: fixed;
+  top: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: min(400px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.bike-toast {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: auto;
+  min-width: 200px;
+  max-width: 100%;
+  padding: 0.75rem 1.25rem;
+  color: #ffffff;
+  border-radius: 999px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.18);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: bikeToastIn 0.25s ease forwards;
+}
+
+.bike-toast-success {
+  background: var(--color-success);
+}
+
+.bike-toast-error {
+  background: var(--color-error);
+}
+
+.bike-toast-info {
+  background: var(--color-info);
+}
+
+.bike-toast-dot {
+  display: none;
+}
+
+.bike-toast-message {
+  flex: 0 1 auto;
+}
+
+.bike-toast.is-hiding {
+  animation: bikeToastOut 0.2s ease forwards;
+}
+
+@keyframes bikeToastIn {
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes bikeToastOut {
+  to {
+    transform: translateY(-8px);
+    opacity: 0;
+  }
 }

@@ -5,17 +5,6 @@
 (function () {
   "use strict";
 
-  function getMessageBox() {
-    return document.getElementById("formMessage");
-  }
-
-  function showMessage(message, type) {
-    var box = getMessageBox();
-    if (!box) return;
-    box.textContent = message;
-    box.className = "alert alert-" + (type === "success" ? "success" : "danger");
-  }
-
   function normalizeValue(value) {
     return String(value || "").trim();
   }
@@ -59,7 +48,7 @@
 
   async function handleLogin(form) {
     var button = form.querySelector('button[type="submit"]');
-    var restore = setLoading(button, "Dang dang nhap...");
+    var restore = setLoading(button, "Đang đăng nhập...");
 
     try {
       var payload = {
@@ -68,25 +57,30 @@
       };
 
       if (!isValidEmail(payload.email) || payload.password.length < 6) {
-        throw new Error("Email hoac mat khau khong hop le.");
+        throw new Error("Email hoặc mật khẩu không hợp lệ.");
       }
 
       var response = await window.BikeApi.login(payload);
       persistAuthData(response.data || response);
-      showMessage("Dang nhap thanh cong.", "success");
+
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show("Đăng nhập thành công!", "success");
+      }
 
       window.setTimeout(function () {
         window.location.href = resolveRedirect(form, "./user.html");
-      }, 400);
+      }, 1200);
     } catch (error) {
-      showMessage(error.message || "Dang nhap that bai.", "danger");
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show(error.message || "Đăng nhập thất bại.", "error");
+      }
       restore();
     }
   }
 
   async function handleRegister(form) {
     var button = form.querySelector('button[type="submit"]');
-    var restore = setLoading(button, "Dang dang ky...");
+    var restore = setLoading(button, "Đang đăng ký...");
 
     try {
       var fullName = normalizeValue(form.querySelector('[name="full_name"]').value);
@@ -95,7 +89,7 @@
       var password = String(form.querySelector('[name="password"]').value || "");
 
       if (!fullName || !isValidEmail(email) || !phone || password.length < 6) {
-        throw new Error("Thong tin dang ky khong hop le.");
+        throw new Error("Thông tin đăng ký không hợp lệ.");
       }
 
       await window.BikeApi.register({
@@ -106,12 +100,16 @@
         password: password
       });
 
-      showMessage("Dang ky thanh cong.", "success");
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show("Đăng ký thành công!", "success");
+      }
       window.setTimeout(function () {
         window.location.href = resolveRedirect(form, "./login.html");
-      }, 500);
+      }, 1200);
     } catch (error) {
-      showMessage(error.message || "Dang ky that bai.", "danger");
+      if (window.BikeToast && typeof window.BikeToast.show === "function") {
+        window.BikeToast.show(error.message || "Đăng ký thất bại.", "error");
+      }
       restore();
     }
   }
