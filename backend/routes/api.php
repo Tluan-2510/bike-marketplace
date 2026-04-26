@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     exit();
 }
 
-$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri = $_GET['route'] ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Loại bỏ tiền tố /backend/ nếu có để khớp với route
@@ -85,5 +85,5 @@ if ($uri == "/api/favorites" && $method == "POST") {
 
 // 404 Fallback
 http_response_code(404);
-echo json_encode(["success" => false, "message" => "API endpoint not found: " . $uri]);
+echo json_encode(["success" => false, "message" => "Không tìm thấy API"], JSON_UNESCAPED_UNICODE);
 exit();

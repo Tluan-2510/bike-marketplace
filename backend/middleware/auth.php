@@ -5,7 +5,7 @@ function checkAuth() {
     $headers = getallheaders();
 
     if (!isset($headers['Authorization'])) {
-        response("Unauthorized", false);
+        response("Chưa xác thực", false);
         exit();
     }
 

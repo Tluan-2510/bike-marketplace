@@ -1,12 +1,11 @@
 <!doctype html>
 <html lang="vi">
   <head>
-    <meta charset="utf-8" />
+    <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <title>Chi tiết sản phẩm - Bike Market</title>
     <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link href="../assets/css/style.css" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
     <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
@@ -18,25 +17,17 @@
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
-              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44">
-              <span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
-            </a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <span class=""></span>
-            </button>
+              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44"><span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class=""></span></button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" href="./index.html"><i class="fa-solid fa-house mr-1"></i> Trang chủ</a></li>
-                <li class="nav-item active"><a class="nav-link" href="./products.html"><i class="fa-solid fa-bicycle mr-1"></i> Sản phẩm</a></li>
-                <li class="nav-item"><a class="nav-link" href="./create_product.html"><i class="fa-solid fa-circle-plus mr-1"></i> Đăng bán</a></li>
+                <li class="nav-item"><a class="nav-link" href="./index.html">Trang chủ</a></li>
+                <li class="nav-item active"><a class="nav-link" href="./products.html">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="./create_product.html">Đăng bán</a></li>
               </ul>
               <div class="user_option">
-                <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">
-                  <i class="fa-solid fa-heart fa-lg text-white"></i>
-                </a>
-                <a href="./user.html" class="user_link" aria-label="Tài khoản">
-                  <i class="fa-solid fa-circle-user fa-lg"></i>
-                </a>
+                <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">Yêu thích</a>
+                <a href="./user.html" class="user_link" aria-label="Tài khoản">Tài khoản</a>
               </div>
             </div>
           </nav>
@@ -77,72 +68,27 @@
 
               <!-- Seller Profile -->
               <div class="seller-profile-card">
-                <div class="seller-avatar">
-                  <i class="fa-solid fa-user"></i>
+                <div class="seller-avatar-wrapper">
+                  <img id="sellerAvatar" class="seller-avatar" src="" alt="Avatar người bán" />
                 </div>
                 <div class="seller-meta">
                   <h6 id="sellerName">Người bán</h6>
-                  <p><i class="fa-solid fa-location-dot mr-1"></i> <span id="sellerLocation">Toàn quốc</span></p>
+                  <p class="seller-location">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span id="sellerLocation">Toàn quốc</span>
+                  </p>
                 </div>
               </div>
 
-              <!-- Specs Grid -->
-              <div class="specs-grid">
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-copyright"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Hãng</span>
-                    <span id="specBrand" class="spec-text">...</span>
-                  </div>
-                </div>
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-bicycle"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Khung</span>
-                    <span id="specFrame" class="spec-text">...</span>
-                  </div>
-                </div>
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-dharmachakra"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Bánh</span>
-                    <span id="specWheel" class="spec-text">...</span>
-                  </div>
-                </div>
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-gears"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Truyền động</span>
-                    <span id="specGroupset" class="spec-text">...</span>
-                  </div>
-                </div>
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-circle-stop"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Phanh</span>
-                    <span id="specBrake" class="spec-text">...</span>
-                  </div>
-                </div>
-                <div class="spec-item">
-                  <div class="spec-icon"><i class="fa-solid fa-medal"></i></div>
-                  <div class="spec-content">
-                    <span class="spec-title">Tình trạng</span>
-                    <span id="specCondition" class="spec-text">...</span>
-                  </div>
-                </div>
-              </div>
+              <h2 class="detail-section-heading">Thông số sản phẩm</h2>
+              <div id="productSpecs" class="specs-grid" aria-live="polite"></div>
 
               <div class="actions mt-4">
-                <a href="#" id="btnCall" class="btn-premium btn-block py-3 mb-2 d-flex align-items-center justify-content-center" style="gap: 10px; font-size: 1.1rem; border-radius: 50px;">
-                  <i class="fa-solid fa-phone-volume"></i>
-                  <span id="phoneText">Gọi cho người bán</span>
-                </a>
-                <a href="#" id="btnZalo" target="_blank" class="btn btn-outline-info btn-block py-3 mb-3 d-flex align-items-center justify-content-center" style="gap: 10px; font-weight: 700; border-radius: 50px; border-width: 2px;">
-                  <i class="fa-solid fa-comments"></i>
-                  <span>Chat qua Zalo</span>
-                </a>
-                <button id="btnFavorite" class="btn-outline-premium btn-block py-3">
-                  <i class="fa-solid fa-heart mr-2"></i> Lưu vào yêu thích
+                <a href="#" id="btnCall" class="btn-premium btn-block product-action-btn btn-product-call"><span id="phoneText">Gọi cho người bán</span></a>
+                <a href="#" id="btnZalo" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-block product-action-btn btn-product-zalo"><span>Chat qua Zalo</span></a>
+                <button id="btnFavorite" class="btn-outline-premium btn-block product-action-btn btn-favorite-detail" aria-label="Yêu thích" aria-pressed="false">
+                  <span class="favorite-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg></span>
+                  <span class="favorite-text">Yêu thích</span>
                 </button>
               </div>
             </div>
@@ -154,8 +100,7 @@
           <div class="col-lg-7">
             <div class="bg-white p-5 rounded shadow-sm detail-desc-box">
               <h3 class="section-title-premium">Mô tả chi tiết</h3>
-              <div id="productDesc" class="text-muted lead" style="white-space: pre-line; font-size: 1rem;">
-                Đang tải mô tả...
+              <div id="productDesc" class="text-muted lead" style="white-space: pre-line; font-size: 1rem;">Đang tải mô tả...
               </div>
             </div>
           </div>
@@ -191,12 +136,12 @@
 
     <!-- Sticky Action Bar for Mobile -->
     <div class="sticky-actions">
-      <button class="btn-fav-sticky" id="btnFavoriteSticky">
-        <i class="fa-solid fa-heart"></i>
+      <button class="btn-fav-sticky" id="btnFavoriteSticky" aria-label="Yêu thích" aria-pressed="false">
+        <span class="favorite-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg></span>
+        <span class="favorite-sticky-text">Yêu thích</span>
       </button>
-      <a href="#" class="btn-buy-now d-flex align-items-center justify-content-center" id="btnCallSticky" style="gap: 8px;">
-        <i class="fa-solid fa-phone"></i> Gọi ngay
-      </a>
+      <a href="#" class="btn-zalo-sticky d-flex align-items-center justify-content-center" id="btnZaloSticky" target="_blank" rel="noopener noreferrer">Zalo</a>
+      <a href="#" class="btn-buy-now d-flex align-items-center justify-content-center" id="btnCallSticky">Gọi ngay</a>
     </div>
 
     <footer class="footer_section">
@@ -206,17 +151,15 @@
             <div class="footer_contact">
               <h4>Liên hệ</h4>
               <div class="contact_link_box">
-                <a href="#"><i class="fa-solid fa-location-dot"></i> <span>Quận 1, TP. Hồ Chí Minh</span></a>
-                <a href="#"><i class="fa-solid fa-phone"></i> <span>0900 000 000</span></a>
-                <a href="#"><i class="fa-solid fa-envelope"></i> <span>support@bikemarket.vn</span></a>
+                <a href="#"><span>Quận 1, TP. Hồ Chí Minh</span></a>
+                <a href="#"><span>0900 000 000</span></a>
+                <a href="#"><span>support@bikemarket.vn</span></a>
               </div>
             </div>
           </div>
           <div class="col-md-4 footer-col text-center">
             <div class="footer_detail">
-              <a href="./index.html" class="footer-logo d-flex align-items-center mb-3 justify-content-center">
-                <span class="text-white" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
-              </a>
+              <a href="./index.html" class="footer-logo d-flex align-items-center mb-3 justify-content-center"><span class="text-white" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
               <p>Nền tảng mua bán xe đạp thể thao cũ uy tín hàng đầu.</p>
             </div>
           </div>
@@ -231,10 +174,8 @@
 
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
-    
-    
-    
-      <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/toast.js"></script>
+    <script src="../assets/js/core.js"></script>
     <script src="../assets/js/product-detail.js"></script>
   </body>
 </html>

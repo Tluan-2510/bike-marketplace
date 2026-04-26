@@ -11,16 +11,10 @@ class Favorite {
     }
 
     public function add($user_id, $product_id) {
-        $query = "INSERT INTO favorites (user_id, product_id) VALUES (?, ?)";
+        $query = "INSERT IGNORE INTO favorites (user_id, product_id) VALUES (?, ?)";
         $stmt = $this->conn->prepare($query);
         $stmt->bind_param("ii", $user_id, $product_id);
-        
-        try {
-            return $stmt->execute();
-        } catch (Exception $e) {
-            // Might be duplicate entry, which is fine
-            return false;
-        }
+        return $stmt->execute();
     }
 
     public function remove($user_id, $product_id) {
@@ -32,7 +26,7 @@ class Favorite {
 
     public function getByUserId($user_id) {
         $query = "
-            SELECT p.*, pi.image_url as primary_image
+            SELECT p.*, p.title as name, pi.image_url as image_url
             FROM favorites f
             JOIN products p ON f.product_id = p.id
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
