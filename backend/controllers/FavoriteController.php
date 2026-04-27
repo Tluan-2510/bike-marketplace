@@ -1,58 +1,69 @@
 <?php
 
-require_once __DIR__ . "/../models/Favorite.php";
+require_once __DIR__ . '/../models/Favorite.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 
 class FavoriteController {
-    private $favoriteModel;
+    private Favorite $favoriteModel;
 
     public function __construct() {
         $this->favoriteModel = new Favorite();
     }
 
-    private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json; charset=utf-8');
+    // ─── Helper ──────────────────────────────────────────────────────────────
+
+    private function jsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200): never {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
         echo json_encode([
-            "success" => $success,
-            "data" => $data,
-            "message" => $message
-        ], JSON_UNESCAPED_UNICODE);
+            'success' => $success,
+            'data'    => $data,
+            'message' => $message,
+        ]);
         exit();
     }
 
-    public function index() {
-        if (!isset($_GET['user_id'])) {
-            $this->jsonResponse(false, null, "Thiếu tham số user_id");
+    // ─── POST /api/favorites ─────────────────────────────────────────────────
+    // Toggle: nếu đã yêu thích → xóa (removed), chưa → thêm (added)
+
+    public function toggle(): never {
+        // Xác thực JWT bắt buộc
+        $payload = AuthMiddleware::authenticate();
+        $userId = (int)$payload['user_id'];
+
+        $raw   = file_get_contents('php://input');
+        $input = json_decode($raw, true);
+
+        if (!is_array($input) || empty($input['product_id'])) {
+            $this->jsonResponse(false, null, 'product_id là bắt buộc', 422);
         }
 
-        $user_id = intval($_GET['user_id']);
-        $favorites = $this->favoriteModel->getByUserId($user_id);
-        $this->jsonResponse(true, $favorites);
+        $productId = filter_var($input['product_id'], FILTER_VALIDATE_INT);
+        if ($productId === false || $productId <= 0) {
+            $this->jsonResponse(false, null, 'product_id không hợp lệ', 422);
+        }
+
+        if ($this->favoriteModel->exists($userId, $productId)) {
+            // Đã có trong danh sách → xóa
+            $this->favoriteModel->remove($userId, $productId);
+            $this->jsonResponse(true, ['status' => 'removed'], 'Đã xóa khỏi danh sách yêu thích');
+        } else {
+            // Chưa có → thêm vào
+            $this->favoriteModel->add($userId, $productId);
+            $this->jsonResponse(true, ['status' => 'added'], 'Đã thêm vào danh sách yêu thích', 201);
+        }
     }
 
-    public function store() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, true);
+    // ─── GET /api/favorites ──────────────────────────────────────────────────
+    // Trả về danh sách yêu thích có JOIN với bảng products
 
-        if (!$input) {
-            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
-        }
+    public function index(): never {
+        // Xác thực JWT bắt buộc
+        $payload = AuthMiddleware::authenticate();
+        $userId = (int)$payload['user_id'];
 
-        $user_id = $input['user_id'] ?? null;
-        $product_id = $input['product_id'] ?? null;
-        $action = $input['action'] ?? 'add'; // 'add' hoặc 'remove'
+        $favorites = $this->favoriteModel->getByUserId($userId);
 
-        if (!$user_id || !$product_id) {
-            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
-        }
-
-        if ($action === 'add') {
-            $success = $this->favoriteModel->add($user_id, $product_id);
-            $message = $success ? "Đã thêm vào danh sách yêu thích" : "Không thể thêm vào danh sách yêu thích hoặc mục này đã tồn tại";
-        } else {
-            $success = $this->favoriteModel->remove($user_id, $product_id);
-            $message = $success ? "Đã xóa khỏi danh sách yêu thích" : "Không thể xóa khỏi danh sách yêu thích";
-        }
-
-        $this->jsonResponse($success, null, $message);
+        $this->jsonResponse(true, $favorites, '');
     }
 }

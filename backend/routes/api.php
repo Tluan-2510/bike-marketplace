@@ -1,89 +1,131 @@
 <?php
 
-// Fix: Sử dụng __DIR__ để đường dẫn luôn chính xác bất kể file nào include file này
-require_once __DIR__ . "/../controllers/ProductController.php";
-require_once __DIR__ . "/../controllers/AuthController.php";
-require_once __DIR__ . "/../controllers/BuyRequestController.php";
-require_once __DIR__ . "/../controllers/FavoriteController.php";
-require_once __DIR__ . "/../controllers/CategoryController.php";
-require_once __DIR__ . "/../controllers/BrandController.php";
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../utils/JwtHelper.php';
+require_once __DIR__ . '/../middleware/AuthMiddleware.php';
+require_once __DIR__ . '/../controllers/AuthController.php';
+require_once __DIR__ . '/../controllers/ProductController.php';
+require_once __DIR__ . '/../controllers/FavoriteController.php';
+require_once __DIR__ . '/../controllers/OrderController.php';
 
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type, Authorization");
-
-if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
-    http_response_code(200);
-    exit();
+// Controllers từ main (nếu tồn tại)
+if (file_exists(__DIR__ . '/../controllers/BuyRequestController.php')) {
+    require_once __DIR__ . '/../controllers/BuyRequestController.php';
+}
+if (file_exists(__DIR__ . '/../controllers/CategoryController.php')) {
+    require_once __DIR__ . '/../controllers/CategoryController.php';
+}
+if (file_exists(__DIR__ . '/../controllers/BrandController.php')) {
+    require_once __DIR__ . '/../controllers/BrandController.php';
 }
 
-$uri = $_GET['route'] ?? parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+header('Content-Type: application/json');
+
+// Trích xuất URI sạch (bỏ query string, bỏ prefix /backend nếu có)
+$uri    = strtok($_SERVER['REQUEST_URI'], '?');
+$uri    = str_replace('/backend', '', $uri);
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Loại bỏ tiền tố /backend/ nếu có để khớp với route
-$uri = str_replace('/backend', '', $uri);
+/* ═══════════════════════════════════════════
+   AUTH  (public – không cần token)
+   ═══════════════════════════════════════════ */
 
-/* ================= CATEGORIES & BRANDS ================= */
-
-if ($uri == "/api/categories" && $method == "GET") {
-    (new CategoryController())->index();
-    exit();
-}
-
-if ($uri == "/api/brands" && $method == "GET") {
-    (new BrandController())->index();
-    exit();
-}
-
-/* ================= PRODUCTS ================= */
-
-if ($uri == "/api/products" && $method == "GET") {
-    (new ProductController())->index();
-    exit();
-}
-
-if ($uri == "/api/products" && $method == "POST") {
-    (new ProductController())->store();
-    exit();
-}
-
-/* ================= AUTH ================= */
-
-if ($uri == "/api/auth/login" && $method == "POST") {
-    (new AuthController())->login();
-    exit();
-}
-
-if ($uri == "/api/auth/register" && $method == "POST") {
+if ($uri === '/api/auth/register' && $method === 'POST') {
     (new AuthController())->register();
     exit();
 }
 
-/* ================= BUY REQUESTS ================= */
-
-if ($uri == "/api/buy-requests" && $method == "GET") {
-    (new BuyRequestController())->index();
+if ($uri === '/api/auth/login' && $method === 'POST') {
+    (new AuthController())->login();
     exit();
 }
 
-if ($uri == "/api/buy-requests" && $method == "POST") {
-    (new BuyRequestController())->store();
+/* ═══════════════════════════════════════════
+   CATEGORIES & BRANDS  (public)
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/categories' && $method === 'GET') {
+    if (class_exists('CategoryController')) {
+        (new CategoryController())->index();
+        exit();
+    }
+}
+
+if ($uri === '/api/brands' && $method === 'GET') {
+    if (class_exists('BrandController')) {
+        (new BrandController())->index();
+        exit();
+    }
+}
+
+/* ═══════════════════════════════════════════
+   PRODUCTS
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/products' && $method === 'GET') {
+    (new ProductController())->index();
     exit();
 }
 
-/* ================= FAVORITE ================= */
+if ($uri === '/api/products' && $method === 'POST') {
+    (new ProductController())->store();
+    exit();
+}
 
-if ($uri == "/api/favorites" && $method == "GET") {
+// GET/PUT/DELETE /api/products/:id
+if (preg_match('/^\/api\/products\/(\d+)$/', $uri, $m)) {
+    $controller = new ProductController();
+    $id = (int)$m[1];
+    if ($method === 'GET')    { $controller->show($id);    exit(); }
+    if ($method === 'PUT')    { $controller->update($id);  exit(); }
+    if ($method === 'DELETE') { $controller->destroy($id); exit(); }
+}
+
+/* ═══════════════════════════════════════════
+   FAVORITES  (protected – cần JWT)
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/favorites' && $method === 'POST') {
+    (new FavoriteController())->toggle();
+    exit();
+}
+
+if ($uri === '/api/favorites' && $method === 'GET') {
     (new FavoriteController())->index();
     exit();
 }
 
-if ($uri == "/api/favorites" && $method == "POST") {
-    (new FavoriteController())->store();
+/* ═══════════════════════════════════════════
+   BUY REQUESTS / ORDERS  (protected – cần JWT)
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/buy-requests' && $method === 'POST') {
+    if (class_exists('BuyRequestController')) {
+        (new BuyRequestController())->store();
+        exit();
+    }
+}
+
+if ($uri === '/api/buy-requests' && $method === 'GET') {
+    if (class_exists('BuyRequestController')) {
+        (new BuyRequestController())->index();
+        exit();
+    }
+}
+
+if ($uri === '/api/orders' && $method === 'POST') {
+    (new OrderController())->create();
     exit();
 }
 
-// 404 Fallback
+if ($uri === '/api/orders' && $method === 'GET') {
+    (new OrderController())->index();
+    exit();
+}
+
+/* ═══════════════════════════════════════════
+   404 fallback
+   ═══════════════════════════════════════════ */
 http_response_code(404);
-echo json_encode(["success" => false, "message" => "Không tìm thấy API"], JSON_UNESCAPED_UNICODE);
+echo json_encode(['success' => false, 'message' => 'Không tìm thấy API'], JSON_UNESCAPED_UNICODE);
 exit();

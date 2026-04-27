@@ -1,86 +1,118 @@
 <?php
 
-require_once __DIR__ . "/../models/User.php";
+require_once __DIR__ . '/../models/User.php';
+require_once __DIR__ . '/../utils/JwtHelper.php';
 
 class AuthController {
-    private $userModel;
+    private User $userModel;
 
     public function __construct() {
         $this->userModel = new User();
     }
 
-    private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json; charset=utf-8');
+    
+
+    private function jsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200): never {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
         echo json_encode([
-            "success" => $success,
-            "data" => $data,
-            "message" => $message
-        ], JSON_UNESCAPED_UNICODE);
+            'success' => $success,
+            'data'    => $data,
+            'message' => $message,
+        ]);
         exit();
     }
 
-    public function register() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, true);
-
-        if (!$input) {
-            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
+    private function getInput(): array {
+        $raw = file_get_contents('php://input');
+        $input = json_decode($raw, true);
+        if (!is_array($input)) {
+            $this->jsonResponse(false, null, 'Invalid JSON input', 400);
         }
-
-        $username = $input['username'] ?? '';
-        $email = $input['email'] ?? '';
-        $password = $input['password'] ?? '';
-        $phone_number = $input['phone_number'] ?? '';
-        $full_name = $input['full_name'] ?? '';
-
-        if (empty($username) || empty($email) || empty($password) || empty($phone_number)) {
-            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
-        }
-
-        $existingUser = $this->userModel->findByEmail($email);
-        if ($existingUser) {
-            $this->jsonResponse(false, null, "Email đã tồn tại");
-        }
-
-        $password_hash = password_hash($password, PASSWORD_DEFAULT);
-        $userId = $this->userModel->create($username, $email, $password_hash, $phone_number, $full_name);
-
-        if ($userId) {
-            $data = [
-                "user_id" => $userId,
-                "username" => $username,
-                "email" => $email,
-                "phone_number" => $phone_number,
-                "full_name" => $full_name
-            ];
-            $this->jsonResponse(true, $data);
-        } else {
-            $this->jsonResponse(false, null, "Không thể đăng ký người dùng");
-        }
+        return $input;
     }
 
-    public function login() {
-        $inputJSON = file_get_contents('php://input');
-        $input = json_decode($inputJSON, true);
+    // ─── POST /api/auth/register ──────────────────────────────────────────────
 
-        if (!$input) {
-            $this->jsonResponse(false, null, "Dữ liệu đầu vào không hợp lệ");
+    public function register(): never {
+        $input = $this->getInput();
+
+        // Lấy & sanitize đầu vào
+        $username = filter_var(trim($input['username'] ?? ''), FILTER_SANITIZE_SPECIAL_CHARS);
+        $email    = filter_var(trim($input['email']    ?? ''), FILTER_SANITIZE_EMAIL);
+        $password = trim($input['password'] ?? '');
+
+        // Validate
+        if (empty($username) || empty($email) || empty($password)) {
+            $this->jsonResponse(false, null, 'Vui lòng điền đầy đủ username, email và password', 422);
         }
 
-        $email = $input['email'] ?? '';
-        $password = $input['password'] ?? '';
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->jsonResponse(false, null, 'Email không hợp lệ', 422);
+        }
+
+        if (strlen($password) < 6) {
+            $this->jsonResponse(false, null, 'Password phải có ít nhất 6 ký tự', 422);
+        }
+
+        // Kiểm tra email trùng
+        $existingUser = $this->userModel->findByEmail($email);
+        if ($existingUser) {
+            $this->jsonResponse(false, null, 'Email đã được sử dụng', 409);
+        }
+
+        // Hash password bằng BCRYPT (yêu cầu bắt buộc)
+        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
+
+        $userId = $this->userModel->create($username, $email, $hashedPassword);
+
+        if ($userId) {
+            $this->jsonResponse(true, [
+                'user_id'  => $userId,
+                'username' => $username,
+                'email'    => $email,
+                'role'     => 'user',
+            ], 'Đăng ký thành công', 201);
+        }
+
+        $this->jsonResponse(false, null, 'Đăng ký thất bại. Vui lòng thử lại', 500);
+    }
+
+    // ─── POST /api/auth/login ─────────────────────────────────────────────────
+
+    public function login(): never {
+        $input = $this->getInput();
+
+        $email    = filter_var(trim($input['email']    ?? ''), FILTER_SANITIZE_EMAIL);
+        $password = trim($input['password'] ?? '');
 
         if (empty($email) || empty($password)) {
-            $this->jsonResponse(false, null, "Thiếu email hoặc mật khẩu");
+            $this->jsonResponse(false, null, 'Vui lòng nhập email và password', 422);
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $this->jsonResponse(false, null, 'Email không hợp lệ', 422);
         }
 
         $user = $this->userModel->findByEmail($email);
 
-        if ($user && password_verify($password, $user['password_hash'])) {
-            unset($user['password_hash']); // Don't return hash to client
-            $this->jsonResponse(true, $user);
-        } else {
-            $this->jsonResponse(false, null, "Email hoặc mật khẩu không đúng");
+        // Kiểm tra user tồn tại và password hợp lệ bằng password_verify()
+        if (!$user || !password_verify($password, $user['password'])) {
+            $this->jsonResponse(false, null, 'Email hoặc password không đúng', 401);
         }
+
+        // Tạo JWT chứa user_id và role
+        $token = JwtHelper::encode([
+            'user_id' => $user['id'],
+            'role'    => $user['role'],
+        ]);
+
+        // Không trả về password
+        unset($user['password']);
+
+        $this->jsonResponse(true, [
+            'token' => $token,
+            'user'  => $user,
+        ], 'Đăng nhập thành công');
     }
 }

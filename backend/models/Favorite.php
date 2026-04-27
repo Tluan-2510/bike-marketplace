@@ -1,47 +1,72 @@
 <?php
 
-require_once __DIR__ . "/../config/database.php";
+require_once __DIR__ . '/../config/database.php';
 
 class Favorite {
-    private $conn;
+    private \PDO $conn;
 
     public function __construct() {
         $db = new Database();
         $this->conn = $db->connect();
     }
 
-    public function add($user_id, $product_id) {
-        $query = "INSERT IGNORE INTO favorites (user_id, product_id) VALUES (?, ?)";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ii", $user_id, $product_id);
-        return $stmt->execute();
+    /**
+     * Kiểm tra sản phẩm đã có trong danh sách yêu thích chưa.
+     */
+    public function exists(int $userId, int $productId): bool {
+        $stmt = $this->conn->prepare(
+            "SELECT id FROM favorites WHERE user_id = ? AND product_id = ? LIMIT 1"
+        );
+        $stmt->execute([$userId, $productId]);
+        return $stmt->fetch() !== false;
     }
 
-    public function remove($user_id, $product_id) {
-        $query = "DELETE FROM favorites WHERE user_id = ? AND product_id = ?";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ii", $user_id, $product_id);
-        return $stmt->execute();
+    /**
+     * Thêm sản phẩm vào danh sách yêu thích.
+     * Trả về true nếu thành công.
+     */
+    public function add(int $userId, int $productId): bool {
+        $stmt = $this->conn->prepare(
+            "INSERT INTO favorites (user_id, product_id) VALUES (?, ?)"
+        );
+        return $stmt->execute([$userId, $productId]);
     }
 
-    public function getByUserId($user_id) {
-        $query = "
-            SELECT p.*, p.title as name, pi.image_url as image_url
-            FROM favorites f
-            JOIN products p ON f.product_id = p.id
-            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-            WHERE f.user_id = ?
-            ORDER BY f.created_at DESC
-        ";
-        $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $user_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $favorites = [];
-        while ($row = $result->fetch_assoc()) {
-            $favorites[] = $row;
-        }
-        return $favorites;
+    /**
+     * Xóa sản phẩm khỏi danh sách yêu thích.
+     * Trả về true nếu thành công.
+     */
+    public function remove(int $userId, int $productId): bool {
+        $stmt = $this->conn->prepare(
+            "DELETE FROM favorites WHERE user_id = ? AND product_id = ?"
+        );
+        return $stmt->execute([$userId, $productId]);
+    }
+
+    /**
+     * Lấy danh sách yêu thích của user, JOIN với bảng products để lấy đầy đủ thông tin xe.
+     * Trả về array danh sách sản phẩm đã yêu thích.
+     */
+    public function getByUserId(int $userId): array {
+        $stmt = $this->conn->prepare(
+            "SELECT 
+                f.id            AS favorite_id,
+                f.created_at    AS favorited_at,
+                p.id            AS product_id,
+                p.name,
+                p.price,
+                p.image,
+                p.category,
+                p.condition_type,
+                p.delivery_type,
+                p.location,
+                p.user_id       AS seller_id
+             FROM favorites f
+             INNER JOIN products p ON f.product_id = p.id
+             WHERE f.user_id = ?
+             ORDER BY f.created_at DESC"
+        );
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
     }
 }

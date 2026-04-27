@@ -1,14 +1,10 @@
-<!-- Kiểm tra login -->
-
 <?php
-function checkAuth() {
-    $headers = getallheaders();
 
-    if (!isset($headers['Authorization'])) {
-        response("Chưa xác thực", false);
-        exit();
-    }
+/**
+ * auth.php – Legacy stub, kept for backward compatibility.
+ * Toàn bộ logic xác thực JWT đã được chuyển sang AuthMiddleware.php
+ *
+ * @deprecated Dùng AuthMiddleware::authenticate() thay thế.
+ */
 
-    // demo: BE1 sẽ xử lý JWT
-}
-?>
+require_once __DIR__ . '/AuthMiddleware.php';
