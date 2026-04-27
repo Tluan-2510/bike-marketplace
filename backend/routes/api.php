@@ -6,9 +6,8 @@ require_once __DIR__ . '/../middleware/AuthMiddleware.php';
 require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/../controllers/FavoriteController.php';
-require_once __DIR__ . '/../controllers/OrderController.php';
 
-// Controllers từ main (nếu tồn tại)
+// Conditional Controllers
 if (file_exists(__DIR__ . '/../controllers/BuyRequestController.php')) {
     require_once __DIR__ . '/../controllers/BuyRequestController.php';
 }
@@ -19,15 +18,18 @@ if (file_exists(__DIR__ . '/../controllers/BrandController.php')) {
     require_once __DIR__ . '/../controllers/BrandController.php';
 }
 
-header('Content-Type: application/json');
+header('Content-Type: application/json; charset=utf-8');
 
-// Trích xuất URI sạch (bỏ query string, bỏ prefix /backend nếu có)
-$uri    = strtok($_SERVER['REQUEST_URI'], '?');
-$uri    = str_replace('/backend', '', $uri);
+// Trích xuất URI sạch
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+// Loại bỏ prefix /backend nếu có
+if (strpos($uri, '/backend') === 0) {
+    $uri = substr($uri, 8);
+}
 $method = $_SERVER['REQUEST_METHOD'];
 
 /* ═══════════════════════════════════════════
-   AUTH  (public – không cần token)
+   AUTH (public)
    ═══════════════════════════════════════════ */
 
 if ($uri === '/api/auth/register' && $method === 'POST') {
@@ -41,7 +43,7 @@ if ($uri === '/api/auth/login' && $method === 'POST') {
 }
 
 /* ═══════════════════════════════════════════
-   CATEGORIES & BRANDS  (public)
+   CATEGORIES & BRANDS (public)
    ═══════════════════════════════════════════ */
 
 if ($uri === '/api/categories' && $method === 'GET') {
@@ -82,7 +84,7 @@ if (preg_match('/^\/api\/products\/(\d+)$/', $uri, $m)) {
 }
 
 /* ═══════════════════════════════════════════
-   FAVORITES  (protected – cần JWT)
+   FAVORITES (protected)
    ═══════════════════════════════════════════ */
 
 if ($uri === '/api/favorites' && $method === 'POST') {
@@ -96,7 +98,7 @@ if ($uri === '/api/favorites' && $method === 'GET') {
 }
 
 /* ═══════════════════════════════════════════
-   BUY REQUESTS / ORDERS  (protected – cần JWT)
+   BUY REQUESTS (protected)
    ═══════════════════════════════════════════ */
 
 if ($uri === '/api/buy-requests' && $method === 'POST') {
@@ -111,16 +113,6 @@ if ($uri === '/api/buy-requests' && $method === 'GET') {
         (new BuyRequestController())->index();
         exit();
     }
-}
-
-if ($uri === '/api/orders' && $method === 'POST') {
-    (new OrderController())->create();
-    exit();
-}
-
-if ($uri === '/api/orders' && $method === 'GET') {
-    (new OrderController())->index();
-    exit();
 }
 
 /* ═══════════════════════════════════════════

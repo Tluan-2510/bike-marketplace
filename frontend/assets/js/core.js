@@ -1,294 +1,166 @@
-/**
- * Bike Market - Core Utils
- * Shared API client and global UI interactions.
- */
 
-(function () {
-  "use strict";
+(function(window, document) {
+    "use strict";
 
-  function trimSlashesRight(value) {
-    return String(value || "").replace(/\/+$/, "");
-  }
+    // Global utility to resolve API base URL
+    window.BikeApi = {
+        resolveApiBaseUrl: function() {
+            return "/backend/api";
+        },
+        
+        getAuthHeader: function() {
+            var token = localStorage.getItem('access_token');
+            return token ? { 'Authorization': 'Bearer ' + token } : {};
+        },
 
-  function isLegacyInvalidApiBaseUrl(value) {
-    return value === "http://localhost/api" || /\/backend\/api$/.test(value);
-  }
+        getAuthUserId: function() {
+            var token = localStorage.getItem('access_token');
+            if (!token) return null;
+            try {
+                var payload = JSON.parse(atob(token.split('.')[1]));
+                return payload.sub || payload.id || payload.user_id;
+            } catch (e) {
+                return null;
+            }
+        },
 
-  function resolveApiBaseUrl() {
-    var fromWindow = trimSlashesRight(window.BIKE_API_BASE_URL || "");
-    var fromStorage = "";
+        getAuthToken: function() {
+            return localStorage.getItem('access_token');
+        },
 
-    try {
-      fromStorage = trimSlashesRight(localStorage.getItem("bike_api_base_url") || "");
-      if (isLegacyInvalidApiBaseUrl(fromStorage)) {
-        localStorage.removeItem("bike_api_base_url");
-        fromStorage = "";
-      }
-    } catch (error) {
-      fromStorage = "";
-    }
+        getAuthUser: function() {
+            try {
+                var user = localStorage.getItem('auth_user');
+                return user ? JSON.parse(user) : null;
+            } catch (e) {
+                return null;
+            }
+        },
 
-    if (fromWindow) return fromWindow;
-    if (fromStorage) return fromStorage;
-    return "http://localhost/bike-marketplace/backend/index.php?route=/api";
-  }
+        // Helper to extract data list from various API response formats
+        pickList: function(response) {
+            if (!response) return [];
+            if (Array.isArray(response)) return response;
+            if (response.data && Array.isArray(response.data)) return response.data;
+            if (response.data && response.data.items && Array.isArray(response.data.items)) return response.data.items;
+            if (response.items && Array.isArray(response.items)) return response.items;
+            return [];
+        },
 
-  function buildApiUrl(path) {
-    var cleanPath = String(path || "");
-    if (!cleanPath.startsWith("/")) cleanPath = "/" + cleanPath;
+        // Formatters
+        formatCurrency: function(amount) {
+            if (!amount) return "0 đ";
+            return new Intl.NumberFormat('vi-VN', {
+                style: 'currency',
+                currency: 'VND'
+            }).format(amount).replace('₫', 'đ');
+        },
 
-    var baseUrl = resolveApiBaseUrl();
-    if (baseUrl.indexOf("?") !== -1) {
-      var pathParts = cleanPath.split("?");
-      var url = baseUrl + pathParts[0];
-      if (pathParts[1]) url += "&" + pathParts[1];
-      return url;
-    }
+        resolveImageUrl: function(path) {
+            if (!path) return "../assets/images/placeholder-bike.png";
+            if (path.startsWith('http')) return path;
+            return "/backend/uploads/" + path;
+        },
 
-    return baseUrl + cleanPath;
-  }
+        // API Methods
+        getProducts: async function(params) {
+            var query = params ? '?' + new URLSearchParams(params).toString() : '';
+            var res = await fetch(this.resolveApiBaseUrl() + '/products' + query);
+            return res.json();
+        },
 
-  function getAuthToken() {
-    try {
-      return localStorage.getItem("access_token") || localStorage.getItem("token") || "";
-    } catch (error) {
-      return "";
-    }
-  }
+        getProductDetail: async function(id) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/products/' + id);
+            return res.json();
+        },
 
-  function getAuthUser() {
-    try {
-      return JSON.parse(localStorage.getItem("auth_user") || "null");
-    } catch (error) {
-      return null;
-    }
-  }
+        // Alias for compatibility
+        getProduct: async function(id) {
+            return this.getProductDetail(id);
+        },
 
-  function getAuthUserId() {
-    var user = getAuthUser();
-    return user ? (user.id || user.user_id || "") : "";
-  }
+        getCategories: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/categories');
+            return res.json();
+        },
 
-  function requireAuthUserId() {
-    var userId = getAuthUserId();
-    if (!userId) throw new Error("Thiếu thông tin người dùng");
-    return userId;
-  }
+        getBrands: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/brands');
+            return res.json();
+        },
 
-  function showToast(message, type) {
-    if (window.BikeToast && typeof window.BikeToast.show === "function") {
-      return window.BikeToast.show(message, type);
-    }
-    return null;
-  }
+        getFavorites: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/favorites', {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
 
-  function parseJSON(text) {
-    try {
-      return JSON.parse(text);
-    } catch (error) {
-      return {};
-    }
-  }
+        toggleFavorite: async function(productId, action) {
+            var method = (action === 'add' || action === 'POST') ? 'POST' : 'DELETE';
+            var res = await fetch(this.resolveApiBaseUrl() + '/favorites', {
+                method: method,
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify({ product_id: productId })
+            });
+            return res.json();
+        },
 
-  function normalizeApiError(payload, status) {
-    if (payload && typeof payload.message === "string" && payload.message.trim()) {
-      return payload.message;
-    }
+        getUser: async function(id) {
+            return { success: false, message: "Endpoint not implemented" };
+        },
 
-    if (status === 401) return "Bạn cần đăng nhập để tiếp tục.";
-    if (status === 404) return "API không tồn tại trên backend hiện tại.";
-    if (status === 405) return "Sai phương thức gọi API.";
-    if (status >= 500) return "Backend đang lỗi hoặc chưa kết nối database.";
-    return "Yêu cầu không thành công.";
-  }
+        login: async function(payload) {
+            var email = payload.email || "";
+            var password = payload.password || "";
+            var res = await fetch(this.resolveApiBaseUrl() + '/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password })
+            });
+            return res.json();
+        },
 
-  async function request(path, options) {
-    var config = options || {};
-    var method = config.method || "GET";
-    var body = config.body;
-    var auth = Boolean(config.auth);
-    var timeoutMs = Number(config.timeoutMs || 15000);
+        register: async function(userData) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            return res.json();
+        },
 
-    var controller = new AbortController();
-    var timer = window.setTimeout(function () {
-      controller.abort();
-    }, timeoutMs);
-
-    try {
-      var headers = { Accept: "application/json" };
-
-      if (auth) {
-        var token = getAuthToken();
-        if (!token) throw new Error("Bạn cần đăng nhập để tiếp tục.");
-        headers.Authorization = "Bearer " + token;
-      }
-
-      var requestBody = null;
-      if (body instanceof FormData) {
-        requestBody = body;
-      } else if (typeof body !== "undefined") {
-        headers["Content-Type"] = "application/json";
-        requestBody = JSON.stringify(body);
-      }
-
-      var response = await fetch(buildApiUrl(path), {
-        method: method,
-        headers: headers,
-        body: requestBody,
-        signal: controller.signal,
-      });
-
-      var raw = await response.text();
-      var payload = parseJSON(raw);
-
-      if (!response.ok || payload.success === false) {
-        var error = new Error(normalizeApiError(payload, response.status));
-        error.status = response.status;
-        error.payload = payload;
-        throw error;
-      }
-
-      return payload;
-    } catch (error) {
-      if (error.name === "AbortError") throw new Error("Kết nối quá thời gian.");
-      if (error instanceof TypeError) throw new Error("Không thể kết nối đến backend API.");
-      throw error;
-    } finally {
-      window.clearTimeout(timer);
-    }
-  }
-
-  function pickList(payload) {
-    if (Array.isArray(payload)) return payload;
-    if (!payload || typeof payload !== "object") return [];
-    if (Array.isArray(payload.data)) return payload.data;
-    if (payload.data && Array.isArray(payload.data.items)) return payload.data.items;
-    if (payload.data && Array.isArray(payload.data.data)) return payload.data.data;
-    if (Array.isArray(payload.items)) return payload.items;
-    return [];
-  }
-
-  function formatCurrency(value) {
-    var amount = Number(value || 0);
-    return amount.toLocaleString("vi-VN") + "đ";
-  }
-
-  function resolveImageUrl(path) {
-    if (!path) return "../assets/images/placeholder-bike.png";
-    if (path.startsWith("http")) return path;
-    if (path.startsWith("/backend/uploads/")) return "http://localhost/bike-marketplace" + path;
-    if (path.startsWith("/bike-marketplace/")) return "http://localhost" + path;
-    return "http://localhost/bike-marketplace/backend/uploads/" + path;
-  }
-
-  window.BikeApi = {
-    resolveApiBaseUrl,
-    buildApiUrl,
-    getAuthToken,
-    getAuthUser,
-    getAuthUserId,
-    requireAuthUserId,
-    request,
-    pickList,
-    formatCurrency,
-    resolveImageUrl,
-    showToast,
-    getProducts: (params) => request("/products" + (params ? "?" + new URLSearchParams(params).toString() : "")),
-    getProduct: (id) => request("/products?id=" + encodeURIComponent(id)),
-    getUser: (id) => request("/users?id=" + encodeURIComponent(id)),
-    getCategories: () => request("/categories"),
-    getBrands: () => request("/brands"),
-    login: (data) => request("/auth/login", { method: "POST", body: data }),
-    register: (data) => request("/auth/register", { method: "POST", body: data }),
-    createProduct: (data) => request("/products", { method: "POST", body: data, auth: true }),
-    sendBuyRequest: (data) => {
-      var payload = Object.assign({}, data || {}, { buyer_id: requireAuthUserId() });
-      return request("/buy-requests", { method: "POST", body: payload, auth: true });
-    },
-    getFavorites: () => request("/favorites?user_id=" + encodeURIComponent(requireAuthUserId()), { auth: true }),
-    toggleFavorite: (productId, action) => request("/favorites", {
-      method: "POST",
-      body: {
-        user_id: requireAuthUserId(),
-        product_id: productId,
-        action: action || "add"
-      },
-      auth: true
-    })
-  };
-
-  function getHeartIconMarkup() {
-    return [
-      '<svg viewBox="0 0 24 24" fill="white" stroke="#ccc" stroke-width="1" aria-hidden="true" focusable="false">',
-      '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>',
-      '</svg>'
-    ].join("");
-  }
-
-  function initGlobalUI() {
-    document.querySelectorAll(".nav_search-btn").forEach((button) => {
-      button.addEventListener("click", (event) => {
-        event.preventDefault();
-        var searchSection = document.getElementById("tim-kiem");
-        if (searchSection) {
-          searchSection.scrollIntoView({ behavior: "smooth" });
-          window.setTimeout(() => document.getElementById("searchKeyword")?.focus(), 500);
-        } else {
-          window.location.href = "./index.html#tim-kiem";
+        showToast: function(message, type) {
+            if (window.showToast) {
+                window.showToast(message, type);
+            } else if (window.BikeToast && window.BikeToast.show) {
+                window.BikeToast.show(message, type);
+            } else {
+                console.log("Toast [" + type + "]: " + message);
+            }
         }
-      });
-    });
+    };
 
-    document.getElementById("btnLogout")?.addEventListener("click", (event) => {
-      event.preventDefault();
-      localStorage.removeItem("access_token");
-      localStorage.removeItem("token");
-      localStorage.removeItem("auth_user");
-      window.location.href = "./login.html";
-    });
+    var API_BASE_URL = window.BikeApi.resolveApiBaseUrl();
 
-    document.addEventListener("click", async (event) => {
-      var button = event.target.closest(".fav-btn");
-      if (!button) return;
+    // Export helpers to window for backward compatibility
+    window.formatCurrency = window.BikeApi.formatCurrency;
+    window.resolveImageUrl = window.BikeApi.resolveImageUrl;
 
-      event.preventDefault();
-      var productId = button.dataset.id;
-      if (!productId) return;
+    // Icon helper
+    window.getHeartIconMarkup = function() {
+        return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>';
+    };
 
-      var userId = getAuthUserId();
-      if (!userId) {
-        showToast("Phiên đăng nhập hết hạn", "error");
-        return;
-      }
-
-      var previousActive = button.classList.contains("active");
-      var nextActive = !previousActive;
-      updateFavoriteCardButton(button, nextActive);
-
-      try {
-        await window.BikeApi.toggleFavorite(productId, nextActive ? "add" : "remove");
-        showToast(nextActive ? "Đã lưu vào yêu thích" : "Đã bỏ khỏi yêu thích", "success");
-      } catch (error) {
-        updateFavoriteCardButton(button, previousActive);
-        showToast("Không thể cập nhật yêu thích lúc này.", "error");
-      }
-    });
-  }
-
-  function updateFavoriteCardButton(button, isActive) {
-    button.classList.toggle("active", isActive);
-    button.setAttribute("aria-pressed", isActive ? "true" : "false");
-    button.setAttribute("aria-label", isActive ? "Bỏ yêu thích" : "Yêu thích");
-  }
-
+    // Component: Product Card
     window.renderProductCard = function (product) {
       var title = product.title || product.name || "Xe đạp";
-      var imageUrl = resolveImageUrl(
+      var imageUrl = window.resolveImageUrl(
         product.image_url ||
         product.primary_image ||
         (product.images && product.images[0] && product.images[0].image_url)
       );
-      var price = formatCurrency(product.price);
+      var price = window.formatCurrency(product.price);
       var brand = product.brand_name || product.brand || "Xe đạp";
       var location = product.location || "Toàn quốc";
       var condition = product.condition || "Đã sử dụng";
@@ -307,7 +179,7 @@
               <span class="badge badge-primary badge-brand">${brand}</span>
             </div>
             <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${product.id}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
-              <span class="fav-btn-icon" aria-hidden="true">${getHeartIconMarkup()}</span>
+              <span class="fav-btn-icon" aria-hidden="true">${window.getHeartIconMarkup()}</span>
             </button>
           </div>
           <div class="detail-box flex-grow-1 d-flex flex-column p-3 bg-white">
@@ -323,12 +195,13 @@
               <span class="product-condition-tag">${condition}</span>
             </div>
   
-            <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+            <div class="mt-auto pt-2 border-top d-flex align-items-center w-100">
               <div class="price-wrapper">
                 <span class="price-label small text-muted d-block">Giá bán</span>
                 <h5 class="mb-0 font-weight-bold text-dark product-price-modern">${price.replace('đ', '')} <span class="currency-symbol">đ</span></h5>
               </div>
-              <a href="./product-detail.html?id=${product.id}" class="btn-detail-link"><i class="fa fa-arrow-right"></i></a>
+              <div class="flex-grow-1"></div>
+              <a href="./product-detail.html?id=${product.id}" class="btn-detail-link" aria-label="Xem chi tiết"><i class="fa fa-arrow-right"></i></a>
             </div>
           </div>
         </div>
@@ -337,5 +210,80 @@
       return column;
     };
 
-  document.addEventListener("DOMContentLoaded", initGlobalUI);
-})();
+    // Global UI Initialization
+    function initGlobalUI() {
+        // Handle favorites toggle
+        document.addEventListener('click', function(e) {
+            var favBtn = e.target.closest('.fav-btn');
+            if (favBtn) {
+                var productId = favBtn.dataset.id;
+                toggleFavorite(productId, favBtn);
+            }
+        });
+
+        updateAuthUI();
+    }
+
+    function toggleFavorite(productId, btn) {
+        var token = localStorage.getItem('access_token');
+        if (!token) {
+            window.BikeApi.showToast("Vui lòng đăng nhập để lưu tin", "warning");
+            return;
+        }
+
+        var isActive = btn.classList.contains('active');
+        window.BikeApi.toggleFavorite(productId, isActive ? 'remove' : 'add')
+        .then(data => {
+            if (data.success) {
+                btn.classList.toggle('active');
+                window.BikeApi.showToast(isActive ? "Đã bỏ lưu tin" : "Đã lưu tin thành công", "success");
+            } else {
+                window.BikeApi.showToast(data.message || "Lỗi khi xử lý", "error");
+            }
+        });
+    }
+
+    function updateAuthUI() {
+        var token = localStorage.getItem('access_token');
+        var navAuth = document.querySelector('.user_option');
+        if (!navAuth) return;
+
+        if (token) {
+            navAuth.innerHTML = `
+                <a href="favorites.html" class="user_link mr-3" title="Yêu thích">
+                    <i class="fa fa-heart" style="font-size: 24px;" aria-hidden="true"></i>
+                </a>
+                <a href="user.html" class="user_link mr-3" title="Tài khoản">
+                    <i class="fa fa-user" style="font-size: 24px;" aria-hidden="true"></i>
+                </a>
+                <a href="javascript:void(0)" onclick="logout()" class="user_link" title="Đăng xuất">
+                    <i class="fa fa-sign-out" style="font-size: 24px;" aria-hidden="true"></i>
+                </a>
+            `;
+        }
+
+        var path = window.location.pathname;
+        var links = navAuth.querySelectorAll('a');
+        links.forEach(function(link) {
+            var href = link.getAttribute('href');
+            if (!href || href === 'javascript:void(0)') return;
+            var target = href.replace('./', '');
+            if (path.indexOf(target) !== -1 || ((path.indexOf('login.html') !== -1 || path.indexOf('register.html') !== -1) && target === 'user.html')) {
+                var icon = link.querySelector('i');
+                if (icon) {
+                    icon.classList.add('text-warning');
+                }
+            }
+        });
+    }
+
+    window.logout = function() {
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('token');
+        localStorage.removeItem('auth_user');
+        location.href = 'index.html';
+    };
+
+    document.addEventListener("DOMContentLoaded", initGlobalUI);
+
+})(window, document);

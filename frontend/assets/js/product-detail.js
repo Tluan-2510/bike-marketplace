@@ -67,17 +67,17 @@
   }
 
   function iconSvg(type) {
-    var paths = {
-      brand: '<path d="M4 5h16v4H4z"></path><path d="M6 9v10h12V9"></path>',
-      frame: '<path d="M4 17 10 7l4 10H4z"></path><path d="M10 7h6l4 10h-6"></path>',
-      wheel: '<circle cx="12" cy="12" r="8"></circle><path d="M12 4v16M4 12h16M6.3 6.3l11.4 11.4M17.7 6.3 6.3 17.7"></path>',
-      groupset: '<circle cx="8" cy="12" r="3"></circle><circle cx="16" cy="12" r="3"></circle><path d="M11 12h2M8 9V5M16 15v4"></path>',
-      brake: '<path d="M6 5h12"></path><path d="M8 5c0 6 2 10 4 14 2-4 4-8 4-14"></path>',
-      condition: '<path d="M12 3l2.4 5 5.6.8-4 3.9.9 5.5-4.9-2.6-4.9 2.6.9-5.5-4-3.9 5.6-.8z"></path>',
-      heart: '<path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>'
+    var icons = {
+      brand: 'fa-tag',
+      frame: 'fa-bicycle',
+      wheel: 'fa-life-ring',
+      groupset: 'fa-cogs',
+      brake: 'fa-dot-circle-o',
+      condition: 'fa-star-o',
+      heart: 'fa-heart'
     };
-
-    return '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">' + (paths[type] || paths.condition) + "</svg>";
+    var iconClass = icons[type] || 'fa-info-circle';
+    return '<i class="fa ' + iconClass + '" aria-hidden="true"></i>';
   }
 
   async function initDetail() {

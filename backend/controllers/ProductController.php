@@ -12,13 +12,46 @@ class ProductController {
 
     private function jsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200): never {
         http_response_code($statusCode);
-        header('Content-Type: application/json');
+        header('Content-Type: application/json; charset=utf-8');
         echo json_encode([
             'success' => $success,
             'data'    => $data,
             'message' => $message,
         ], JSON_UNESCAPED_UNICODE);
         exit();
+    }
+
+    public function show(int $id): never {
+        $product = $this->productModel->findById($id);
+        if ($product) {
+            $this->jsonResponse(true, $product);
+        }
+        $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
+    }
+
+    public function update(int $id): never {
+        // To be implemented
+        $this->jsonResponse(false, null, "Chức năng cập nhật đang được phát triển", 501);
+    }
+
+    public function destroy(int $id): never {
+        $user = AuthMiddleware::authenticate();
+        $product = $this->productModel->findById($id);
+        
+        if (!$product) {
+            $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
+        }
+
+        // Check ownership or admin
+        if ($product['seller_id'] != $user['user_id'] && $user['role'] !== 'admin') {
+            $this->jsonResponse(false, null, "Bạn không có quyền xóa sản phẩm này", 403);
+        }
+
+        $success = $this->productModel->delete($id);
+        if ($success) {
+            $this->jsonResponse(true, null, "Xóa sản phẩm thành công");
+        }
+        $this->jsonResponse(false, null, "Không thể xóa sản phẩm", 500);
     }
 
     public function index(): never {

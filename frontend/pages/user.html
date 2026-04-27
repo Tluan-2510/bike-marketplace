@@ -50,6 +50,7 @@
       }
     </style>
       <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
   </head>
 
   <body class="sub_page">
@@ -58,33 +59,33 @@
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
             <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
-              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44"><span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span></a>
+              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44" />
+              <span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
+            </a>
 
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Mở menu điều hướng"
-            ><span class=""></span></button>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="fa fa-bars" style="color: white;"></i>
+            </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-               <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
+              <ul class="navbar-nav mx-auto">
+                <li class="nav-item ">
                   <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item ">
                   <a class="nav-link" href="./products.html">Sản phẩm</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item ">
                   <a class="nav-link" href="./create_product.html">Đăng bán</a>
                 </li>
               </ul>
-              <div class="user_option">
-                <a class="cart_link mr-3" href="./favorites.html" aria-label="Yêu thích">Yêu thích</a>
-                <a href="./user.html" class="user_link active" aria-label="Tài khoản">Tài khoản</a>
+                                          <div class="user_option">
+                <a class="cart_link mr-3" href="./favorites.html" title="Yêu thích">
+                  <i class="fa fa-heart" style="font-size: 24px;" aria-hidden="true"></i>
+                </a>
+                <a href="./user.html" class="user_link" title="Tài khoản">
+                  <i class="fa fa-user" style="font-size: 24px;" aria-hidden="true"></i>
+                </a>
               </div>
             </div>
           </nav>
@@ -107,7 +108,7 @@
                 <a class="nav-link active" id="v-pills-dashboard-tab" data-toggle="pill" href="#v-pills-dashboard" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">Tổng quan</a>
                 <a class="nav-link" id="v-pills-listings-tab" data-toggle="pill" href="#v-pills-listings" role="tab" aria-controls="v-pills-listings" aria-selected="false">Xe đang bán</a>
                 <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Cài đặt tài khoản</a>
-                <a class="nav-link text-danger mt-3" href="#" id="btnLogout">Đăng xuất</a>
+                <a class="nav-link text-danger mt-3" href="javascript:void(0)" onclick="logout()" id="btnLogout">Đăng xuất</a>
               </div>
             </div>
           </div>

@@ -40,14 +40,13 @@ class BuyRequestController {
         }
 
         $product_id = $input['product_id'] ?? null;
-        $seller_id = $input['seller_id'] ?? null;
         $message = $input['message'] ?? '';
 
-        if (!$product_id || !$seller_id) {
-            $this->jsonResponse(false, null, "Thiếu thông tin sản phẩm hoặc người bán", 422);
+        if (!$product_id) {
+            $this->jsonResponse(false, null, "Thiếu thông tin sản phẩm", 422);
         }
 
-        $request_id = $this->requestModel->create((int)$product_id, (int)$user['user_id'], (int)$seller_id, $message);
+        $request_id = $this->requestModel->create((int)$product_id, (int)$user['user_id'], $message);
 
         if ($request_id) {
             $this->jsonResponse(true, ["request_id" => $request_id], "Gửi yêu cầu mua thành công", 201);

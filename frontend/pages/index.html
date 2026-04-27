@@ -16,7 +16,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
       rel="stylesheet"
     />
-    <link href="../assets/css/style.css" rel="stylesheet" />
+    <link href="../assets/css/style.css?v=2.0" rel="stylesheet" />
     <link href="../assets/css/responsive.css" rel="stylesheet" />
     <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
   </head>
@@ -26,68 +26,33 @@
       <header class="header_section bg-black">
         <div class="container">
           <nav class="navbar navbar-expand-lg custom_nav-container">
-            <a
-              class="navbar-brand d-flex align-items-center"
-              href="./index.html"
-              style="gap: 10px; text-decoration: none"
-            >
-              <img
-                src="../assets/images/favicon.svg"
-                alt="BikeMarket Logo"
-                width="44"
-                height="44"
-              /><span
-                class="text-white ml-1"
-                style="
-                  font-size: 24px;
-                  font-weight: 900;
-                  letter-spacing: 1px;
-                  text-transform: uppercase;
-                "
-                >Bike<span style="color: #ffd700">Market</span></span
-              ></a
-            >
+            <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
+              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44" />
+              <span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
+            </a>
 
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Mở menu điều hướng"
-            >
-              <i class="fa fa-bars" style="color: white"></i>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="fa fa-bars" style="color: white;"></i>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
+                <li class="nav-item active">
                   <a class="nav-link" href="./index.html">Trang chủ</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item ">
                   <a class="nav-link" href="./products.html">Sản phẩm</a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item ">
                   <a class="nav-link" href="./create_product.html">Đăng bán</a>
                 </li>
               </ul>
-              <div class="user_option">
-                <a
-                  class="cart_link mr-3 d-flex align-items-center"
-                  href="./favorites.html"
-                  aria-label="Yêu thích"
-                >
-                  <i class="fa fa-heart mr-1" aria-hidden="true"></i>
-                  <span>Yêu thích</span>
+                                          <div class="user_option">
+                <a class="cart_link mr-3" href="./favorites.html" title="Yêu thích">
+                  <i class="fa fa-heart" style="font-size: 24px;" aria-hidden="true"></i>
                 </a>
-                <a
-                  href="./user.html"
-                  class="user_link d-flex align-items-center"
-                  aria-label="Tài khoản"
-                >
-                  <i class="fa fa-user mr-1" aria-hidden="true"></i>
-                  <span>Tài khoản</span>
+                <a href="./user.html" class="user_link" title="Tài khoản">
+                  <i class="fa fa-user" style="font-size: 24px;" aria-hidden="true"></i>
                 </a>
               </div>
             </div>
@@ -437,7 +402,7 @@
     <script src="../assets/js/bootstrap.js"></script>
 
     <script src="../assets/js/toast.js"></script>
-    <script src="../assets/js/core.js"></script>
+    <script src="../assets/js/core.js?v=13.0"></script>
     <script src="../assets/js/products.js"></script>
   </body>
 </html>

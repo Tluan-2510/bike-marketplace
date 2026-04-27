@@ -16,7 +16,7 @@ class User {
     public function findByEmail(string $email): array|false {
         $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
         $stmt = $this->conn->prepare(
-            "SELECT id, username, email, password, role, created_at FROM users WHERE email = ? LIMIT 1"
+            "SELECT id, username, email, password_hash as password, role, created_at FROM users WHERE email = ? LIMIT 1"
         );
         $stmt->execute([$email]);
         return $stmt->fetch();
@@ -43,7 +43,7 @@ class User {
         $role     = in_array($role, ['user', 'admin']) ? $role : 'user';
 
         $stmt = $this->conn->prepare(
-            "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)"
+            "INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)"
         );
 
         if ($stmt->execute([$username, $email, $hashedPassword, $role])) {

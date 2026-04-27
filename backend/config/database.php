@@ -29,7 +29,8 @@ class Database {
         $this->host     = getenv('DB_HOST')    ?: 'db';
         $this->db_name  = getenv('DB_NAME')    ?: 'bike_db';
         $this->username = getenv('DB_USER')    ?: 'root';
-        $this->password = getenv('DB_PASS')    ?: 'root';
+        // Hỗ trợ cả DB_PASSWORD (trong .env) lẫn DB_PASS (legacy)
+        $this->password = getenv('DB_PASSWORD') ?: (getenv('DB_PASS') ?: 'root');
         $this->charset  = getenv('DB_CHARSET') ?: 'utf8mb4';
     }
 
@@ -47,6 +48,7 @@ class Database {
 
         try {
             $this->connection = new \PDO($dsn, $this->username, $this->password, $options);
+            $this->connection->exec("SET NAMES utf8mb4");
         } catch (\PDOException $e) {
             http_response_code(500);
             echo json_encode(['success' => false, 'message' => 'Database connection failed']);

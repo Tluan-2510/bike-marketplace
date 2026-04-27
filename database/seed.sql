@@ -1,8 +1,9 @@
 -- Script to seed test products
--- Run this in your MySQL database to populate the UI for testing.
+SET NAMES utf8mb4;
 
-INSERT INTO users (id, full_name, username, email, password_hash, role) 
-VALUES (999, 'Admin Tester', 'admin_test', 'tester@bikemarket.vn', '123456', 'admin');
+
+INSERT INTO users (id, full_name, username, email, password_hash, role, phone_number) 
+VALUES (999, 'Admin Tester', 'admin_test', 'tester@bikemarket.vn', '123456', 'admin', '0912345678');
 
 -- Insert Products
 INSERT INTO products (id, seller_id, title, description, price, category_id, brand_id, frame_material, wheel_size, groupset, brake_type, condition_state, status)

@@ -50,19 +50,30 @@ class Favorite {
     public function getByUserId(int $userId): array {
         $stmt = $this->conn->prepare(
             "SELECT 
-                f.id            AS favorite_id,
-                f.created_at    AS favorited_at,
-                p.id            AS product_id,
-                p.name,
+                f.id              AS favorite_id,
+                f.created_at      AS favorited_at,
+                p.id              AS product_id,
+                p.title           AS name,
                 p.price,
-                p.image,
-                p.category,
-                p.condition_type,
+                p.condition_state,
                 p.delivery_type,
                 p.location,
-                p.user_id       AS seller_id
+                p.seller_id,
+                p.category_id,
+                p.brand_id,
+                p.status,
+                (
+                    SELECT pi.image_url
+                    FROM product_images pi
+                    WHERE pi.product_id = p.id AND pi.is_primary = 1
+                    LIMIT 1
+                ) AS image_url,
+                c.name            AS category_name,
+                b.name            AS brand_name
              FROM favorites f
              INNER JOIN products p ON f.product_id = p.id
+             LEFT JOIN categories c ON p.category_id = c.id
+             LEFT JOIN brands b ON p.brand_id = b.id
              WHERE f.user_id = ?
              ORDER BY f.created_at DESC"
         );
