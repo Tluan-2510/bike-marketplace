@@ -3,14 +3,14 @@
 require_once __DIR__ . "/../config/database.php";
 
 class Product {
-    private $conn;
+    private \PDO $conn;
 
     public function __construct() {
         $db = new Database();
         $this->conn = $db->connect();
     }
 
-    public function getAll() {
+    public function getAll(): array {
         $query = "
             SELECT p.*, p.title as name, c.name as category_name, b.name as brand_name, pi.image_url as image_url
             FROM products p
@@ -19,24 +19,18 @@ class Product {
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
             ORDER BY p.created_at DESC
         ";
-        $result = $this->conn->query($query);
-        $products = [];
-        if ($result && $result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $products[] = $row;
-            }
-        }
-        return $products;
+        $stmt = $this->conn->query($query);
+        return $stmt->fetchAll();
     }
 
-    public function getAdvanced($params) {
+    public function getAdvanced(array $params): array {
         $page = isset($params['page']) ? max(1, (int)$params['page']) : 1;
         $limit = isset($params['limit']) ? max(1, (int)$params['limit']) : 12;
         $offset = ($page - 1) * $limit;
 
         $conditions = ["1=1"];
         $bind_params = [];
-        $types = "";
+        
         $priceRange = $this->parsePriceRange($params['price_range'] ?? null);
         $minPrice = $params['min_price'] ?? $priceRange['min'];
         $maxPrice = $params['max_price'] ?? $priceRange['max'];
@@ -44,45 +38,38 @@ class Product {
         if ($minPrice !== null && $minPrice !== '') {
             $conditions[] = "p.price >= ?";
             $bind_params[] = (float)$minPrice;
-            $types .= "d";
         }
         if ($maxPrice !== null && $maxPrice !== '') {
             $conditions[] = "p.price <= ?";
             $bind_params[] = (float)$maxPrice;
-            $types .= "d";
         }
         if (!empty($params['category_id'])) {
             $conditions[] = "p.category_id = ?";
             $bind_params[] = (int)$params['category_id'];
-            $types .= "i";
         } elseif (!empty($params['category']) && $params['category'] !== 'all') {
             $conditions[] = "p.category_id = (SELECT id FROM categories WHERE slug = ? LIMIT 1)";
             $bind_params[] = $this->normalizeCategorySlug($params['category']);
-            $types .= "s";
         }
         if (!empty($params['seller_id'])) {
             $conditions[] = "p.seller_id = ?";
             $bind_params[] = (int)$params['seller_id'];
-            $types .= "i";
         }
         if (!empty($params['keyword'])) {
             $conditions[] = "(p.title LIKE ? OR p.description LIKE ?)";
             $keyword = "%" . $params['keyword'] . "%";
             $bind_params[] = $keyword;
             $bind_params[] = $keyword;
-            $types .= "ss";
         }
 
         $whereSql = implode(" AND ", $conditions);
 
+        // Count total
         $countQuery = "SELECT COUNT(*) as total FROM products p WHERE $whereSql";
         $stmtCount = $this->conn->prepare($countQuery);
-        if (!empty($types)) {
-            $stmtCount->bind_param($types, ...$bind_params);
-        }
-        $stmtCount->execute();
-        $total_items = (int)$stmtCount->get_result()->fetch_assoc()['total'];
+        $stmtCount->execute($bind_params);
+        $total_items = (int)$stmtCount->fetch()['total'];
 
+        // Get items
         $query = "
             SELECT p.*, p.title as name, c.name as category_name, b.name as brand_name, pi.image_url as image_url
             FROM products p
@@ -95,16 +82,10 @@ class Product {
         ";
 
         $stmt = $this->conn->prepare($query);
-        $queryTypes = $types . "ii";
-        $queryParams = array_merge($bind_params, [$limit, $offset]);
-        $stmt->bind_param($queryTypes, ...$queryParams);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-        $items = [];
-        while ($row = $result->fetch_assoc()) {
-            $items[] = $row;
-        }
+        // PDO with emulated prepares disabled needs parameters for LIMIT/OFFSET to be integers or passed correctly
+        $finalParams = array_merge($bind_params, [$limit, $offset]);
+        $stmt->execute($finalParams);
+        $items = $stmt->fetchAll();
 
         return [
             "items" => $items,
@@ -114,7 +95,7 @@ class Product {
         ];
     }
 
-    private function parsePriceRange($priceRange) {
+    private function parsePriceRange(?string $priceRange): array {
         if (empty($priceRange) || $priceRange === 'all') {
             return ['min' => null, 'max' => null];
         }
@@ -130,16 +111,13 @@ class Product {
         ];
     }
 
-    private function normalizeCategorySlug($category) {
-        $slug = strtolower(trim((string)$category));
-        $aliases = [
-            'fixed' => 'fixed-gear'
-        ];
-
+    private function normalizeCategorySlug(string $category): string {
+        $slug = strtolower(trim($category));
+        $aliases = ['fixed' => 'fixed-gear'];
         return $aliases[$slug] ?? $slug;
     }
 
-    public function findById($id) {
+    public function findById(int $id): array|false {
         $query = "
             SELECT p.*, p.title as name, c.name as category_name, b.name as brand_name,
                    u.full_name as seller_name, u.phone_number as seller_phone
@@ -150,20 +128,15 @@ class Product {
             WHERE p.id = ?
         ";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $product = $stmt->get_result()->fetch_assoc();
+        $stmt->execute([$id]);
+        $product = $stmt->fetch();
 
         if ($product) {
             $imgQuery = "SELECT image_url, is_primary FROM product_images WHERE product_id = ?";
             $imgStmt = $this->conn->prepare($imgQuery);
-            $imgStmt->bind_param("i", $id);
-            $imgStmt->execute();
-            $imgResult = $imgStmt->get_result();
-            $images = [];
-            while ($img = $imgResult->fetch_assoc()) {
-                $images[] = $img;
-            }
+            $imgStmt->execute([$id]);
+            $images = $imgStmt->fetchAll();
+            
             $product['images'] = $images;
             $product['image_url'] = $images[0]['image_url'] ?? null;
         }
@@ -171,24 +144,41 @@ class Product {
         return $product;
     }
 
-    public function create($seller_id, $category_id, $brand_id, $title, $description, $price, $condition_state, $frame_material, $wheel_size, $groupset, $brake_type, $location, $delivery_type) {
-        $query = "INSERT INTO products (seller_id, category_id, brand_id, title, description, price, condition_state, frame_material, wheel_size, groupset, brake_type, location, delivery_type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public function create(array $data): int|false {
+        $query = "INSERT INTO products 
+            (seller_id, category_id, brand_id, title, description, price, condition_state, frame_material, wheel_size, groupset, brake_type, location, delivery_type) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("iiissdsssssss", $seller_id, $category_id, $brand_id, $title, $description, $price, $condition_state, $frame_material, $wheel_size, $groupset, $brake_type, $location, $delivery_type);
+        $params = [
+            (int)$data['seller_id'],
+            (int)$data['category_id'],
+            (int)($data['brand_id'] ?? null),
+            $data['title'],
+            $data['description'],
+            (float)$data['price'],
+            $data['condition_state'],
+            $data['frame_material'],
+            $data['wheel_size'],
+            $data['groupset'],
+            $data['brake_type'],
+            $data['location'],
+            $data['delivery_type']
+        ];
 
-        if ($stmt->execute()) {
-            return $this->conn->insert_id;
+        if ($stmt->execute($params)) {
+            return (int)$this->conn->lastInsertId();
         }
         return false;
     }
 
-    public function addImage($product_id, $image_url, $is_primary = 0) {
+    public function addImage(int $product_id, string $image_url, int $is_primary = 0): bool {
         $query = "INSERT INTO product_images (product_id, image_url, is_primary) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("isi", $product_id, $image_url, $is_primary);
-        return $stmt->execute();
+        return $stmt->execute([$product_id, $image_url, $is_primary]);
     }
-    public function getSimilar($product_id, $category_id, $limit = 4) {
+
+    public function getSimilar(int $product_id, int $category_id, int $limit = 4): array {
         $query = "
             SELECT p.*, c.name as category_name, b.name as brand_name, pi.image_url as primary_image
             FROM products p
@@ -200,14 +190,7 @@ class Product {
             LIMIT ?
         ";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("iii", $category_id, $product_id, $limit);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        
-        $products = [];
-        while ($row = $result->fetch_assoc()) {
-            $products[] = $row;
-        }
-        return $products;
+        $stmt->execute([$category_id, $product_id, $limit]);
+        return $stmt->fetchAll();
     }
 }

@@ -3,8 +3,8 @@
 require_once __DIR__ . "/../config/database.php";
 
 class BuyRequest {
-    private $conn;
-    private $table = 'buy_requests';
+    private \PDO $conn;
+    private string $table = 'buy_requests';
 
     public function __construct() {
         $db = new Database();
@@ -13,59 +13,46 @@ class BuyRequest {
 
     /**
      * Tạo yêu cầu mua mới
-     * Logic: Khi người mua bấm "Liên hệ", lưu vào bảng buy_requests.
      */
-    public function create($product_id, $buyer_id, $seller_id, $message) {
+    public function create(int $product_id, int $buyer_id, int $seller_id, string $message): int|false {
         $query = "INSERT INTO " . $this->table . " 
                   (product_id, buyer_id, seller_id, message, status) 
-                  VALUES (?, ?, ?, ?, 0)";
+                  VALUES (?, ?, ?, ?, 'pending')";
         
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("iiis", $product_id, $buyer_id, $seller_id, $message);
 
-        if ($stmt->execute()) {
-            return true;
+        if ($stmt->execute([$product_id, $buyer_id, $seller_id, $message])) {
+            return (int)$this->conn->lastInsertId();
         }
         return false;
     }
 
     /**
-     * Lấy danh sách yêu cầu mua của người bán
-     * API GET /api/buy-requests?seller_id=...
+     * Lấy danh sách yêu cầu mua của người dùng (với tư cách là người bán hoặc người mua)
      */
-    public function getBySeller($seller_id) {
-        $query = "SELECT br.*, p.title as product_title, p.price as product_price, u.full_name as buyer_name 
+    public function getByUserId(int $userId, string $role = 'seller'): array {
+        $column = ($role === 'buyer') ? 'buyer_id' : 'seller_id';
+        
+        $query = "SELECT br.*, p.title as product_title, p.price as product_price, 
+                         u_buyer.full_name as buyer_name, u_seller.full_name as seller_name
                   FROM " . $this->table . " br
                   JOIN products p ON br.product_id = p.id
-                  JOIN users u ON br.buyer_id = u.id
-                  WHERE br.seller_id = ?
+                  JOIN users u_buyer ON br.buyer_id = u_buyer.id
+                  JOIN users u_seller ON br.seller_id = u_seller.id
+                  WHERE br.$column = ?
                   ORDER BY br.created_at DESC";
 
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("i", $seller_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        $requests = [];
-        while ($row = $result->fetch_assoc()) {
-            $requests[] = $row;
-        }
-        return $requests;
+        $stmt->execute([$userId]);
+        return $stmt->fetchAll();
     }
 
     /**
      * Cập nhật trạng thái yêu cầu
-     * Trạng thái (Status):
-     * 0: Chờ xử lý (Mặc định).
-     * 1: Đã liên hệ/Đang thương lượng.
-     * 2: Thành công (Xe đã bán).
-     * 3: Đã hủy.
      */
-    public function updateStatus($id, $status) {
+    public function updateStatus(int $id, string $status): bool {
         $query = "UPDATE " . $this->table . " SET status = ? WHERE id = ?";
         $stmt = $this->conn->prepare($query);
-        $stmt->bind_param("ii", $status, $id);
-        
-        return $stmt->execute();
+        return $stmt->execute([$status, $id]);
     }
 }

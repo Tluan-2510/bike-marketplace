@@ -1,128 +1,105 @@
 <?php
 
 require_once __DIR__ . "/../models/Product.php";
+require_once __DIR__ . "/../middleware/AuthMiddleware.php";
 
 class ProductController {
-    private $productModel;
+    private Product $productModel;
 
     public function __construct() {
         $this->productModel = new Product();
     }
 
-    private function jsonResponse($success, $data = null, $message = "") {
-        header('Content-Type: application/json; charset=utf-8');
+    private function jsonResponse(bool $success, mixed $data = null, string $message = '', int $statusCode = 200): never {
+        http_response_code($statusCode);
+        header('Content-Type: application/json');
         echo json_encode([
-            "success" => $success,
-            "data" => $data,
-            "message" => $message
+            'success' => $success,
+            'data'    => $data,
+            'message' => $message,
         ], JSON_UNESCAPED_UNICODE);
         exit();
     }
 
-    public function index() {
+    public function index(): never {
         if (isset($_GET['id'])) {
-            $product = $this->productModel->findById((int) $_GET['id']);
-
+            $product = $this->productModel->findById((int)$_GET['id']);
             if ($product) {
                 $this->jsonResponse(true, $product);
             }
-
-            http_response_code(404);
-            $this->jsonResponse(false, null, "Không tìm thấy sản phẩm");
+            $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
         }
 
-        if (method_exists($this->productModel, "getAdvanced")) {
-            $filters = [
-                'page' => $_GET['page'] ?? 1,
-                'limit' => $_GET['limit'] ?? 12,
-                'min_price' => $_GET['min_price'] ?? null,
-                'max_price' => $_GET['max_price'] ?? null,
-                'category_id' => $_GET['category_id'] ?? null,
-                'category' => $_GET['category'] ?? null,
-                'keyword' => $_GET['keyword'] ?? null,
-                'seller_id' => $_GET['seller_id'] ?? null,
-                'price_range' => $_GET['price_range'] ?? null
-            ];
-            $this->jsonResponse(true, $this->productModel->getAdvanced($filters));
-        }
+        $filters = [
+            'page'        => $_GET['page'] ?? 1,
+            'limit'       => $_GET['limit'] ?? 12,
+            'min_price'   => $_GET['min_price'] ?? null,
+            'max_price'   => $_GET['max_price'] ?? null,
+            'category_id' => $_GET['category_id'] ?? null,
+            'category'    => $_GET['category'] ?? null,
+            'keyword'     => $_GET['keyword'] ?? null,
+            'seller_id'   => $_GET['seller_id'] ?? null,
+            'price_range' => $_GET['price_range'] ?? null
+        ];
 
-        $this->jsonResponse(true, $this->productModel->getAll());
+        $result = $this->productModel->getAdvanced($filters);
+        $this->jsonResponse(true, $result);
     }
 
-    public function store() {
-        $seller_id = $_POST['seller_id'] ?? null;
-        $category_id = $_POST['category_id'] ?? null;
-        $brand_id = $_POST['brand_id'] ?? null;
-        $title = $_POST['title'] ?? ($_POST['name'] ?? '');
-        $description = $_POST['description'] ?? '';
-        $price = $_POST['price'] ?? 0;
-        $condition_state = $_POST['condition_state'] ?? ($_POST['condition'] ?? 'Sử dụng tốt');
-        $frame_material = $_POST['frame_material'] ?? ($_POST['frame'] ?? null);
-        $wheel_size = $_POST['wheel_size'] ?? ($_POST['wheel'] ?? ($_POST['size'] ?? null));
-        $groupset = $_POST['groupset'] ?? null;
-        $brake_type = $_POST['brake_type'] ?? ($_POST['brake'] ?? null);
-        $location = $_POST['location'] ?? '';
-        $delivery_type = $_POST['delivery_type'] ?? '';
+    public function store(): never {
+        $user = AuthMiddleware::authenticate();
 
-        if (!$seller_id || empty($title) || empty($price)) {
-            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc");
+        $data = [
+            'seller_id'       => $user['user_id'],
+            'category_id'     => $_POST['category_id'] ?? null,
+            'brand_id'        => $_POST['brand_id'] ?? null,
+            'title'           => $_POST['title'] ?? ($_POST['name'] ?? ''),
+            'description'     => $_POST['description'] ?? '',
+            'price'           => $_POST['price'] ?? 0,
+            'condition_state' => $_POST['condition_state'] ?? ($_POST['condition'] ?? 'Sử dụng tốt'),
+            'frame_material'  => $_POST['frame_material'] ?? ($_POST['frame'] ?? null),
+            'wheel_size'      => $_POST['wheel_size'] ?? ($_POST['wheel'] ?? ($_POST['size'] ?? null)),
+            'groupset'        => $_POST['groupset'] ?? null,
+            'brake_type'      => $_POST['brake_type'] ?? ($_POST['brake'] ?? null),
+            'location'        => $_POST['location'] ?? '',
+            'delivery_type'   => $_POST['delivery_type'] ?? ''
+        ];
+
+        if (empty($data['title']) || empty($data['price'])) {
+            $this->jsonResponse(false, null, "Thiếu thông tin bắt buộc (Tiêu đề, Giá)", 422);
         }
 
-        $product_id = $this->productModel->create(
-            (int) $seller_id,
-            $category_id ? (int) $category_id : null,
-            $brand_id ? (int) $brand_id : null,
-            $title,
-            $description,
-            (float) $price,
-            $condition_state,
-            $frame_material,
-            $wheel_size,
-            $groupset,
-            $brake_type,
-            $location,
-            $delivery_type
-        );
+        $product_id = $this->productModel->create($data);
 
         if (!$product_id) {
-            $this->jsonResponse(false, null, "Không thể tạo sản phẩm");
+            $this->jsonResponse(false, null, "Không thể tạo sản phẩm", 500);
         }
 
-        $this->storeUploadedImages((int) $product_id);
-        $this->jsonResponse(true, ["product_id" => $product_id], "Tạo sản phẩm thành công");
+        $this->storeUploadedImages((int)$product_id);
+        $this->jsonResponse(true, ["product_id" => $product_id], "Đăng tin thành công", 201);
     }
 
-    private function storeUploadedImages($product_id) {
-        if (!isset($_FILES['images'])) {
-            return;
-        }
+    private function storeUploadedImages(int $product_id): void {
+        if (!isset($_FILES['images'])) return;
 
         $upload_dir = __DIR__ . '/../uploads/';
-        if (!is_dir($upload_dir)) {
-            mkdir($upload_dir, 0777, true);
-        }
+        if (!is_dir($upload_dir)) mkdir($upload_dir, 0777, true);
 
         $files = $_FILES['images'];
         $allowed_ext = ['jpg', 'jpeg', 'png', 'webp'];
-        $total_files = count($files['name']);
+        $total_files = is_array($files['name']) ? count($files['name']) : 0;
         $saved_count = 0;
 
         for ($i = 0; $i < $total_files; $i++) {
-            if ($files['error'][$i] !== UPLOAD_ERR_OK) {
-                continue;
-            }
+            if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
 
-            $original_name = basename($files['name'][$i]);
-            $ext = strtolower(pathinfo($original_name, PATHINFO_EXTENSION));
-
-            if (!in_array($ext, $allowed_ext, true)) {
-                continue;
-            }
+            $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
+            if (!in_array($ext, $allowed_ext, true)) continue;
 
             $new_name = 'prod_' . bin2hex(random_bytes(8)) . '.jpg';
             $destination = $upload_dir . $new_name;
-            $saved = $this->processImage($files['tmp_name'][$i], $destination, 1200, 75);
-
+            
+            $saved = $this->processImage($files['tmp_name'][$i], $destination, 1200, 80);
             if (!$saved) {
                 $new_name = 'bike_' . bin2hex(random_bytes(8)) . '.' . $ext;
                 $destination = $upload_dir . $new_name;
@@ -137,61 +114,31 @@ class ProductController {
         }
     }
 
-    private function processImage($source, $destination, $maxWidth, $quality) {
-        if (
-            !function_exists('getimagesize') ||
-            !function_exists('imagecreatetruecolor') ||
-            !function_exists('imagejpeg')
-        ) {
-            return false;
-        }
+    private function processImage(string $source, string $destination, int $maxWidth, int $quality): bool {
+        if (!function_exists('imagecreatefromjpeg')) return false;
 
-        $imageInfo = getimagesize($source);
-        if ($imageInfo === false) {
-            return false;
-        }
+        $info = getimagesize($source);
+        if (!$info) return false;
 
-        [$width, $height, $type] = $imageInfo;
-        if ($width <= 0 || $height <= 0) {
-            return false;
-        }
-
+        [$width, $height, $type] = $info;
         switch ($type) {
-            case IMAGETYPE_JPEG:
-                $srcImg = function_exists('imagecreatefromjpeg') ? imagecreatefromjpeg($source) : false;
-                break;
-            case IMAGETYPE_PNG:
-                $srcImg = function_exists('imagecreatefrompng') ? imagecreatefrompng($source) : false;
-                break;
-            case IMAGETYPE_WEBP:
-                $srcImg = function_exists('imagecreatefromwebp') ? imagecreatefromwebp($source) : false;
-                break;
-            default:
-                return false;
+            case IMAGETYPE_JPEG: $srcImg = imagecreatefromjpeg($source); break;
+            case IMAGETYPE_PNG:  $srcImg = imagecreatefrompng($source);  break;
+            case IMAGETYPE_WEBP: $srcImg = imagecreatefromwebp($source); break;
+            default: return false;
         }
 
-        if (!$srcImg) {
-            return false;
-        }
+        if (!$srcImg) return false;
 
         $newWidth = $width > $maxWidth ? $maxWidth : $width;
-        $newHeight = (int) round(($height / $width) * $newWidth);
+        $newHeight = (int)round(($height / $width) * $newWidth);
         $dstImg = imagecreatetruecolor($newWidth, $newHeight);
 
-        if (!$dstImg) {
-            imagedestroy($srcImg);
-            return false;
-        }
-
-        $white = imagecolorallocate($dstImg, 255, 255, 255);
-        imagefilledrectangle($dstImg, 0, 0, $newWidth, $newHeight, $white);
         imagecopyresampled($dstImg, $srcImg, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
-
         $saved = imagejpeg($dstImg, $destination, $quality);
 
         imagedestroy($srcImg);
         imagedestroy($dstImg);
-
         return $saved;
     }
 }
