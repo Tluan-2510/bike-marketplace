@@ -33,7 +33,7 @@
     var token = window.BikeApi.getAuthToken();
 
     if (!user && !token) {
-      window.location.href = "./login.html";
+      window.location.href = "./login.php";
       return null;
     }
 
@@ -73,7 +73,7 @@
         container.innerHTML = `
           <div class="col-12 text-center py-5">
             <p class="text-muted">Bạn chưa đăng bán sản phẩm nào.</p>
-            <a href="./create_product.html" class="explore-link-premium mt-2">Đăng bán xe ngay</a>
+            <a href="./create_product.php" class="explore-link-premium mt-2">Đăng bán xe ngay</a>
           </div>
         `;
         return;
@@ -81,12 +81,14 @@
 
       container.innerHTML = "";
       products.forEach(function (product) {
+        product.is_owner = true; // Flag to show delete button
         container.appendChild(window.renderProductCard(product));
       });
 
       if (recentContainer) {
         recentContainer.innerHTML = "";
         products.slice(0, 3).forEach(function (product) {
+          product.is_owner = true;
           recentContainer.appendChild(window.renderProductCard(product));
         });
       }
@@ -451,7 +453,7 @@
         renderImagePreviews();
         syncImageInput(document.getElementById("productImage"));
         window.setTimeout(function () {
-          window.location.href = "./user.html";
+          window.location.href = "./user.php";
         }, 900);
       } catch (error) {
         showToast(getFriendlyCreateError(error), "error");
@@ -484,5 +486,30 @@
         showToast("Chức năng cập nhật thông tin đang được phát triển.", "error");
       });
     }
+
+    // Handle delete buttons
+    document.addEventListener("click", async function (event) {
+      var deleteBtn = event.target.closest(".btn-delete-product");
+      if (!deleteBtn) return;
+
+      var productId = deleteBtn.dataset.id;
+      if (!productId) return;
+
+      if (!confirm("Bạn có chắc chắn muốn xóa tin đăng này không? Thao tác này không thể hoàn tác.")) {
+        return;
+      }
+
+      try {
+        var response = await window.BikeApi.deleteProduct(productId);
+        if (response.success) {
+          showToast("Đã xóa tin đăng thành công.", "success");
+          loadUserListings(user); // Refresh the list
+        } else {
+          showToast(response.message || "Không thể xóa tin đăng.", "error");
+        }
+      } catch (error) {
+        showToast("Lỗi khi kết nối đến máy chủ.", "error");
+      }
+    });
   });
 })();

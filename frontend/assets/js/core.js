@@ -79,6 +79,14 @@
             return this.getProductDetail(id);
         },
 
+        deleteProduct: async function(id) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/products/' + id, {
+                method: 'DELETE',
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
         createProduct: async function(formData) {
             var res = await fetch(this.resolveApiBaseUrl() + '/products', {
                 method: 'POST',
@@ -182,7 +190,7 @@
       column.innerHTML = `
         <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden product-card-modern">
           <div class="img-box product-card-media">
-            <a href="./product-detail.html?id=${productId}" class="product-card-link">
+            <a href="./product-detail.php?id=${productId}" class="product-card-link">
               <img src="${imageUrl}" alt="${title}" class="img-fluid product-card-image">
             </a>
             <div class="card-badges">
@@ -195,7 +203,7 @@
           <div class="detail-box flex-grow-1 d-flex flex-column p-3 bg-white">
             <div class="product-category-small mb-1">${category}</div>
             <h6 class="product-title-modern mb-2 font-weight-bold">
-              <a href="./product-detail.html?id=${productId}" class="text-dark" style="text-decoration: none;">${title}</a>
+              <a href="./product-detail.php?id=${productId}" class="text-dark" style="text-decoration: none;">${title}</a>
             </h6>
             
             <div class="product-meta-row d-flex align-items-center mb-1">
@@ -211,7 +219,8 @@
                 <h5 class="mb-0 font-weight-bold text-dark product-price-modern">${price.replace('đ', '')} <span class="currency-symbol">đ</span></h5>
               </div>
               <div class="flex-grow-1"></div>
-              <a href="./product-detail.html?id=${productId}" class="btn-detail-link" aria-label="Xem chi tiết"><i class="fa fa-arrow-right"></i></a>
+              ${product.is_owner ? `<button class="btn btn-sm btn-outline-danger mr-2 btn-delete-product" data-id="${productId}" title="Xóa tin đăng"><i class="fa fa-trash"></i></button>` : ''}
+              <a href="./product-detail.php?id=${productId}" class="btn-detail-link" aria-label="Xem chi tiết"><i class="fa fa-arrow-right"></i></a>
             </div>
           </div>
         </div>
@@ -260,10 +269,10 @@
 
         if (token) {
             navAuth.innerHTML = `
-                <a href="favorites.html" class="user_link mr-3" title="Yêu thích">
+                <a href="favorites.php" class="user_link mr-3" title="Yêu thích">
                     <i class="fa fa-heart" style="font-size: 24px;" aria-hidden="true"></i>
                 </a>
-                <a href="user.html" class="user_link mr-3" title="Tài khoản">
+                <a href="user.php" class="user_link mr-3" title="Tài khoản">
                     <i class="fa fa-user" style="font-size: 24px;" aria-hidden="true"></i>
                 </a>
                 <a href="javascript:void(0)" onclick="logout()" class="user_link" title="Đăng xuất">
@@ -278,7 +287,7 @@
             var href = link.getAttribute('href');
             if (!href || href === 'javascript:void(0)') return;
             var target = href.replace('./', '');
-            if (path.indexOf(target) !== -1 || ((path.indexOf('login.html') !== -1 || path.indexOf('register.html') !== -1) && target === 'user.html')) {
+            if (path.indexOf(target) !== -1 || ((path.indexOf('login.php') !== -1 || path.indexOf('register.php') !== -1) && target === 'user.php')) {
                 var icon = link.querySelector('i');
                 if (icon) {
                     icon.classList.add('text-warning');
@@ -291,7 +300,7 @@
         localStorage.removeItem('access_token');
         localStorage.removeItem('token');
         localStorage.removeItem('auth_user');
-        location.href = 'index.html';
+        location.href = 'index.php';
     };
 
     document.addEventListener("DOMContentLoaded", initGlobalUI);
