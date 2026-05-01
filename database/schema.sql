@@ -64,6 +64,7 @@ CREATE TABLE IF NOT EXISTS products (
     location       VARCHAR(100)            DEFAULT NULL,
     delivery_type  VARCHAR(50)             DEFAULT NULL,
     status         ENUM('available','sold','hidden') NOT NULL DEFAULT 'available',
+    is_approved    BOOLEAN        NOT NULL DEFAULT FALSE,
     created_at     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at     TIMESTAMP      NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
@@ -71,6 +72,7 @@ CREATE TABLE IF NOT EXISTS products (
     INDEX idx_products_category (category_id),
     INDEX idx_products_price    (price),
     INDEX idx_products_status   (status),
+    INDEX idx_products_approved (is_approved),
     CONSTRAINT fk_products_seller   FOREIGN KEY (seller_id)   REFERENCES users      (id) ON DELETE CASCADE,
     CONSTRAINT fk_products_category FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE SET NULL,
     CONSTRAINT fk_products_brand    FOREIGN KEY (brand_id)    REFERENCES brands     (id) ON DELETE SET NULL

@@ -29,6 +29,12 @@ class Product {
         $offset = ($page - 1) * $limit;
 
         $conditions = ["1=1"];
+        
+        // Chỉ lấy tin đã duyệt trừ khi có yêu cầu đặc biệt (cho Admin hoặc chính chủ)
+        if (!isset($params['show_all']) || $params['show_all'] == false) {
+            $conditions[] = "p.is_approved = 1";
+        }
+
         $bind_params = [];
         
         $priceRange = $this->parsePriceRange($params['price_range'] ?? null);
@@ -185,12 +191,38 @@ class Product {
             LEFT JOIN categories c ON p.category_id = c.id
             LEFT JOIN brands b ON p.brand_id = b.id
             LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
-            WHERE p.category_id = ? AND p.id != ?
+            WHERE p.category_id = ? AND p.id != ? AND p.is_approved = 1
             ORDER BY RAND()
             LIMIT ?
         ";
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$category_id, $product_id, $limit]);
         return $stmt->fetchAll();
+    }
+
+    // --- Admin Methods ---
+    
+    public function getPending(int $page = 1, int $limit = 20): array {
+        $offset = ($page - 1) * $limit;
+        $query = "
+            SELECT p.*, c.name as category_name, b.name as brand_name, u.username as seller_name, pi.image_url as image_url
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN brands b ON p.brand_id = b.id
+            LEFT JOIN users u ON p.seller_id = u.id
+            LEFT JOIN product_images pi ON p.id = pi.product_id AND pi.is_primary = 1
+            WHERE p.is_approved = 0
+            ORDER BY p.created_at ASC
+            LIMIT ? OFFSET ?
+        ";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute([$limit, $offset]);
+        return $stmt->fetchAll();
+    }
+
+    public function approve(int $id): bool {
+        $query = "UPDATE products SET is_approved = 1 WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$id]);
     }
 }
