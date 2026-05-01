@@ -79,6 +79,15 @@
             return this.getProductDetail(id);
         },
 
+        createProduct: async function(formData) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/products', {
+                method: 'POST',
+                headers: this.getAuthHeader(),
+                body: formData
+            });
+            return res.json();
+        },
+
         getCategories: async function() {
             var res = await fetch(this.resolveApiBaseUrl() + '/categories');
             return res.json();
@@ -165,6 +174,7 @@
       var location = product.location || "Toàn quốc";
       var condition = product.condition || "Đã sử dụng";
       var category = product.category_name || "Thể thao";
+      var productId = product.id || product.product_id;
   
       var isFavorite = Boolean(product.is_favorite || product.isFavorite || product.favorite_id);
       var column = document.createElement("div");
@@ -172,20 +182,20 @@
       column.innerHTML = `
         <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden product-card-modern">
           <div class="img-box product-card-media">
-            <a href="./product-detail.html?id=${product.id}" class="product-card-link">
+            <a href="./product-detail.html?id=${productId}" class="product-card-link">
               <img src="${imageUrl}" alt="${title}" class="img-fluid product-card-image">
             </a>
             <div class="card-badges">
               <span class="badge badge-primary badge-brand">${brand}</span>
             </div>
-            <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${product.id}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
+            <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${productId}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
               <span class="fav-btn-icon" aria-hidden="true">${window.getHeartIconMarkup()}</span>
             </button>
           </div>
           <div class="detail-box flex-grow-1 d-flex flex-column p-3 bg-white">
             <div class="product-category-small mb-1">${category}</div>
             <h6 class="product-title-modern mb-2 font-weight-bold">
-              <a href="./product-detail.html?id=${product.id}" class="text-dark" style="text-decoration: none;">${title}</a>
+              <a href="./product-detail.html?id=${productId}" class="text-dark" style="text-decoration: none;">${title}</a>
             </h6>
             
             <div class="product-meta-row d-flex align-items-center mb-1">
@@ -201,7 +211,7 @@
                 <h5 class="mb-0 font-weight-bold text-dark product-price-modern">${price.replace('đ', '')} <span class="currency-symbol">đ</span></h5>
               </div>
               <div class="flex-grow-1"></div>
-              <a href="./product-detail.html?id=${product.id}" class="btn-detail-link" aria-label="Xem chi tiết"><i class="fa fa-arrow-right"></i></a>
+              <a href="./product-detail.html?id=${productId}" class="btn-detail-link" aria-label="Xem chi tiết"><i class="fa fa-arrow-right"></i></a>
             </div>
           </div>
         </div>

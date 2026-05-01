@@ -1,64 +1,8 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <meta
-      name="keywords"
-      content="xe dap cu, xe dap the thao, mua ban xe dap"
-    />
-    <link rel="stylesheet" type="text/css" href="../assets/css/bootstrap.css" />
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-      rel="stylesheet"
-    />
-    <link href="../assets/css/style.css?v=2.0" rel="stylesheet" />
-    <link href="../assets/css/responsive.css" rel="stylesheet" />
-    <link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml" />
-  </head>
+<?php include '../includes/head.php'; ?>
 
   <body>
     <div class="hero_area">
-      <header class="header_section bg-black">
-        <div class="container">
-          <nav class="navbar navbar-expand-lg custom_nav-container">
-            <a class="navbar-brand d-flex align-items-center" href="./index.html" style="gap: 10px; text-decoration: none;">
-              <img src="../assets/images/favicon.svg" alt="BikeMarket Logo" width="44" height="44" />
-              <span class="text-white ml-1" style="font-size: 24px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">Bike<span style="color: #FFD700;">Market</span></span>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-              <i class="fa fa-bars" style="color: white;"></i>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mx-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="./index.html">Trang chủ</a>
-                </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="./products.html">Sản phẩm</a>
-                </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="./create_product.html">Đăng bán</a>
-                </li>
-              </ul>
-                                          <div class="user_option">
-                <a class="cart_link mr-3" href="./favorites.html" title="Yêu thích">
-                  <i class="fa fa-heart" style="font-size: 24px;" aria-hidden="true"></i>
-                </a>
-                <a href="./user.html" class="user_link" title="Tài khoản">
-                  <i class="fa fa-user" style="font-size: 24px;" aria-hidden="true"></i>
-                </a>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <?php include '../includes/navbar.php'; ?>
 
       <section class="slider_section">
         <div
@@ -88,7 +32,7 @@
                           >Tìm xe ngay</a
                         >
                         <a
-                          href="./create_product.html"
+                          href="./create_product.php"
                           class="btn-outline-premium"
                           >Đăng bán xe</a
                         >
@@ -118,11 +62,11 @@
                         mức giá không thể tốt hơn.
                       </p>
                       <div class="btn-box mt-4">
-                        <a href="./products.html" class="btn-premium"
+                        <a href="./products.php" class="btn-premium"
                           >Xem sản phẩm</a
                         >
                         <a
-                          href="./create_product.html"
+                          href="./create_product.php"
                           class="btn-outline-premium"
                           >Đăng tin ngay</a
                         >
@@ -151,7 +95,7 @@
                         <a href="#xe-noi-bat" class="btn-premium"
                           >Khám phá ngay</a
                         >
-                        <a href="./register.html" class="btn-outline-premium"
+                        <a href="./register.php" class="btn-outline-premium"
                           >Tham gia ngay</a
                         >
                       </div>
@@ -241,7 +185,7 @@
         <div class="row justify-content-center">
           <!-- Road Bike -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=road" class="category-card">
+            <a href="./products.php?category=road" class="category-card">
               <div class="category-img-box">
                 <img src="../assets/images/category_road.png" alt="Road Bike" />
               </div>
@@ -252,7 +196,7 @@
           </div>
           <!-- MTB -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=mtb" class="category-card">
+            <a href="./products.php?category=mtb" class="category-card">
               <div class="category-img-box">
                 <img src="../assets/images/category_mtb.png" alt="MTB" />
               </div>
@@ -263,7 +207,7 @@
           </div>
           <!-- Touring -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=touring" class="category-card">
+            <a href="./products.php?category=touring" class="category-card">
               <div class="category-img-box">
                 <img
                   src="../assets/images/category_touring.png"
@@ -277,7 +221,7 @@
           </div>
           <!-- City Bike -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=city" class="category-card">
+            <a href="./products.php?category=city" class="category-card">
               <div class="category-img-box">
                 <img src="../assets/images/category_city.png" alt="City Bike" />
               </div>
@@ -288,7 +232,7 @@
           </div>
           <!-- Fixed Gear -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=fixed" class="category-card">
+            <a href="./products.php?category=fixed" class="category-card">
               <div class="category-img-box">
                 <img
                   src="../assets/images/category_fixed.png"
@@ -302,7 +246,7 @@
           </div>
           <!-- Gravel -->
           <div class="col-6 col-md-4 col-lg-2 mb-4">
-            <a href="./products.html?category=gravel" class="category-card">
+            <a href="./products.php?category=gravel" class="category-card">
               <div class="category-img-box">
                 <img
                   src="../assets/images/category_gravel.png"
@@ -316,7 +260,7 @@
           </div>
         </div>
         <div class="text-center mt-3">
-          <a href="./products.html" class="explore-link-premium"
+          <a href="./products.php" class="explore-link-premium"
             >Khám phá tất cả các dòng xe</a
           >
         </div>
@@ -341,68 +285,16 @@
         </div>
 
         <div class="text-center mt-4">
-          <a href="./products.html" class="explore-link-premium"
+          <a href="./products.php" class="explore-link-premium"
             >Xem tất cả xe</a
           >
         </div>
       </div>
     </section>
 
-    <footer class="footer_section">
-      <div class="container">
-        <div class="row">
-          <div class="col-md-4 footer-col">
-            <div class="footer_contact">
-              <h4>Liên hệ</h4>
-              <div class="contact_link_box">
-                <a href="#" class="d-flex align-items-center mb-2">
-                  <i class="fa fa-map-marker mr-2" aria-hidden="true"></i>
-                  <span>Quận 1, TP. Hồ Chí Minh</span>
-                </a>
-                <a href="#" class="d-flex align-items-center mb-2">
-                  <i class="fa fa-phone mr-2" aria-hidden="true"></i>
-                  <span>0900 000 000</span>
-                </a>
-                <a href="#" class="d-flex align-items-center mb-2">
-                  <i class="fa fa-envelope mr-2" aria-hidden="true"></i>
-                  <span>support@bikemarket.vn</span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4 footer-col text-center">
-            <div class="footer_detail">
-              <a
-                href="./index.html"
-                class="footer-logo d-flex align-items-center mb-3 justify-content-center"
-                ><span
-                  class="text-white"
-                  style="
-                    font-size: 24px;
-                    font-weight: 900;
-                    letter-spacing: 1px;
-                    text-transform: uppercase;
-                  "
-                  >Bike<span style="color: #ffd700">Market</span></span
-                ></a
-              >
-              <p>Nền tảng mua bán xe đạp thể thao cũ uy tín hàng đầu.</p>
-            </div>
-          </div>
-          <div class="col-md-4 footer-col text-md-right">
-            <h4>Hỗ trợ 24/7</h4>
-            <p>08:00 - 22:00 hàng ngày</p>
-            <p>Tư vấn kỹ thuật miễn phí</p>
-          </div>
-        </div>
-      </div>
-    </footer>
+    <?php include '../includes/footer.php'; ?>
 
-    <script src="../assets/js/jquery-3.4.1.min.js"></script>
-    <script src="../assets/js/bootstrap.js"></script>
-
-    <script src="../assets/js/toast.js"></script>
-    <script src="../assets/js/core.js?v=13.0"></script>
+    <?php include '../includes/scripts.php'; ?>
     <script src="../assets/js/products.js"></script>
   </body>
 </html>
