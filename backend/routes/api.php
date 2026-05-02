@@ -17,6 +17,12 @@ if (file_exists(__DIR__ . '/../controllers/CategoryController.php')) {
 if (file_exists(__DIR__ . '/../controllers/BrandController.php')) {
     require_once __DIR__ . '/../controllers/BrandController.php';
 }
+if (file_exists(__DIR__ . '/../controllers/AdminController.php')) {
+    require_once __DIR__ . '/../controllers/AdminController.php';
+}
+if (file_exists(__DIR__ . '/../controllers/UserController.php')) {
+    require_once __DIR__ . '/../controllers/UserController.php';
+}
 
 header('Content-Type: application/json; charset=utf-8');
 
@@ -113,6 +119,39 @@ if ($uri === '/api/buy-requests' && $method === 'GET') {
         (new BuyRequestController())->index();
         exit();
     }
+}
+
+/* ═══════════════════════════════════════════
+   USER PROFILE (protected)
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/user/me' && $method === 'GET') {
+    (new UserController())->me();
+    exit();
+}
+
+if ($uri === '/api/user/profile' && $method === 'PUT') {
+    (new UserController())->updateProfile();
+    exit();
+}
+
+/* ═══════════════════════════════════════════
+   ADMIN (protected)
+   ═══════════════════════════════════════════ */
+
+if ($uri === '/api/admin/pending-products' && $method === 'GET') {
+    (new AdminController())->pending();
+    exit();
+}
+
+if ($uri === '/api/admin/approve' && $method === 'POST') {
+    (new AdminController())->approve();
+    exit();
+}
+
+if ($uri === '/api/admin/stats' && $method === 'GET') {
+    (new AdminController())->stats();
+    exit();
 }
 
 /* ═══════════════════════════════════════════

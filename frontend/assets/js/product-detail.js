@@ -243,14 +243,85 @@
     }
   }
 
+  var currentProduct = null;
+
   async function initActions(product) {
+    currentProduct = product;
     var phone = await resolveSellerPhone(product);
     setupPhoneActions(phone);
+  }
 
+  // Global listeners attached on load
+  function initGlobalListeners() {
+    // Buy Now Button
+    var btnBuyNow = document.getElementById("btnBuyNow");
+    if (btnBuyNow) {
+      btnBuyNow.addEventListener("click", function (event) {
+        event.preventDefault();
+        console.log("Buy Now clicked");
+        var userId = window.BikeApi.getAuthUserId();
+        if (!userId) {
+          showToast("Vui lòng đăng nhập để gửi yêu cầu mua.", "info");
+          window.setTimeout(() => window.location.href = "./login.php", 1500);
+          return;
+        }
+        
+        if (typeof $ !== "undefined" && typeof $.fn.modal === "function") {
+          $('#buyRequestModal').modal('show');
+        } else {
+          console.error("Bootstrap Modal or jQuery not found");
+          showToast("Có lỗi xảy ra với giao diện. Vui lòng thử lại sau.", "error");
+        }
+      });
+    }
+
+    // Confirm Buy Request
+    var confirmBtn = document.getElementById("confirmBuyRequest");
+    if (confirmBtn) {
+      confirmBtn.addEventListener("click", async function () {
+        if (!currentProduct) {
+          showToast("Đang tải thông tin sản phẩm, vui lòng đợi...", "info");
+          return;
+        }
+        
+        var message = document.getElementById("buyRequestMessage").value;
+        var productId = currentProduct.id || currentProduct.product_id;
+        
+        try {
+          confirmBtn.disabled = true;
+          confirmBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Đang gửi...';
+          
+          var res = await window.BikeApi.createBuyRequest({
+            product_id: productId,
+            message: message
+          });
+          
+          if (res.success) {
+            showToast("Gửi yêu cầu thành công! Người bán sẽ sớm liên hệ với bạn.", "success");
+            $('#buyRequestModal').modal('hide');
+            document.getElementById("buyRequestMessage").value = "";
+          } else {
+            showToast(res.message || "Không thể gửi yêu cầu.", "error");
+          }
+        } catch (error) {
+          console.error("Buy request error:", error);
+          showToast("Không thể gửi yêu cầu. Vui lòng thử lại.", "error");
+        } finally {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Gửi yêu cầu";
+        }
+      });
+    }
+
+    // Favorite Buttons
     document.querySelectorAll("#btnFavorite, #btnFavoriteSticky").forEach(function (button) {
       button.addEventListener("click", function (event) {
         event.preventDefault();
-        toggleFavorite(product);
+        if (currentProduct) {
+          toggleFavorite(currentProduct);
+        } else {
+          showToast("Đang tải sản phẩm...", "info");
+        }
       });
     });
   }
@@ -353,5 +424,8 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", initDetail);
+  document.addEventListener("DOMContentLoaded", function() {
+    initGlobalListeners();
+    initDetail();
+  });
 })();

@@ -67,7 +67,7 @@
         price_range: document.getElementById("searchPrice")?.value || ""
       });
       const params = new URLSearchParams(filters);
-      window.location.href = `./products.html${params.toString() ? `?${params.toString()}` : ""}`;
+      window.location.href = `./products.php${params.toString() ? `?${params.toString()}` : ""}`;
     });
   }
 
@@ -80,6 +80,10 @@
     const homeGrid = document.getElementById("productGrid");
     if (homeGrid && !document.getElementById("shopProductGrid")) {
       try {
+        homeGrid.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          homeGrid.appendChild(window.renderProductSkeleton());
+        }
         const res = await api.getProducts({ limit: 6 });
         const items = api.pickList(res);
         if (items.length) {
@@ -94,6 +98,10 @@
     const shopGrid = document.getElementById("shopProductGrid");
     if (shopGrid) {
       const loadShop = async (filters = {}) => {
+        shopGrid.innerHTML = "";
+        for (let i = 0; i < 6; i++) {
+          shopGrid.appendChild(window.renderProductSkeleton());
+        }
         document.getElementById("shopLoader")?.classList.remove("d-none");
         try {
           const res = await api.getProducts(filters);
@@ -127,6 +135,10 @@
       const empty = document.getElementById("favEmpty") || document.getElementById("favoritesEmpty");
 
       try {
+        favGrid.innerHTML = "";
+        for (let i = 0; i < 3; i++) {
+          favGrid.appendChild(window.renderProductSkeleton());
+        }
         const res = await api.getFavorites();
         const items = api.pickList(res);
         favGrid.innerHTML = "";

@@ -126,6 +126,11 @@ class ProductController {
         for ($i = 0; $i < $total_files; $i++) {
             if ($files['error'][$i] !== UPLOAD_ERR_OK) continue;
 
+            // Kiểm tra dung lượng (Max 5MB)
+            if ($files['size'][$i] > 5 * 1024 * 1024) {
+                continue; // Hoặc báo lỗi cụ thể
+            }
+
             $ext = strtolower(pathinfo($files['name'][$i], PATHINFO_EXTENSION));
             if (!in_array($ext, $allowed_ext, true)) continue;
 

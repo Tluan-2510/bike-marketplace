@@ -51,4 +51,33 @@ class User {
         }
         return false;
     }
+
+    /**
+     * Cập nhật thông tin user.
+     */
+    public function update(int $id, array $data): bool {
+        $fields = [];
+        $params = [];
+
+        if (isset($data['full_name'])) {
+            $fields[] = "full_name = ?";
+            $params[] = $data['full_name'];
+        }
+        if (isset($data['phone_number'])) {
+            $fields[] = "phone_number = ?";
+            $params[] = $data['phone_number'];
+        }
+        if (isset($data['avatar_url'])) {
+            $fields[] = "avatar_url = ?";
+            $params[] = $data['avatar_url'];
+        }
+
+        if (empty($fields)) return false;
+
+        $sql = "UPDATE users SET " . implode(", ", $fields) . " WHERE id = ?";
+        $params[] = $id;
+
+        $stmt = $this->conn->prepare($sql);
+        return $stmt->execute($params);
+    }
 }

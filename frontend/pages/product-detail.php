@@ -54,12 +54,50 @@
               <div id="productSpecs" class="specs-grid" aria-live="polite"></div>
 
               <div class="actions mt-4">
-                <a href="#" id="btnCall" class="btn-premium btn-block product-action-btn btn-product-call"><span id="phoneText">Gọi cho người bán</span></a>
-                <a href="#" id="btnZalo" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-block product-action-btn btn-product-zalo"><span>Chat qua Zalo</span></a>
+                <button id="btnBuyNow" type="button" class="btn-premium btn-block product-action-btn mb-3" style="background-color: var(--black); color: var(--primary); border-color: var(--black);" data-action="buy-now">
+                  <i class="fa fa-shopping-cart mr-2"></i> Mua ngay & Liên hệ
+                </button>
+                <div class="row no-gutters mb-3" style="gap: 10px;">
+                  <div class="col">
+                    <a href="#" id="btnCall" class="btn btn-outline-dark btn-block product-action-btn d-flex align-items-center justify-content-center" style="height: 50px;">
+                      <i class="fa fa-phone mr-2"></i> Gọi điện
+                    </a>
+                  </div>
+                  <div class="col">
+                    <a href="#" id="btnZalo" target="_blank" rel="noopener noreferrer" class="btn btn-outline-info btn-block product-action-btn d-flex align-items-center justify-content-center" style="height: 50px;">
+                      <i class="fa fa-comment mr-2"></i> Zalo
+                    </a>
+                  </div>
+                </div>
                 <button id="btnFavorite" class="btn-outline-premium btn-block product-action-btn btn-favorite-detail" aria-label="Yêu thích" aria-pressed="false">
                   <span class="favorite-icon" aria-hidden="true"><svg viewBox="0 0 24 24" focusable="false"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg></span>
                   <span class="favorite-text">Yêu thích</span>
                 </button>
+              </div>
+
+              <!-- Buy Request Modal -->
+              <div class="modal fade" id="buyRequestModal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content border-0 shadow">
+                    <div class="modal-header bg-warning text-dark border-0">
+                      <h5 class="modal-title font-weight-bold">Gửi yêu cầu mua xe</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body p-4">
+                      <p class="text-muted small mb-3">Hệ thống sẽ gửi thông báo cho người bán. Bạn có thể để lại lời nhắn để người bán chủ động liên hệ lại.</p>
+                      <div class="form-group">
+                        <label class="font-weight-bold">Lời nhắn của bạn:</label>
+                        <textarea id="buyRequestMessage" class="form-control" rows="4" placeholder="Ví dụ: Tôi muốn xem xe vào chiều nay, vui lòng liên hệ lại..."></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                      <button type="button" class="btn btn-light px-4" data-dismiss="modal">Hủy</button>
+                      <button type="button" id="confirmBuyRequest" class="btn-premium px-4">Gửi yêu cầu</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

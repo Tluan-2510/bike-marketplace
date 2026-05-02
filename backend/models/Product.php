@@ -225,4 +225,28 @@ class Product {
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$id]);
     }
+
+    public function delete(int $id): bool {
+        $query = "DELETE FROM products WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$id]);
+    }
+
+    public function getStats(): array {
+        $stats = [];
+        
+        // Total Users
+        $stmt = $this->conn->query("SELECT COUNT(*) as total FROM users WHERE role = 'user'");
+        $stats['total_users'] = (int)$stmt->fetch()['total'];
+        
+        // Total Active Bikes (Approved and Available)
+        $stmt = $this->conn->query("SELECT COUNT(*) as total FROM products WHERE is_approved = 1 AND status = 'available'");
+        $stats['total_active_bikes'] = (int)$stmt->fetch()['total'];
+        
+        // Total Sold Bikes
+        $stmt = $this->conn->query("SELECT COUNT(*) as total FROM products WHERE status = 'sold'");
+        $stats['total_sold_bikes'] = (int)$stmt->fetch()['total'];
+        
+        return $stats;
+    }
 }

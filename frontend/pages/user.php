@@ -9,18 +9,39 @@
       <div class="container">
         
         <div class="row">
-          <!-- Sidebar -->
           <div class="col-lg-3 col-md-4 mb-4">
-            <div class="profile-card mb-4">
-              <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=FFD700&color=000&size=150" alt="Avatar" class="profile-avatar">
-              <h4 id="userName" class="font-weight-bold mb-1">Người Dùng</h4>
-              <p id="userEmail" class="text-muted small mb-3">user@example.com</p>
+            <div class="profile-card sidebar-sticky shadow-sm">
+              <div class="profile-header text-center p-4">
+                <div class="avatar-wrapper mb-3">
+                  <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=FFD700&color=000&size=150" alt="Avatar" class="profile-avatar shadow-sm">
+                  <div class="online-indicator"></div>
+                </div>
+                <h5 id="userName" class="font-weight-bold mb-1">Người Dùng</h5>
+                <p id="userEmail" class="text-muted small mb-0">user@example.com</p>
+              </div>
               
-              <div class="nav flex-column nav-pills text-left" id="v-pills-tab" role="tablist" aria-orientation="vertical">
-                <a class="nav-link active" id="v-pills-dashboard-tab" data-toggle="pill" href="#v-pills-dashboard" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">Tổng quan</a>
-                <a class="nav-link" id="v-pills-listings-tab" data-toggle="pill" href="#v-pills-listings" role="tab" aria-controls="v-pills-listings" aria-selected="false">Xe đang bán</a>
-                <a class="nav-link" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">Cài đặt tài khoản</a>
-                <a class="nav-link text-danger mt-3" href="javascript:void(0)" onclick="logout()" id="btnLogout">Đăng xuất</a>
+              <div class="sidebar-nav p-2">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                  <a class="nav-link active d-flex align-items-center mb-1" id="v-pills-dashboard-tab" data-toggle="pill" href="#v-pills-dashboard" role="tab" aria-controls="v-pills-dashboard" aria-selected="true">
+                    <i class="fa fa-th-large mr-3"></i> <span>Tổng quan</span>
+                  </a>
+                  <a class="nav-link d-flex align-items-center mb-1" id="v-pills-listings-tab" data-toggle="pill" href="#v-pills-listings" role="tab" aria-controls="v-pills-listings" aria-selected="false">
+                    <i class="fa fa-bicycle mr-3"></i> <span>Xe đang bán</span>
+                  </a>
+                  <a class="nav-link d-flex align-items-center mb-1" id="v-pills-settings-tab" data-toggle="pill" href="#v-pills-settings" role="tab" aria-controls="v-pills-settings" aria-selected="false">
+                    <i class="fa fa-user-circle mr-3"></i> <span>Cài đặt tài khoản</span>
+                  </a>
+                  <a class="nav-link d-flex align-items-center mb-1" id="v-pills-buying-tab" data-toggle="pill" href="#v-pills-buying" role="tab" aria-controls="v-pills-buying" aria-selected="false">
+                    <i class="fa fa-shopping-bag mr-3"></i> <span>Lịch sử mua hàng</span>
+                  </a>
+                  <a class="nav-link d-flex align-items-center mb-1" id="v-pills-selling-tab" data-toggle="pill" href="#v-pills-selling" role="tab" aria-controls="v-pills-selling" aria-selected="false">
+                    <i class="fa fa-handshake-o mr-3"></i> <span>Yêu cầu từ khách</span>
+                  </a>
+                  <hr class="my-2">
+                  <a class="nav-link logout-link d-flex align-items-center text-danger" href="javascript:void(0)" onclick="logout()" id="btnLogout">
+                    <i class="fa fa-sign-out mr-3"></i> <span>Đăng xuất</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -34,18 +55,24 @@
                 <h3 class="font-weight-bold mb-4">Tổng quan tài khoản</h3>
                 <div class="row mb-5">
                   <div class="col-md-6 mb-3">
-                    <div class="stat-card">
+                    <div class="stat-card d-flex align-items-center p-4">
+                      <div class="stat-icon bg-warning-light text-warning mr-4">
+                        <i class="fa fa-bicycle"></i>
+                      </div>
                       <div>
                         <h3 class="mb-0 font-weight-bold" id="statListings">0</h3>
-                        <p class="text-muted mb-0 small text-uppercase">Tin đang bán</p>
+                        <p class="text-muted mb-0 small text-uppercase font-weight-bold">Tin đang bán</p>
                       </div>
                     </div>
                   </div>
                   <div class="col-md-6 mb-3">
-                    <div class="stat-card">
+                    <div class="stat-card d-flex align-items-center p-4">
+                      <div class="stat-icon bg-info-light text-info mr-4">
+                        <i class="fa fa-heart"></i>
+                      </div>
                       <div>
                         <h3 class="mb-0 font-weight-bold" id="statFavorites">0</h3>
-                        <p class="text-muted mb-0 small text-uppercase">Xe đã lưu</p>
+                        <p class="text-muted mb-0 small text-uppercase font-weight-bold">Xe đã lưu</p>
                       </div>
                     </div>
                   </div>
@@ -74,6 +101,55 @@
                    <div class="col-12 text-center py-5">
                       <div class="spinner-border text-warning" role="status"></div>
                    </div>
+                </div>
+              </div>
+
+              <!-- Tab Buying (Buy History) -->
+              <div class="tab-pane fade" id="v-pills-buying" role="tabpanel" aria-labelledby="v-pills-buying-tab">
+                <h3 class="font-weight-bold mb-4">Lịch sử mua hàng</h3>
+                <div class="bg-white p-4 rounded shadow-sm">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>Sản phẩm</th>
+                          <th>Ngày gửi</th>
+                          <th>Lời nhắn</th>
+                          <th>Trạng thái</th>
+                        </tr>
+                      </thead>
+                      <tbody id="buyRequestsContainer">
+                        <tr>
+                          <td colspan="4" class="text-center py-4">Đang tải dữ liệu...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab Selling (Customer Requests) -->
+              <div class="tab-pane fade" id="v-pills-selling" role="tabpanel" aria-labelledby="v-pills-selling-tab">
+                <h3 class="font-weight-bold mb-4">Yêu cầu từ khách hàng</h3>
+                <div class="bg-white p-4 rounded shadow-sm">
+                  <div class="table-responsive">
+                    <table class="table table-hover">
+                      <thead class="thead-light">
+                        <tr>
+                          <th>Khách hàng</th>
+                          <th>Sản phẩm</th>
+                          <th>Lời nhắn</th>
+                          <th>Ngày nhận</th>
+                          <th>Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody id="sellRequestsContainer">
+                        <tr>
+                          <td colspan="5" class="text-center py-4">Đang tải dữ liệu...</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
 

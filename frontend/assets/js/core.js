@@ -113,6 +113,45 @@
             return res.json();
         },
 
+        getMe: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/user/me', {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
+        updateProfile: async function(data) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/user/profile', {
+                method: 'PUT',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify(data)
+            });
+            return res.json();
+        },
+
+        getAdminStats: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/admin/stats', {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
+        createBuyRequest: async function(data) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/buy-requests', {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify(data)
+            });
+            return res.json();
+        },
+
+        getBuyRequests: async function(role) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/buy-requests?role=' + (role || 'seller'), {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
         toggleFavorite: async function(productId, action) {
             var method = (action === 'add' || action === 'POST') ? 'POST' : 'DELETE';
             var res = await fetch(this.resolveApiBaseUrl() + '/favorites', {
@@ -227,6 +266,26 @@
       `;
   
       return column;
+    };
+
+    window.renderProductSkeleton = function() {
+        var column = document.createElement("div");
+        column.className = "col-6 col-md-6 col-lg-4 mb-4";
+        column.innerHTML = `
+            <div class="box h-100 d-flex flex-column shadow-sm border rounded overflow-hidden">
+                <div class="skeleton skeleton-img"></div>
+                <div class="p-3 bg-white">
+                    <div class="skeleton skeleton-text" style="width: 40%"></div>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text" style="width: 60%"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%"></div>
+                    <div class="mt-3 pt-2 border-top d-flex">
+                        <div class="skeleton skeleton-text" style="width: 50%; height: 1.5rem"></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        return column;
     };
 
     // Global UI Initialization

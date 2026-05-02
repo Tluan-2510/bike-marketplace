@@ -74,4 +74,14 @@ class AdminController {
         
         $this->jsonResponse(false, null, "Không thể duyệt sản phẩm (ID không tồn tại hoặc lỗi server)", 500);
     }
+
+    /**
+     * Lấy thống kê hệ thống.
+     * GET /api/admin/stats
+     */
+    public function stats(): never {
+        $this->checkAdmin();
+        $stats = $this->productModel->getStats();
+        $this->jsonResponse(true, $stats, "Lấy thống kê thành công");
+    }
 }
