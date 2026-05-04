@@ -26,9 +26,22 @@
 
   function persistAuthData(data) {
     var source = data || {};
+
+    // Safety guard: never persist error responses
+    if (source.success === false || (!source.token && !source.access_token && !source.user && !source.tokens)) {
+      console.error("[Auth] Attempted to persist invalid auth data, skipping.", source);
+      return;
+    }
+
     var tokens = source.tokens || {};
     var user = source.user || source;
     var accessToken = source.access_token || source.token || tokens.access_token || "";
+
+    // Don't persist if user object looks like an error response
+    if (user && user.success === false) {
+      console.error("[Auth] User data is an error response, skipping persist.");
+      return;
+    }
 
     if (!accessToken && user && (user.id || user.user_id || user.email)) {
       accessToken = "local_session_" + (user.id || user.user_id || user.email);
@@ -39,7 +52,9 @@
       localStorage.setItem("token", accessToken);
     }
 
-    localStorage.setItem("auth_user", JSON.stringify(user));
+    if (user && (user.id || user.user_id)) {
+      localStorage.setItem("auth_user", JSON.stringify(user));
+    }
   }
 
   function resolveRedirect(form, fallback) {
