@@ -216,12 +216,7 @@
             return res.json();
         },
 
-        getAdminStats: async function() {
-            var res = await fetch(this.resolveApiBaseUrl() + '/admin/stats', {
-                headers: this.getAuthHeader()
-            });
-            return res.json();
-        },
+
 
         createBuyRequest: async function(data) {
             var res = await fetch(this.resolveApiBaseUrl() + '/buy-requests', {

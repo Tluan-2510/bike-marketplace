@@ -649,6 +649,21 @@
     loadBuyRequests();
     loadSellRequests();
 
+    // Refresh user data from server to ensure localStorage is up-to-date
+    (async function() {
+      try {
+        var meResponse = await window.BikeApi.getMe();
+        if (meResponse && meResponse.success && meResponse.data) {
+          var freshUser = meResponse.data;
+          localStorage.setItem('auth_user', JSON.stringify(freshUser));
+          renderUserInfo(freshUser);
+          user = freshUser;
+        }
+      } catch (e) {
+        console.warn("[UserPage] Could not refresh user data from API:", e);
+      }
+    })();
+
     // Tab switching logic for lazy loading
     $('a[data-toggle="pill"]').on('shown.bs.tab', function (e) {
       var targetId = $(e.target).attr('href');

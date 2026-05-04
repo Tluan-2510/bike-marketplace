@@ -1,7 +1,5 @@
 <?php include '../includes/head.php'; ?>
-<head>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  <style>
+<style>
     .admin-page .stat-card {
       transition: all 0.3s ease;
       cursor: default;
@@ -35,7 +33,6 @@
       color: white;
     }
   </style>
-</head>
 <body class="sub_page admin-page">
   <div class="hero_area">
     <?php include '../includes/navbar.php'; ?>

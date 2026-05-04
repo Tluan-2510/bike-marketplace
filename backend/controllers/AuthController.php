@@ -38,9 +38,11 @@ class AuthController {
         $input = $this->getInput();
 
         // Lấy & sanitize đầu vào
-        $username = filter_var(trim($input['username'] ?? ''), FILTER_SANITIZE_SPECIAL_CHARS);
-        $email    = filter_var(trim($input['email']    ?? ''), FILTER_SANITIZE_EMAIL);
-        $password = trim($input['password'] ?? '');
+        $username    = filter_var(trim($input['username'] ?? ''), FILTER_SANITIZE_SPECIAL_CHARS);
+        $email       = filter_var(trim($input['email']    ?? ''), FILTER_SANITIZE_EMAIL);
+        $password    = trim($input['password'] ?? '');
+        $fullName    = filter_var(trim($input['full_name'] ?? ''), FILTER_SANITIZE_SPECIAL_CHARS);
+        $phoneNumber = filter_var(trim($input['phone_number'] ?? ''), FILTER_SANITIZE_SPECIAL_CHARS);
 
         // Validate
         if (empty($username) || empty($email) || empty($password)) {
@@ -64,14 +66,16 @@ class AuthController {
         // Hash password bằng BCRYPT (yêu cầu bắt buộc)
         $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        $userId = $this->userModel->create($username, $email, $hashedPassword);
+        $userId = $this->userModel->create($username, $email, $hashedPassword, 'user', $fullName ?: null, $phoneNumber ?: null);
 
         if ($userId) {
             $this->jsonResponse(true, [
-                'user_id'  => $userId,
-                'username' => $username,
-                'email'    => $email,
-                'role'     => 'user',
+                'user_id'      => $userId,
+                'username'     => $username,
+                'email'        => $email,
+                'full_name'    => $fullName,
+                'phone_number' => $phoneNumber,
+                'role'         => 'user',
             ], 'Đăng ký thành công', 201);
         }
 

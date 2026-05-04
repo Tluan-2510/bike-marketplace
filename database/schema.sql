@@ -153,6 +153,9 @@ INSERT INTO categories (name, slug) VALUES
 ('Xe đạp Touring',         'touring'),
 ('Xe đạp Fixed Gear',      'fixed-gear'),
 ('Xe đạp BMX',             'bmx'),
+('Xe đạp Hybrid',          'city'),
+('Xe đạp Gravel',          'gravel'),
+('Triathlon / TT',          'triathlon'),
 ('Khác',                   'khac')
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 

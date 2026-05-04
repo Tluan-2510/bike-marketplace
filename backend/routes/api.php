@@ -113,7 +113,7 @@ if (preg_match('/^\/api\/products\/(\d+)\/status$/', $uri, $m)) {
    FAVORITES (protected)
    ═══════════════════════════════════════════ */
 
-if ($uri === '/api/favorites' && $method === 'POST') {
+if ($uri === '/api/favorites' && ($method === 'POST' || $method === 'DELETE')) {
     (new FavoriteController())->toggle();
     exit();
 }

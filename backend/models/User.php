@@ -16,7 +16,7 @@ class User {
     public function findByEmail(string $email): array|false {
         $email = filter_var(trim($email), FILTER_SANITIZE_EMAIL);
         $stmt = $this->conn->prepare(
-            "SELECT id, username, email, password_hash as password, role, created_at FROM users WHERE email = ? LIMIT 1"
+            "SELECT id, username, email, password_hash as password, full_name, phone_number, avatar_url, role, created_at FROM users WHERE email = ? LIMIT 1"
         );
         $stmt->execute([$email]);
         return $stmt->fetch();
@@ -27,7 +27,7 @@ class User {
      */
     public function findById(int $id): array|false {
         $stmt = $this->conn->prepare(
-            "SELECT id, username, email, role, created_at FROM users WHERE id = ? LIMIT 1"
+            "SELECT id, username, email, full_name, phone_number, avatar_url, role, created_at FROM users WHERE id = ? LIMIT 1"
         );
         $stmt->execute([$id]);
         return $stmt->fetch();
@@ -37,16 +37,16 @@ class User {
      * Tạo user mới. Password phải đã được hash bằng password_hash() trước khi gọi.
      * Trả về ID mới hoặc false nếu thất bại.
      */
-    public function create(string $username, string $email, string $hashedPassword, string $role = 'user'): int|false {
+    public function create(string $username, string $email, string $hashedPassword, string $role = 'user', ?string $fullName = null, ?string $phoneNumber = null): int|false {
         $username = filter_var(trim($username), FILTER_SANITIZE_SPECIAL_CHARS);
         $email    = filter_var(trim($email),    FILTER_SANITIZE_EMAIL);
         $role     = in_array($role, ['user', 'admin']) ? $role : 'user';
 
         $stmt = $this->conn->prepare(
-            "INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)"
+            "INSERT INTO users (username, email, password_hash, role, full_name, phone_number) VALUES (?, ?, ?, ?, ?, ?)"
         );
 
-        if ($stmt->execute([$username, $email, $hashedPassword, $role])) {
+        if ($stmt->execute([$username, $email, $hashedPassword, $role, $fullName, $phoneNumber])) {
             return (int)$this->conn->lastInsertId();
         }
         return false;

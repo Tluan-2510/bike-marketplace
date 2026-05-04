@@ -86,7 +86,7 @@
     var productId = params.get("id");
 
     if (!productId) {
-      window.location.href = "./products.html";
+      window.location.href = "./products.php";
       return;
     }
 

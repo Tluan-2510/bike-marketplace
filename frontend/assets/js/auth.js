@@ -61,6 +61,11 @@
       }
 
       var response = await window.BikeApi.login(payload);
+      
+      if (!response || !response.success) {
+        throw new Error(response && response.message ? response.message : "Đăng nhập thất bại.");
+      }
+
       persistAuthData(response.data || response);
 
       if (window.BikeToast && typeof window.BikeToast.show === "function") {
@@ -98,6 +103,10 @@
         email: email,
         phone_number: phone,
         password: password
+      }).then(function(response) {
+        if (!response || !response.success) {
+          throw new Error(response && response.message ? response.message : "Đăng ký thất bại.");
+        }
       });
 
       if (window.BikeToast && typeof window.BikeToast.show === "function") {
