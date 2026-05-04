@@ -1,17 +1,18 @@
 <p align="center">
-  <img src="frontend/assets/images/favicon.svg" alt="Bike Marketplace Logo" width="100">
+  <img src="frontend/assets/images/favicon.svg" alt="Bike Marketplace Logo" width="80">
 </p>
 
 <h1 align="center">🚲 Bike Marketplace</h1>
 
 <p align="center">
-  <strong>Nền Tảng Mua Bán Xe Đạp Thể Thao Chuyên Nghiệp</strong>
+  <strong>Nền tảng mua bán xe đạp thể thao chuyên nghiệp — Kết nối người mua và người bán trong cộng đồng xe đạp Việt Nam</strong>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/PHP-7.4%2B-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP">
   <img src="https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
   <img src="https://img.shields.io/badge/Docker-Enabled-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker">
+  <img src="https://img.shields.io/badge/Nginx-stable-009639?style=for-the-badge&logo=nginx&logoColor=white" alt="Nginx">
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
 </p>
 
@@ -19,41 +20,42 @@
 
 ## 🎯 Giới thiệu
 
-**Bike Marketplace** là giải pháp kết nối cộng đồng yêu xe đạp thể thao. Chúng tôi tập trung vào việc tạo ra một môi trường giao dịch minh bạch, nơi người mua có thể tìm thấy những chiếc xe chất lượng với thông số kỹ thuật chi tiết nhất, và người bán có thể tiếp cận đúng đối tượng khách hàng.
+**Bike Marketplace** là một nền tảng web fullstack cho phép người dùng mua bán xe đạp thể thao đã qua sử dụng. Hệ thống được xây dựng với kiến trúc **Frontend–Backend tách biệt**, giao tiếp qua **RESTful API** và triển khai hoàn toàn bằng **Docker**.
 
-### ✨ Tính năng nổi bật
+### ✨ Tính năng chính
 
-- 🔍 **Tìm kiếm thông minh**: Lọc xe theo thương hiệu, loại xe, tình trạng và khu vực.
-- 📊 **Thông số chuyên sâu**: Cung cấp chi tiết về Group-set, khung xe, kích thước bánh và phanh.
-- 📸 **Thư viện hình ảnh**: Hỗ trợ nhiều góc chụp giúp đánh giá chính xác tình trạng xe.
-- 📩 **Thương lượng trực tiếp**: Hệ thống "Buy Request" giúp người mua và người bán dễ dàng trao đổi giá.
-- ✅ **Xác minh uy tín**: Hệ thống tích xanh và đánh giá giúp tăng độ tin cậy.
+| Tính năng | Mô tả |
+|---|---|
+| 🔐 **Xác thực JWT** | Đăng ký, đăng nhập với token bảo mật |
+| 📋 **Quản lý tin đăng** | Tạo, chỉnh sửa, xóa sản phẩm với nhiều ảnh |
+| 🛡️ **Duyệt bài (Admin)** | Admin có thể duyệt/từ chối sản phẩm trước khi hiển thị |
+| 🔍 **Tìm kiếm & Lọc** | Lọc theo thương hiệu, loại xe, tình trạng, khu vực, giá |
+| 📩 **Buy Request** | Người mua gửi yêu cầu mua, người bán phản hồi |
+| ❤️ **Yêu thích** | Lưu và quản lý danh sách xe yêu thích |
+| 👤 **Hồ sơ cá nhân** | Xem và cập nhật thông tin, quản lý tin đăng |
+| 📊 **Thông số kỹ thuật** | Chi tiết về groupset, khung xe, kích thước bánh, phanh |
 
 ---
 
 ## 🏗️ Kiến trúc hệ thống
 
-Dưới đây là sơ đồ luồng hoạt động của hệ thống:
-
-```mermaid
-graph TD
-    User((Người dùng)) -->|Truy cập| FE[Frontend - PHP/HTML/JS]
-    FE -->|API Call| BE[Backend - PHP RESTful API]
-    BE -->|Query| DB[(MySQL Database)]
-    BE -->|Lưu trữ| Storage[Physical File Storage]
-    
-    subgraph "Core Components"
-        BE
-        DB
-        Storage
-    end
+```
+┌─────────────────────────────────────────────────────────┐
+│                     DOCKER NETWORK                      │
+│                                                         │
+│  ┌──────────────┐    ┌──────────────┐    ┌───────────┐  │
+│  │    Nginx     │───▶│   PHP-FPM    │───▶│   MySQL   │  │
+│  │  Port: 8888  │    │  (Backend)   │    │ Port:3306 │  │
+│  └──────────────┘    └──────────────┘    └───────────┘  │
+│         │                  │                            │
+│  Serve Frontend       RESTful API                       │
+│  (PHP pages)        /api/v1/...                         │
+└─────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🗄️ Thiết kế Cơ sở dữ liệu
-
-Hệ thống được thiết kế chuẩn hóa để tối ưu hóa việc quản lý dữ liệu xe đạp:
+## 🗄️ Mô hình cơ sở dữ liệu
 
 ```mermaid
 erDiagram
@@ -70,17 +72,23 @@ erDiagram
         int id PK
         string username
         string email
+        string password_hash
         string full_name
+        string role
         boolean is_verified
         float rating
     }
     PRODUCTS {
         int id PK
+        int user_id FK
+        int category_id FK
+        int brand_id FK
         string title
         decimal price
         string condition_state
         string frame_material
         string groupset
+        string status
     }
 ```
 
@@ -88,54 +96,161 @@ erDiagram
 
 ## 🛠️ Công nghệ sử dụng
 
-| Layer | Technologies |
-| --- | --- |
-| **Frontend** | ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white) ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css3&logoColor=white) ![JS](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black) |
-| **Backend** | ![PHP](https://img.shields.io/badge/PHP-777BB4?style=flat-square&logo=php&logoColor=white) (RESTful API) |
-| **Database** | ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat-square&logo=mysql&logoColor=white) |
-| **DevOps** | ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) ![Compose](https://img.shields.io/badge/Docker--Compose-2496ED?style=flat-square&logo=docker&logoColor=white) |
+| Tầng | Công nghệ |
+|---|---|
+| **Frontend** | PHP (template), HTML5, CSS3 (Vanilla), JavaScript (Vanilla) |
+| **UI Library** | Bootstrap 5, Font Awesome |
+| **Backend** | PHP 8 — RESTful API (không framework) |
+| **Database** | MySQL 8.0 |
+| **Auth** | JWT (JSON Web Token) + bcrypt |
+| **DevOps** | Docker, Docker Compose, Nginx, PHP-FPM |
+
+---
+
+## 📂 Cấu trúc thư mục
+
+```
+bike-marketplace/
+├── backend/                    # PHP Backend — RESTful API
+│   ├── config/
+│   │   └── database.php        # Kết nối PDO
+│   ├── controllers/
+│   │   ├── AuthController.php
+│   │   ├── ProductController.php
+│   │   ├── BuyRequestController.php
+│   │   ├── FavoriteController.php
+│   │   ├── UserController.php
+│   │   ├── AdminController.php
+│   │   ├── BrandController.php
+│   │   └── CategoryController.php
+│   ├── models/
+│   │   ├── User.php
+│   │   ├── Product.php
+│   │   ├── BuyRequest.php
+│   │   ├── Favorite.php
+│   │   ├── Brand.php
+│   │   └── Category.php
+│   ├── middleware/
+│   │   └── AuthMiddleware.php  # JWT verification
+│   ├── routes/
+│   │   └── api.php             # Route dispatcher
+│   ├── utils/
+│   │   ├── JwtHelper.php
+│   │   └── response.php
+│   ├── uploads/                # Ảnh sản phẩm (bị gitignore)
+│   └── index.php               # Entry point API
+│
+├── frontend/                   # Giao diện người dùng
+│   ├── pages/
+│   │   ├── index.php           # Trang chủ
+│   │   ├── products.php        # Danh sách sản phẩm
+│   │   ├── product-detail.php  # Chi tiết sản phẩm
+│   │   ├── create_product.php  # Đăng bán xe
+│   │   ├── user.php            # Hồ sơ cá nhân
+│   │   ├── favorites.php       # Danh sách yêu thích
+│   │   ├── admin.php           # Trang quản trị
+│   │   ├── login.php
+│   │   └── register.php
+│   ├── includes/               # PHP components tái sử dụng
+│   │   ├── head.php
+│   │   ├── navbar.php
+│   │   ├── footer.php
+│   │   └── scripts.php
+│   └── assets/
+│       ├── css/                # Stylesheet theo trang
+│       ├── js/                 # JavaScript theo module
+│       └── images/             # Ảnh tĩnh (hero, categories, icons)
+│
+├── database/
+│   ├── schema.sql              # DDL — Tạo toàn bộ bảng
+│   ├── seed.sql                # Dữ liệu mẫu cơ bản
+│   ├── sample_products.sql     # Dữ liệu sản phẩm demo
+│   └── reset_system.php        # Script reset & tạo admin
+│
+├── docker/
+│   ├── nginx/default.conf      # Nginx routing config
+│   └── php/Dockerfile          # PHP-FPM image
+│
+├── docker-compose.yml          # Điều phối 3 services
+├── .env.example                # Mẫu biến môi trường
+└── .gitignore
+```
 
 ---
 
 ## 🚀 Hướng dẫn khởi chạy
 
-### 1. Sử dụng Docker (Khuyên dùng)
-Yêu cầu: Đã cài đặt Docker & Docker Compose.
+### Yêu cầu
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) đã cài đặt và đang chạy
+
+### Các bước
+
 ```bash
+# 1. Clone repository
+git clone https://github.com/Tluan-2510/bike-marketplace.git
+cd bike-marketplace
+
+# 2. Tạo file môi trường
+cp .env.example .env
+
+# 3. Khởi động toàn bộ hệ thống
 docker-compose up -d --build
 ```
-Hệ thống sẽ tự động khởi tạo:
-- **Web App**: `http://localhost:8080`
-- **Database**: Cổng `3306`
 
-### 2. Cài đặt thủ công (XAMPP)
-Vui lòng tham khảo file chi tiết: [📄 SETUP.md](file:///c:/Users/ntlxx/OneDrive/Desktop/Web/bike-marketplace/SETUP.md)
+### Truy cập
+
+| Service | URL |
+|---|---|
+| **Web App** | http://localhost:8888 |
+| **API Endpoint** | http://localhost:8888/api/v1/ |
+| **Database** | `localhost:3306` (user: root / pass: root) |
+
+### Tài khoản mặc định
+
+Hệ thống tự động seed dữ liệu qua `database/seed.sql`. Để tạo tài khoản admin hoặc reset dữ liệu:
+
+```bash
+docker exec -it bike_market_app php /var/www/html/database/reset_system.php
+```
+
+---
+
+## 🔌 API Overview
+
+Base URL: `http://localhost:8888/api/v1`
+
+| Method | Endpoint | Mô tả | Auth |
+|---|---|---|---|
+| `POST` | `/auth/register` | Đăng ký tài khoản | ❌ |
+| `POST` | `/auth/login` | Đăng nhập, nhận JWT | ❌ |
+| `GET` | `/products` | Lấy danh sách sản phẩm | ❌ |
+| `GET` | `/products/{id}` | Chi tiết sản phẩm | ❌ |
+| `POST` | `/products` | Đăng bán sản phẩm | ✅ |
+| `PUT` | `/products/{id}` | Cập nhật sản phẩm | ✅ |
+| `DELETE` | `/products/{id}` | Xóa sản phẩm | ✅ |
+| `POST` | `/buy-requests` | Gửi yêu cầu mua | ✅ |
+| `GET` | `/buy-requests` | Xem yêu cầu của tôi | ✅ |
+| `POST` | `/favorites/{id}` | Thêm/bỏ yêu thích | ✅ |
+| `GET` | `/users/me` | Thông tin cá nhân | ✅ |
+| `PUT` | `/users/me` | Cập nhật hồ sơ | ✅ |
+| `GET` | `/admin/products` | Duyệt sản phẩm (admin) | ✅ Admin |
+| `PUT` | `/admin/products/{id}` | Approve/reject sản phẩm | ✅ Admin |
+| `GET` | `/brands` | Danh sách thương hiệu | ❌ |
+| `GET` | `/categories` | Danh sách danh mục | ❌ |
+
+> **Auth**: Gửi header `Authorization: Bearer <token>` với các endpoint yêu cầu xác thực.
 
 ---
 
 ## 👥 Đội ngũ phát triển
 
-| Role | Thành viên |
-| --- | --- |
+| Vai trò | Thành viên |
+|---|---|
 | **Frontend** | Huỳnh Văn Khánh, Nguyễn Hoàng Phương |
 | **Backend** | Vạn Tường Ceasar, Nguyễn Duy Ngọc, Nguyễn Thành Luân |
 | **Database & DevOps** | Phạm Văn Hưng |
 
 ---
 
-## 📂 Cấu trúc thư mục
-
-```text
-.
-├── backend/            # PHP API & Business Logic
-├── frontend/           # Giao diện người dùng & Assets
-├── database/           # SQL scripts & Schema
-├── docker/             # Docker configuration files
-└── docker-compose.yml  # File điều phối container
-```
-
----
-
-<p align="center">
-  Made with ❤️ for the Bike Community
-</p>
+<p align="center">Made with ❤️ for the Bike Community · Vietnam 🇻🇳</p>

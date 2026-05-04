@@ -20,3 +20,6 @@
 
 /* 6. Forms & Input Components (Search, Uploads) */
 @import url("forms.css");
+
+/* 7. User Profile Specific Styles */
+@import url("user-profile.css");

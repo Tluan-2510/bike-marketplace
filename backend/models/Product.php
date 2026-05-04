@@ -88,9 +88,17 @@ class Product {
         ";
 
         $stmt = $this->conn->prepare($query);
-        // PDO with emulated prepares disabled needs parameters for LIMIT/OFFSET to be integers or passed correctly
-        $finalParams = array_merge($bind_params, [$limit, $offset]);
-        $stmt->execute($finalParams);
+        
+        // Bind where parameters
+        foreach ($bind_params as $index => $value) {
+            $stmt->bindValue($index + 1, $value);
+        }
+        
+        // Bind limit and offset as integers
+        $stmt->bindValue(count($bind_params) + 1, (int)$limit, \PDO::PARAM_INT);
+        $stmt->bindValue(count($bind_params) + 2, (int)$offset, \PDO::PARAM_INT);
+        
+        $stmt->execute();
         $items = $stmt->fetchAll();
 
         return [
@@ -216,7 +224,9 @@ class Product {
             LIMIT ? OFFSET ?
         ";
         $stmt = $this->conn->prepare($query);
-        $stmt->execute([$limit, $offset]);
+        $stmt->bindValue(1, (int)$limit, \PDO::PARAM_INT);
+        $stmt->bindValue(2, (int)$offset, \PDO::PARAM_INT);
+        $stmt->execute();
         return $stmt->fetchAll();
     }
 
@@ -224,6 +234,15 @@ class Product {
         $query = "UPDATE products SET is_approved = 1 WHERE id = ?";
         $stmt = $this->conn->prepare($query);
         return $stmt->execute([$id]);
+    }
+
+    public function updateStatus(int $id, string $status): bool {
+        $allowed = ['available', 'sold', 'hidden'];
+        if (!in_array($status, $allowed)) return false;
+        
+        $query = "UPDATE products SET status = ? WHERE id = ?";
+        $stmt = $this->conn->prepare($query);
+        return $stmt->execute([$status, $id]);
     }
 
     public function delete(int $id): bool {

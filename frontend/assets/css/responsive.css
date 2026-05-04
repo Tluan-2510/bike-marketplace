@@ -150,7 +150,7 @@
 
   /* Product Detail Mobile Fixes */
   .product-detail-section {
-    padding: 30px 0;
+    padding: 30px 15px !important;
   }
 
   .detail-gallery-container {
@@ -190,7 +190,7 @@
   }
 
   .bg-white.p-5.rounded.shadow-sm {
-    padding: 25px !important;
+    padding: 15px !important;
   }
 
   /* Product Card Mobile Fixes - Index & Shop */
@@ -267,8 +267,18 @@
   }
 }
 
+@media (max-width: 1199px) {
+  .container {
+    padding-left: 15px !important;
+    padding-right: 15px !important;
+    max-width: 100% !important;
+  }
+}
+
 @media (min-width: 1200px) {
   .container {
     max-width: 1170px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 }

@@ -9,17 +9,52 @@
         },
         
         getAuthHeader: function() {
-            var token = localStorage.getItem('access_token');
-            return token ? { 'Authorization': 'Bearer ' + token } : {};
+            var token = this.getAuthToken();
+            if (!token) {
+                console.warn("[BikeApi] No token found for Authorization header");
+                return {};
+            }
+            return { 'Authorization': 'Bearer ' + token };
         },
 
         getAuthUserId: function() {
-            var token = localStorage.getItem('access_token');
+            // First try to get from stored user object (most reliable)
+            var user = this.getAuthUser();
+            if (user && (user.id || user.user_id)) {
+                var id = user.id || user.user_id;
+                console.log("[BikeApi] Found User ID in localStorage:", id);
+                return id;
+            }
+
+            // Fallback to manual JWT decoding
+            var token = this.getAuthToken();
+            console.log("[BikeApi] Token from localStorage:", token ? "Exists (length: " + token.length + ")" : "MISSING");
+            
             if (!token) return null;
             try {
-                var payload = JSON.parse(atob(token.split('.')[1]));
-                return payload.sub || payload.id || payload.user_id;
+                var parts = token.split('.');
+                if (parts.length !== 3) {
+                    console.error("[BikeApi] Invalid token format (expected 3 parts)");
+                    return null;
+                }
+                var base64Url = parts[1];
+                
+                // Convert Base64URL to Base64
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+                
+                // Add padding if missing
+                var pad = base64.length % 4;
+                if (pad) {
+                    if (pad === 1) throw new Error("Invalid base64");
+                    base64 += new Array(5 - pad).join('=');
+                }
+                
+                var payload = JSON.parse(atob(base64));
+                var id = payload.sub || payload.id || payload.user_id;
+                console.log("[BikeApi] Decoded User ID from JWT:", id);
+                return id;
             } catch (e) {
+                console.error("[BikeApi] Failed to decode auth token:", e);
                 return null;
             }
         },
@@ -59,13 +94,24 @@
         resolveImageUrl: function(path) {
             if (!path) return "../assets/images/placeholder-bike.png";
             if (path.startsWith('http')) return path;
+            if (path.startsWith('/backend/uploads/') || path.startsWith('backend/uploads/')) {
+                return (path.startsWith('/') ? '' : '/') + path;
+            }
             return "/backend/uploads/" + path;
         },
 
         // API Methods
         getProducts: async function(params) {
             var query = params ? '?' + new URLSearchParams(params).toString() : '';
-            var res = await fetch(this.resolveApiBaseUrl() + '/products' + query);
+            var headers = {};
+            var authHeader = this.getAuthHeader();
+            if (authHeader) {
+                headers = authHeader;
+            }
+            console.log("[BikeApi] Fetching products:", query, "Headers:", headers);
+            var res = await fetch(this.resolveApiBaseUrl() + '/products' + query, {
+                headers: headers
+            });
             return res.json();
         },
 
@@ -86,6 +132,36 @@
             });
             return res.json();
         },
+        updateProductStatus: async function(id, status) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/products/' + id + '/status', {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify({ status: status })
+            });
+            return res.json();
+        },
+        getAdminStats: async function() {
+            var res = await fetch(this.resolveApiBaseUrl() + '/admin/stats', {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
+        getPendingProducts: async function(page) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/admin/pending-products?page=' + (page || 1), {
+                headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
+        approveProduct: async function(productId) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/admin/approve', {
+                method: 'POST',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify({ product_id: productId })
+            });
+            return res.json();
+        },
 
         createProduct: async function(formData) {
             var res = await fetch(this.resolveApiBaseUrl() + '/products', {
@@ -93,7 +169,18 @@
                 headers: this.getAuthHeader(),
                 body: formData
             });
-            return res.json();
+            
+            var contentType = res.headers.get("content-type");
+            if (contentType && contentType.indexOf("application/json") !== -1) {
+                return res.json();
+            } else {
+                var text = await res.text();
+                console.error("[BikeApi] Expected JSON but got:", text.substring(0, 100));
+                return { 
+                    success: false, 
+                    message: "Lỗi hệ thống (HTTP " + res.status + "). Có thể file quá lớn hoặc lỗi máy chủ." 
+                };
+            }
         },
 
         getCategories: async function() {
@@ -146,8 +233,18 @@
         },
 
         getBuyRequests: async function(role) {
-            var res = await fetch(this.resolveApiBaseUrl() + '/buy-requests?role=' + (role || 'seller'), {
+            var url = this.resolveApiBaseUrl() + '/buy-requests' + (role ? '?role=' + role : '');
+            var res = await fetch(url, {
                 headers: this.getAuthHeader()
+            });
+            return res.json();
+        },
+
+        updateBuyRequestStatus: async function(id, status) {
+            var res = await fetch(this.resolveApiBaseUrl() + '/buy-requests/' + id, {
+                method: 'PUT',
+                headers: Object.assign({ 'Content-Type': 'application/json' }, this.getAuthHeader()),
+                body: JSON.stringify({ status: status })
             });
             return res.json();
         },
@@ -218,8 +315,6 @@
       );
       var price = window.formatCurrency(product.price);
       var brand = product.brand_name || product.brand || "Xe đạp";
-      var location = product.location || "Toàn quốc";
-      var condition = product.condition || "Đã sử dụng";
       var category = product.category_name || "Thể thao";
       var productId = product.id || product.product_id;
   
@@ -234,22 +329,22 @@
             </a>
             <div class="card-badges">
               <span class="badge badge-primary badge-brand">${brand}</span>
+              ${(product.is_approved == 0 || product.is_approved === '0' || product.is_approved === false) ? '<span class="badge badge-warning badge-pending ml-1" style="background: #ffc107; color: #212529; font-weight: bold; border: 1px solid rgba(0,0,0,0.1);">Chờ duyệt</span>' : ''}
             </div>
             <button class="fav-btn${isFavorite ? " active" : ""}" data-id="${productId}" aria-pressed="${isFavorite ? "true" : "false"}" aria-label="${isFavorite ? "Bỏ yêu thích" : "Yêu thích"}">
               <span class="fav-btn-icon" aria-hidden="true">${window.getHeartIconMarkup()}</span>
             </button>
           </div>
           <div class="detail-box flex-grow-1 d-flex flex-column p-3 bg-white">
-            <div class="product-category-small mb-1">${category}</div>
             <h6 class="product-title-modern mb-2 font-weight-bold">
               <a href="./product-detail.php?id=${productId}" class="text-dark" style="text-decoration: none;">${title}</a>
             </h6>
             
             <div class="product-meta-row d-flex align-items-center mb-1">
-              <span class="product-location-tag"><i class="fa fa-map-marker mr-1"></i> ${location}</span>
+              <span class="product-brand-tag"><i class="fa fa-tag mr-1"></i> ${brand}</span>
             </div>
             <div class="product-meta-row d-flex align-items-center mb-3">
-              <span class="product-condition-tag">${condition}</span>
+              <span class="product-category-tag"><i class="fa fa-bicycle mr-1"></i> ${category}</span>
             </div>
   
             <div class="mt-auto pt-2 border-top d-flex align-items-center w-100">
@@ -339,18 +434,38 @@
                 </a>
             `;
         }
+    }
 
+    function updateActiveLinks() {
         var path = window.location.pathname;
-        var links = navAuth.querySelectorAll('a');
+        var links = document.querySelectorAll('.navbar-nav .nav-link, .user_option .user_link, .user_option .cart_link');
+        
         links.forEach(function(link) {
             var href = link.getAttribute('href');
             if (!href || href === 'javascript:void(0)') return;
-            var target = href.replace('./', '');
-            if (path.indexOf(target) !== -1 || ((path.indexOf('login.php') !== -1 || path.indexOf('register.php') !== -1) && target === 'user.php')) {
-                var icon = link.querySelector('i');
-                if (icon) {
-                    icon.classList.add('text-warning');
+            
+            // Normalize path and href for comparison
+            var fileName = path.split('/').pop() || 'index.php';
+            var target = href.split('/').pop();
+            
+            // Handle home path index.php vs /
+            if ((fileName === 'index.php' || fileName === '') && target === 'index.php') {
+                link.closest('.nav-item')?.classList.add('active');
+                link.classList.add('text-warning');
+                return;
+            }
+
+            if (fileName === target || (fileName === 'user.php' && (target === 'login.php' || target === 'register.php'))) {
+                var navItem = link.closest('.nav-item');
+                if (navItem) {
+                    navItem.classList.add('active');
+                } else {
+                    link.classList.add('text-warning');
                 }
+            } else {
+                var navItem = link.closest('.nav-item');
+                if (navItem) navItem.classList.remove('active');
+                link.classList.remove('text-warning');
             }
         });
     }
@@ -362,6 +477,24 @@
         location.href = 'index.php';
     };
 
-    document.addEventListener("DOMContentLoaded", initGlobalUI);
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function() {
+            initGlobalUI();
+            updateActiveLinks();
+        });
+    } else {
+        initGlobalUI();
+        updateActiveLinks();
+    }
+
+    // Auto-show Admin link if user is admin
+    document.addEventListener("DOMContentLoaded", function() {
+        var user = window.BikeApi.getAuthUser();
+        if (user && user.role === 'admin') {
+            var adminLink = document.getElementById('navAdminLink');
+            if (adminLink) adminLink.classList.remove('d-none');
+        }
+        updateActiveLinks(); // Run again after showing admin link
+    });
 
 })(window, document);

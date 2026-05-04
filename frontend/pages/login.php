@@ -13,7 +13,7 @@
         <div class="row justify-content-center">
           <div class="col-md-5">
             <div class="bg-white p-5 shadow-sm rounded">
-              <form id="loginForm" data-redirect="./index.html">
+              <form id="loginForm" data-redirect="./index.php">
                 <div class="form-group mb-4">
                   <label class="font-weight-bold">Email</label>
                   <input type="email" class="form-control" name="email" placeholder="email@example.com" required />

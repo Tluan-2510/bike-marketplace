@@ -112,7 +112,17 @@
     setText("breadcrumbName", title);
     setText("productName", title);
     setText("productPrice", api.formatCurrency(product.price));
-    setText("productBadge", product.category_name || "Xe đạp");
+    var categoryName = product.category_name || "Xe đạp";
+    var badgeHtml = categoryName;
+    if (product.is_approved == 0 || product.is_approved === '0' || product.is_approved === false) {
+      badgeHtml += ' <span class="badge badge-warning ml-2" style="background: #ffc107; color: #212529; font-size: 0.7em; vertical-align: middle;">Chờ duyệt</span>';
+      var badgeElem = document.getElementById("productBadge");
+      if (badgeElem) {
+        badgeElem.innerHTML = badgeHtml;
+      }
+    } else {
+      setText("productBadge", categoryName);
+    }
     setText("productDesc", product.description || "Không có mô tả.");
     var sellerName = product.seller_name || product.full_name || "Người bán";
     setText("sellerName", sellerName);
@@ -247,6 +257,53 @@
 
   async function initActions(product) {
     currentProduct = product;
+    var api = window.BikeApi;
+    var currentUserId = api.getAuthUserId();
+    var sellerId = product.seller_id || product.user_id;
+
+    // Show/Hide actions based on ownership
+    var ownerBox = document.getElementById("ownerActions");
+    var visitorBox = document.getElementById("visitorActions");
+
+    if (currentUserId && String(currentUserId) === String(sellerId)) {
+      if (ownerBox) ownerBox.classList.remove("d-none");
+      if (visitorBox) visitorBox.classList.add("d-none");
+      
+      // Update status if already sold
+      var btnMarkSold = document.getElementById("btnMarkSold");
+      if (product.status === "sold" && btnMarkSold) {
+        btnMarkSold.disabled = true;
+        btnMarkSold.innerHTML = '<i class="fa fa-check-circle mr-2"></i> TIN ĐÃ BÁN';
+        btnMarkSold.className = "btn-sold-status mb-3";
+      }
+    } else {
+      if (ownerBox) ownerBox.classList.add("d-none");
+      if (visitorBox) visitorBox.classList.remove("d-none");
+      
+      // Show "Sold Out" badge if status is sold
+      if (product.status === "sold") {
+        var btnBuyNow = document.getElementById("btnBuyNow");
+        if (btnBuyNow) {
+          btnBuyNow.disabled = true;
+          btnBuyNow.innerHTML = '<i class="fa fa-lock mr-2"></i> SẢN PHẨM ĐÃ BÁN';
+          btnBuyNow.className = "btn-sold-status mb-3";
+        }
+
+        // Cập nhật thanh sticky trên mobile
+        var btnCallSticky = document.getElementById("btnCallSticky");
+        if (btnCallSticky) {
+          btnCallSticky.textContent = "HẾT HÀNG";
+          btnCallSticky.style.background = "#ccc";
+          btnCallSticky.style.pointerEvents = "none";
+          btnCallSticky.href = "javascript:void(0)";
+        }
+        var btnZaloSticky = document.getElementById("btnZaloSticky");
+        if (btnZaloSticky) {
+          btnZaloSticky.style.display = "none";
+        }
+      }
+    }
+
     var phone = await resolveSellerPhone(product);
     setupPhoneActions(phone);
   }
@@ -324,6 +381,86 @@
         }
       });
     });
+
+    // Mark as Sold Button
+    var btnMarkSold = document.getElementById("btnMarkSold");
+    if (btnMarkSold) {
+      btnMarkSold.addEventListener("click", async function() {
+        if (!currentProduct) return;
+        
+        const result = await Swal.fire({
+          title: 'Xác nhận đã bán?',
+          text: "Tin đăng sẽ không hiển thị trên chợ nữa sau khi bạn xác nhận.",
+          icon: 'question',
+          showCancelButton: true,
+          confirmButtonColor: '#1a1a1a',
+          cancelButtonColor: '#6c757d',
+          confirmButtonText: 'Đúng, tôi đã bán xe',
+          cancelButtonText: 'Hủy',
+          background: '#ffffff',
+          color: '#1a1a1a',
+          borderRadius: '15px',
+          customClass: {
+            confirmButton: 'btn-swal-confirm',
+            cancelButton: 'btn-swal-cancel'
+          }
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+          btnMarkSold.disabled = true;
+          var res = await window.BikeApi.updateProductStatus(currentProduct.id || currentProduct.product_id, "sold");
+          if (res.success) {
+            window.location.reload();
+          } else {
+            showToast(res.message || "Không thể cập nhật trạng thái.", "error");
+            btnMarkSold.disabled = false;
+          }
+        } catch (error) {
+          showToast("Có lỗi xảy ra. Vui lòng thử lại.", "error");
+          btnMarkSold.disabled = false;
+        }
+      });
+    }
+
+    // Delete Product Button
+    var btnDeleteProduct = document.getElementById("btnDeleteProduct");
+    if (btnDeleteProduct) {
+      btnDeleteProduct.addEventListener("click", async function() {
+        if (!currentProduct) return;
+
+        const result = await Swal.fire({
+          title: 'Gỡ tin đăng?',
+          text: "Bạn có chắc chắn muốn gỡ tin này? Hành động này không thể hoàn tác.",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#1a1a1a',
+          confirmButtonText: 'Gỡ tin ngay',
+          cancelButtonText: 'Quay lại',
+          background: '#ffffff',
+          color: '#1a1a1a',
+          borderRadius: '15px'
+        });
+
+        if (!result.isConfirmed) return;
+
+        try {
+          btnDeleteProduct.disabled = true;
+          var res = await window.BikeApi.deleteProduct(currentProduct.id || currentProduct.product_id);
+          if (res.success) {
+            window.location.href = "./user.php";
+          } else {
+            showToast(res.message || "Không thể xóa tin.", "error");
+            btnDeleteProduct.disabled = false;
+          }
+        } catch (error) {
+          showToast("Có lỗi xảy ra. Vui lòng thử lại.", "error");
+          btnDeleteProduct.disabled = false;
+        }
+      });
+    }
   }
 
   function setupPhoneActions(phone) {
@@ -424,8 +561,14 @@
     }
   }
 
-  document.addEventListener("DOMContentLoaded", function() {
+  function start() {
     initGlobalListeners();
     initDetail();
-  });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 })();

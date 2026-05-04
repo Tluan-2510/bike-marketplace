@@ -89,6 +89,13 @@ if (preg_match('/^\/api\/products\/(\d+)$/', $uri, $m)) {
     if ($method === 'DELETE') { $controller->destroy($id); exit(); }
 }
 
+// POST /api/products/:id/status
+if (preg_match('/^\/api\/products\/(\d+)\/status$/', $uri, $m)) {
+    $controller = new ProductController();
+    $id = (int)$m[1];
+    if ($method === 'POST') { $controller->changeStatus($id); exit(); }
+}
+
 /* ═══════════════════════════════════════════
    FAVORITES (protected)
    ═══════════════════════════════════════════ */
@@ -117,6 +124,13 @@ if ($uri === '/api/buy-requests' && $method === 'POST') {
 if ($uri === '/api/buy-requests' && $method === 'GET') {
     if (class_exists('BuyRequestController')) {
         (new BuyRequestController())->index();
+        exit();
+    }
+}
+
+if (preg_match('/^\/api\/buy-requests\/(\d+)$/', $uri, $m) && $method === 'PUT') {
+    if (class_exists('BuyRequestController')) {
+        (new BuyRequestController())->updateStatus((int)$m[1]);
         exit();
     }
 }

@@ -10,6 +10,7 @@ services:
     restart: unless-stopped
     volumes:
       - .:/var/www/html
+      - ./docker/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
     networks:
       - bike_market_network
     depends_on:

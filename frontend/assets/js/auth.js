@@ -68,7 +68,7 @@
       }
 
       window.setTimeout(function () {
-        window.location.href = resolveRedirect(form, "./user.html");
+        window.location.href = resolveRedirect(form, "./user.php");
       }, 1200);
     } catch (error) {
       if (window.BikeToast && typeof window.BikeToast.show === "function") {
@@ -104,7 +104,7 @@
         window.BikeToast.show("Đăng ký thành công!", "success");
       }
       window.setTimeout(function () {
-        window.location.href = resolveRedirect(form, "./login.html");
+        window.location.href = resolveRedirect(form, "./login.php");
       }, 1200);
     } catch (error) {
       if (window.BikeToast && typeof window.BikeToast.show === "function") {

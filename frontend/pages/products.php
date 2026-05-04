@@ -1,5 +1,29 @@
 <?php include '../includes/head.php'; ?>
 
+    <style>
+        .custom-pagination .page-item .page-link {
+            color: #333;
+            border: none;
+            margin: 0 5px;
+            border-radius: 5px;
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: all 0.3s;
+        }
+        .custom-pagination .page-item.active .page-link {
+            background-color: #f3c93e;
+            color: #000;
+            box-shadow: 0 4px 10px rgba(243, 201, 62, 0.3);
+        }
+        .custom-pagination .page-item .page-link:hover:not(.active) {
+            background-color: #f8f9fa;
+            color: #f3c93e;
+        }
+        .custom-pagination .page-item.disabled .page-link {
+            color: #ccc;
+            background: transparent;
+        }
+    </style>
     <body class="sub_page">
         <div class="hero_area">
             <?php include '../includes/navbar.php'; ?>
@@ -57,7 +81,12 @@
                     </div>
                 </div>
 
-                <div id="shopEmpty" class="text-center py-5 d-none"> <p class="text-muted">Không tìm thấy xe phù hợp với tiêu chí của bạn.</p>
+                <div id="shopEmpty" class="text-center py-5 d-none"> 
+                  <p class="text-muted">Không tìm thấy xe phù hợp với tiêu chí của bạn.</p>
+                </div>
+
+                <!-- Pagination Container -->
+                <div class="pagination-container d-flex justify-content-center mt-5" id="shopPagination">
                 </div>
             </div>
         </section>

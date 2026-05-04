@@ -54,18 +54,29 @@
               <div class="tab-pane fade show active" id="v-pills-dashboard" role="tabpanel" aria-labelledby="v-pills-dashboard-tab">
                 <h3 class="font-weight-bold mb-4">Tổng quan tài khoản</h3>
                 <div class="row mb-5">
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-4 mb-3">
                     <div class="stat-card d-flex align-items-center p-4">
                       <div class="stat-icon bg-warning-light text-warning mr-4">
                         <i class="fa fa-bicycle"></i>
                       </div>
                       <div>
                         <h3 class="mb-0 font-weight-bold" id="statListings">0</h3>
-                        <p class="text-muted mb-0 small text-uppercase font-weight-bold">Tin đang bán</p>
+                        <p class="text-muted mb-0 small text-uppercase font-weight-bold">Tin đã duyệt</p>
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-6 mb-3">
+                  <div class="col-md-4 mb-3">
+                    <div class="stat-card d-flex align-items-center p-4">
+                      <div class="stat-icon bg-pending-light text-warning mr-4" style="background-color: rgba(255, 193, 7, 0.1);">
+                        <i class="fa fa-clock-o"></i>
+                      </div>
+                      <div>
+                        <h3 class="mb-0 font-weight-bold" id="statPending">0</h3>
+                        <p class="text-muted mb-0 small text-uppercase font-weight-bold">Chờ duyệt</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 mb-3">
                     <div class="stat-card d-flex align-items-center p-4">
                       <div class="stat-icon bg-info-light text-info mr-4">
                         <i class="fa fa-heart"></i>
@@ -107,10 +118,10 @@
               <!-- Tab Buying (Buy History) -->
               <div class="tab-pane fade" id="v-pills-buying" role="tabpanel" aria-labelledby="v-pills-buying-tab">
                 <h3 class="font-weight-bold mb-4">Lịch sử mua hàng</h3>
-                <div class="bg-white p-4 rounded shadow-sm">
+                <div class="profile-table-container">
                   <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead class="thead-light">
+                    <table class="premium-table">
+                      <thead>
                         <tr>
                           <th>Sản phẩm</th>
                           <th>Ngày gửi</th>
@@ -120,7 +131,7 @@
                       </thead>
                       <tbody id="buyRequestsContainer">
                         <tr>
-                          <td colspan="4" class="text-center py-4">Đang tải dữ liệu...</td>
+                          <td colspan="4" class="text-center py-5"><i class="fa fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td>
                         </tr>
                       </tbody>
                     </table>
@@ -131,10 +142,10 @@
               <!-- Tab Selling (Customer Requests) -->
               <div class="tab-pane fade" id="v-pills-selling" role="tabpanel" aria-labelledby="v-pills-selling-tab">
                 <h3 class="font-weight-bold mb-4">Yêu cầu từ khách hàng</h3>
-                <div class="bg-white p-4 rounded shadow-sm">
+                <div class="profile-table-container">
                   <div class="table-responsive">
-                    <table class="table table-hover">
-                      <thead class="thead-light">
+                    <table class="premium-table">
+                      <thead>
                         <tr>
                           <th>Khách hàng</th>
                           <th>Sản phẩm</th>
@@ -145,7 +156,7 @@
                       </thead>
                       <tbody id="sellRequestsContainer">
                         <tr>
-                          <td colspan="5" class="text-center py-4">Đang tải dữ liệu...</td>
+                          <td colspan="5" class="text-center py-5"><i class="fa fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td>
                         </tr>
                       </tbody>
                     </table>
@@ -239,6 +250,6 @@
     <?php include '../includes/footer.php'; ?>
 
     <?php include '../includes/scripts.php'; ?>
-    <script src="../assets/js/user.js"></script>
+    <script src="../assets/js/user.js?v=12.0"></script>
   </body>
 </html>

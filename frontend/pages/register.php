@@ -13,7 +13,7 @@
         <div class="row justify-content-center">
           <div class="col-md-5">
             <div class="bg-white p-5 shadow-sm rounded">
-              <form id="registerForm" data-redirect="./login.html">
+              <form id="registerForm" data-redirect="./login.php">
                  <div class="form-group mb-3">
                   <label class="font-weight-bold">Họ và tên</label>
                   <input type="text" class="form-control" name="full_name" placeholder="Nguyễn Văn A" required />

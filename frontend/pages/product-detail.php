@@ -53,7 +53,16 @@
               <h2 class="detail-section-heading">Thông số sản phẩm</h2>
               <div id="productSpecs" class="specs-grid" aria-live="polite"></div>
 
-              <div class="actions mt-4">
+              <div id="ownerActions" class="actions mt-4 d-none">
+                <button id="btnMarkSold" type="button" class="btn btn-success btn-block product-action-btn mb-3" style="height: 50px; font-weight: 800;">
+                  <i class="fa fa-check-circle mr-2"></i> Xác nhận đã bán
+                </button>
+                <button id="btnDeleteProduct" type="button" class="btn btn-danger btn-block product-action-btn" style="height: 50px; font-weight: 800;">
+                  <i class="fa fa-trash mr-2"></i> Gỡ tin đăng
+                </button>
+              </div>
+
+              <div id="visitorActions" class="actions mt-4">
                 <button id="btnBuyNow" type="button" class="btn-premium btn-block product-action-btn mb-3" style="background-color: var(--black); color: var(--primary); border-color: var(--black);" data-action="buy-now">
                   <i class="fa fa-shopping-cart mr-2"></i> Mua ngay & Liên hệ
                 </button>
@@ -75,36 +84,13 @@
                 </button>
               </div>
 
-              <!-- Buy Request Modal -->
-              <div class="modal fade" id="buyRequestModal" tabindex="-1" role="dialog" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered" role="document">
-                  <div class="modal-content border-0 shadow">
-                    <div class="modal-header bg-warning text-dark border-0">
-                      <h5 class="modal-title font-weight-bold">Gửi yêu cầu mua xe</h5>
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                      </button>
-                    </div>
-                    <div class="modal-body p-4">
-                      <p class="text-muted small mb-3">Hệ thống sẽ gửi thông báo cho người bán. Bạn có thể để lại lời nhắn để người bán chủ động liên hệ lại.</p>
-                      <div class="form-group">
-                        <label class="font-weight-bold">Lời nhắn của bạn:</label>
-                        <textarea id="buyRequestMessage" class="form-control" rows="4" placeholder="Ví dụ: Tôi muốn xem xe vào chiều nay, vui lòng liên hệ lại..."></textarea>
-                      </div>
-                    </div>
-                    <div class="modal-footer border-0">
-                      <button type="button" class="btn btn-light px-4" data-dismiss="modal">Hủy</button>
-                      <button type="button" id="confirmBuyRequest" class="btn-premium px-4">Gửi yêu cầu</button>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
         </div>
 
         <!-- CONTENT ROW -->
-        <div class="row mt-5 pt-4">
+        <div class="row mt-5 pt-4 content-row-premium">
           <div class="col-lg-7">
             <div class="bg-white p-5 rounded shadow-sm detail-desc-box">
               <h3 class="section-title-premium">Mô tả chi tiết</h3>
@@ -152,12 +138,38 @@
       <a href="#" class="btn-buy-now d-flex align-items-center justify-content-center" id="btnCallSticky">Gọi ngay</a>
     </div>
 
+    <!-- Buy Request Modal -->
+    <div class="modal fade" id="buyRequestModal" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-warning text-dark border-0">
+            <h5 class="modal-title font-weight-bold">Gửi yêu cầu mua xe</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body p-4">
+            <p class="text-muted small mb-3">Hệ thống sẽ gửi thông báo cho người bán. Bạn có thể để lại lời nhắn để người bán chủ động liên hệ lại.</p>
+            <div class="form-group">
+              <label class="font-weight-bold">Lời nhắn của bạn:</label>
+              <textarea id="buyRequestMessage" class="form-control" rows="4" placeholder="Ví dụ: Tôi muốn xem xe vào chiều nay, vui lòng liên hệ lại..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="button" class="btn btn-light px-4" data-dismiss="modal">Hủy</button>
+            <button type="button" id="confirmBuyRequest" class="btn-premium px-4">Gửi yêu cầu</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <?php include '../includes/footer.php'; ?>
 
     <script src="../assets/js/jquery-3.4.1.min.js"></script>
     <script src="../assets/js/bootstrap.js"></script>
     <script src="../assets/js/toast.js"></script>
-    <script src="../assets/js/core.js?v=2"></script>
-    <script src="../assets/js/product-detail.js"></script>
+    <script src="../assets/js/core.js?v=16.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/product-detail.js?v=3.0"></script>
   </body>
 </html>

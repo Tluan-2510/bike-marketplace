@@ -29,6 +29,37 @@ class ProductController {
         $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
     }
 
+    public function changeStatus(int $id): never {
+        $user = AuthMiddleware::authenticate();
+        $product = $this->productModel->findById($id);
+
+        if (!$product) {
+            $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
+        }
+
+        if ($product['seller_id'] != $user['user_id'] && $user['role'] !== 'admin') {
+            $this->jsonResponse(false, null, "Bạn không có quyền cập nhật sản phẩm này", 403);
+        }
+
+        $input = json_decode(file_get_contents('php://input'), true);
+        $status = $input['status'] ?? null;
+
+        if (!$status) {
+            $this->jsonResponse(false, null, "Thiếu trạng thái cập nhật", 400);
+        }
+
+        $success = $this->productModel->updateStatus($id, $status);
+        if ($success) {
+            // Nếu đánh dấu là Đã bán, tự động cập nhật các yêu cầu mua liên quan
+            if ($status === 'sold') {
+                require_once __DIR__ . "/../models/BuyRequest.php";
+                (new BuyRequest())->completeRequestsForProduct($id);
+            }
+            $this->jsonResponse(true, null, "Cập nhật trạng thái thành công");
+        }
+        $this->jsonResponse(false, null, "Không thể cập nhật trạng thái", 500);
+    }
+
     public function update(int $id): never {
         // To be implemented
         $this->jsonResponse(false, null, "Chức năng cập nhật đang được phát triển", 501);
@@ -42,8 +73,13 @@ class ProductController {
             $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
         }
 
+        // Debug logging
+        error_log("[ProductController] Destroying product ID: " . $id);
+        error_log("[ProductController] Product seller_id: " . $product['seller_id'] . " (type: " . gettype($product['seller_id']) . ")");
+        error_log("[ProductController] Current user_id: " . $user['user_id'] . " (type: " . gettype($user['user_id']) . ")");
+
         // Check ownership or admin
-        if ($product['seller_id'] != $user['user_id'] && $user['role'] !== 'admin') {
+        if ((int)$product['seller_id'] !== (int)$user['user_id'] && $user['role'] !== 'admin') {
             $this->jsonResponse(false, null, "Bạn không có quyền xóa sản phẩm này", 403);
         }
 
@@ -63,6 +99,17 @@ class ProductController {
             $this->jsonResponse(false, null, "Không tìm thấy sản phẩm", 404);
         }
 
+        $sellerId = $_GET['seller_id'] ?? null;
+        $showAll  = isset($_GET['show_all']) && ($_GET['show_all'] == '1' || $_GET['show_all'] == 'true');
+        
+        // Security: only allow show_all if requesting own products or if admin
+        if ($showAll) {
+            $currentUser = AuthMiddleware::authenticate(false); // don't exit if no token
+            if (!$currentUser || ($currentUser['role'] !== 'admin' && (string)$currentUser['user_id'] !== (string)$sellerId)) {
+                $showAll = false; // Force show_all off if not authorized
+            }
+        }
+
         $filters = [
             'page'        => $_GET['page'] ?? 1,
             'limit'       => $_GET['limit'] ?? 12,
@@ -71,8 +118,9 @@ class ProductController {
             'category_id' => $_GET['category_id'] ?? null,
             'category'    => $_GET['category'] ?? null,
             'keyword'     => $_GET['keyword'] ?? null,
-            'seller_id'   => $_GET['seller_id'] ?? null,
-            'price_range' => $_GET['price_range'] ?? null
+            'seller_id'   => $sellerId,
+            'price_range' => $_GET['price_range'] ?? null,
+            'show_all'    => $showAll
         ];
 
         $result = $this->productModel->getAdvanced($filters);

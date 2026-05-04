@@ -72,14 +72,28 @@
 
     try {
       var userId = String(user.id || user.user_id || "");
-      var response = await window.BikeApi.getProducts(userId ? { seller_id: userId, limit: 100 } : {});
+      var response = await window.BikeApi.getProducts(userId ? { seller_id: userId, limit: 100, show_all: 1 } : {});
       var products = window.BikeApi.pickList(response).filter(function (product) {
         return !userId || String(product.seller_id || "") === userId;
       });
 
+      var approvedProducts = products.filter(p => String(p.is_approved) === '1');
+      var pendingProducts = products.filter(p => String(p.is_approved) !== '1');
+
       if (document.getElementById("statListings")) {
-        document.getElementById("statListings").textContent = String(products.length);
+        document.getElementById("statListings").textContent = String(approvedProducts.length);
       }
+      if (document.getElementById("statPending")) {
+        document.getElementById("statPending").textContent = String(pendingProducts.length);
+      }
+
+      // Sort products: Pending first, then by date descending
+      products.sort(function(a, b) {
+        if (a.is_approved != b.is_approved) {
+          return a.is_approved - b.is_approved; // 0 comes before 1
+        }
+        return new Date(b.created_at) - new Date(a.created_at);
+      });
 
       if (!products.length) {
         container.innerHTML = `
@@ -88,6 +102,9 @@
             <a href="./create_product.php" class="explore-link-premium mt-2">Đăng bán xe ngay</a>
           </div>
         `;
+        if (recentContainer) {
+          recentContainer.innerHTML = '<div class="col-12 text-center py-4 text-muted small">Chưa có tin đăng nào.</div>';
+        }
         return;
       }
 
@@ -99,7 +116,8 @@
 
       if (recentContainer) {
         recentContainer.innerHTML = "";
-        products.slice(0, 3).forEach(function (product) {
+        // Show up to 4 recent items
+        products.slice(0, 4).forEach(function (product) {
           product.is_owner = true;
           recentContainer.appendChild(window.renderProductCard(product));
         });
@@ -117,37 +135,43 @@
     if (!container) return;
 
     try {
-      container.innerHTML = '<tr><td colspan="4" class="text-center py-4"><i class="fa fa-spinner fa-spin"></i> Đang tải...</td></tr>';
+      container.innerHTML = '<tr><td colspan="4" class="text-center py-5"><i class="fa fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td></tr>';
       var response = await window.BikeApi.getBuyRequests('buyer');
-      var requests = window.BikeApi.pickList(response);
+      var list = window.BikeApi.pickList(response);
 
-      if (!requests.length) {
+      if (!list || list.length === 0) {
         container.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-muted">Bạn chưa gửi yêu cầu mua nào.</td></tr>';
         return;
       }
 
-      container.innerHTML = requests.map(req => `
-        <tr>
-          <td class="align-middle">
-            <div class="d-flex align-items-center">
-              <img src="${window.BikeApi.resolveImageUrl(req.image_url)}" class="rounded mr-2 shadow-sm" style="width: 45px; height: 45px; object-fit: cover;">
-              <div>
-                <div class="font-weight-bold">${req.title || "Xe đạp"}</div>
-                <div class="small text-muted">${window.BikeApi.formatCurrency(req.price)}</div>
+      container.innerHTML = list.map(req => {
+        var statusClass = `status-badge-${req.status || 'pending'}`;
+        var statusText = {
+          'pending': 'Chờ phản hồi',
+          'accepted': 'Đã chấp nhận',
+          'completed': 'Hoàn thành',
+          'rejected': 'Đã từ chối'
+        }[req.status] || req.status;
+
+        return `
+          <tr>
+            <td>
+              <div class="table-product-item">
+                <img src="${window.BikeApi.resolveImageUrl(req.image_url)}" class="table-product-img">
+                <div class="table-product-info">
+                  <a href="product-detail.php?id=${req.product_id}" class="table-product-title">${req.title || "Sản phẩm"}</a>
+                  <span class="table-product-price">${window.BikeApi.formatCurrency(req.price)}</span>
+                </div>
               </div>
-            </div>
-          </td>
-          <td class="align-middle small">${new Date(req.created_at).toLocaleDateString('vi-VN')}</td>
-          <td class="align-middle small text-muted">${req.message || '<i class="text-muted">Không có lời nhắn</i>'}</td>
-          <td class="align-middle">
-            <span class="badge badge-pill badge-${getStatusColor(req.status)} px-3 py-2">
-              ${translateStatus(req.status)}
-            </span>
-          </td>
-        </tr>
-      `).join('');
+            </td>
+            <td class="text-nowrap">${new Date(req.created_at).toLocaleDateString('vi-VN')}</td>
+            <td><div class="table-message-cell" title="${req.message || ''}">${req.message || ""}</div></td>
+            <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+          </tr>
+        `;
+      }).join('');
     } catch (error) {
-      container.innerHTML = '<tr><td colspan="4" class="text-center text-danger py-4">Lỗi tải dữ liệu.</td></tr>';
+      container.innerHTML = '<tr><td colspan="4" class="text-center py-5 text-danger">Không thể tải dữ liệu.</td></tr>';
     }
   }
 
@@ -156,59 +180,80 @@
     if (!container) return;
 
     try {
-      container.innerHTML = '<tr><td colspan="5" class="text-center py-4"><i class="fa fa-spinner fa-spin"></i> Đang tải...</td></tr>';
+      container.innerHTML = '<tr><td colspan="5" class="text-center py-5"><i class="fa fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</td></tr>';
       var response = await window.BikeApi.getBuyRequests('seller');
-      var requests = window.BikeApi.pickList(response);
+      var list = window.BikeApi.pickList(response);
 
-      if (!requests.length) {
+      if (!list || list.length === 0) {
         container.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-muted">Chưa có yêu cầu mua nào từ khách.</td></tr>';
         return;
       }
 
-      container.innerHTML = requests.map(req => `
-        <tr>
-          <td class="align-middle">
-            <div class="font-weight-bold">${req.buyer_name || "Khách hàng"}</div>
-            <div class="small text-muted">${req.buyer_phone || ""}</div>
-          </td>
-          <td class="align-middle">
-            <div class="font-weight-bold small">${req.title || "Sản phẩm"}</div>
-            <div class="text-muted" style="font-size: 11px;">#${req.product_id}</div>
-          </td>
-          <td class="align-middle small text-muted">${req.message || '-'}</td>
-          <td class="align-middle small">${new Date(req.created_at).toLocaleDateString('vi-VN')}</td>
-          <td class="align-middle">
-            <div class="btn-group btn-group-sm shadow-sm">
-              <a href="tel:${req.buyer_phone}" class="btn btn-outline-success" title="Gọi điện"><i class="fa fa-phone"></i></a>
-              <a href="https://zalo.me/${req.buyer_phone}" target="_blank" class="btn btn-outline-info" title="Zalo"><i class="fa fa-comment"></i></a>
+      container.innerHTML = list.map(req => {
+        var statusClass = `status-badge-${req.status || 'pending'}`;
+        var statusText = {
+          'pending': 'Mới',
+          'accepted': 'Đã chấp nhận',
+          'completed': 'Đã bán',
+          'rejected': 'Đã từ chối'
+        }[req.status] || req.status;
+
+        var actions = "";
+        if (req.status === 'pending') {
+          actions = `
+            <div class="table-actions">
+              <button class="btn-table-action btn-table-action-icon btn-table-action-accept update-req-status" onclick="window.updateRequestStatus(${req.id}, 'accepted')" title="Chấp nhận">
+                <i class="fa fa-check"></i>
+              </button>
+              <button class="btn-table-action btn-table-action-icon btn-table-action-reject update-req-status" onclick="window.updateRequestStatus(${req.id}, 'rejected')" title="Từ chối">
+                <i class="fa fa-times"></i>
+              </button>
             </div>
-          </td>
-        </tr>
-      `).join('');
+          `;
+        } else if (req.status === 'accepted') {
+          actions = `
+            <div class="table-actions">
+              <button class="btn-table-action btn-table-action-complete update-req-status" onclick="window.updateRequestStatus(${req.id}, 'completed')">
+                <i class="fa fa-handshake-o"></i> Đã bán
+              </button>
+            </div>
+          `;
+        } else {
+          actions = `<span class="status-badge ${statusClass}">${statusText}</span>`;
+        }
+
+        return `
+          <tr>
+            <td>
+              <div class="table-user-meta">
+                <span class="table-user-name">${req.buyer_name || "Khách hàng"}</span>
+                <span class="table-user-sub">${req.buyer_phone ? `<i class="fa fa-phone"></i> ${req.buyer_phone}` : ''}</span>
+                <div class="contact-links">
+                  <a href="tel:${req.buyer_phone || ''}" class="contact-link contact-link-call"><i class="fa fa-phone"></i> Gọi</a>
+                  <a href="https://zalo.me/${req.buyer_phone || ''}" target="_blank" class="contact-link contact-link-zalo"><i class="fa fa-comment"></i> Zalo</a>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="table-product-item">
+                <img src="${window.BikeApi.resolveImageUrl(req.image_url)}" class="table-product-img">
+                <div class="table-product-info">
+                  <a href="product-detail.php?id=${req.product_id}" class="table-product-title">${req.title || "Sản phẩm"}</a>
+                  <span class="table-product-price">${window.BikeApi.formatCurrency(req.price)}</span>
+                </div>
+              </div>
+            </td>
+            <td><div class="table-message-cell" title="${req.message || ''}">${req.message || ""}</div></td>
+            <td class="text-nowrap small">${new Date(req.created_at).toLocaleDateString('vi-VN')}</td>
+            <td>${actions}</td>
+          </tr>
+        `;
+      }).join('');
     } catch (error) {
-      container.innerHTML = '<tr><td colspan="5" class="text-center text-danger py-4">Lỗi tải dữ liệu.</td></tr>';
+      container.innerHTML = '<tr><td colspan="5" class="text-center py-5 text-danger">Không thể tải dữ liệu.</td></tr>';
     }
   }
 
-  function getStatusColor(status) {
-    switch (status) {
-      case 'pending': return 'warning';
-      case 'accepted': return 'success';
-      case 'rejected': return 'danger';
-      case 'completed': return 'info';
-      default: return 'secondary';
-    }
-  }
-
-  function translateStatus(status) {
-    switch (status) {
-      case 'pending': return 'Đang chờ';
-      case 'accepted': return 'Đã chấp nhận';
-      case 'rejected': return 'Từ chối';
-      case 'completed': return 'Hoàn thành';
-      default: return status;
-    }
-  }
 
   async function loadFavoritesCount() {
     if (!document.getElementById("statFavorites")) return;
@@ -510,7 +555,7 @@
   }
 
   function getFriendlyCreateError(error) {
-    if (error && /dang nhap|người dùng|nguoi dung|token|401/i.test(error.message || "")) {
+    if (error && /dang nhap|người dùng|nguoi dung|token|session|bearer|401/i.test(error.message || "")) {
       return "Phiên đăng nhập hết hạn";
     }
     return "Không thể đăng tin lúc này. Vui lòng thử lại.";
@@ -537,8 +582,11 @@
       }
 
       var userId = window.BikeApi.getAuthUserId();
+      console.log("[CreateProduct] Submitting form. User ID:", userId);
+
       if (!userId) {
         showToast("Phiên đăng nhập hết hạn", "error");
+        console.error("[CreateProduct] Cannot submit: userId is null");
         return;
       }
 
@@ -556,16 +604,26 @@
           formData.append("images[]", file, file.name);
         });
 
-        await window.BikeApi.createProduct(formData);
-        showToast("Đăng tin thành công!", "success");
-        form.reset();
-        selectedProductImages = [];
-        renderImagePreviews();
-        syncImageInput(document.getElementById("productImage"));
-        window.setTimeout(function () {
-          window.location.href = "./user.php";
-        }, 900);
+        console.log("[CreateProduct] Calling API createProduct...");
+        var response = await window.BikeApi.createProduct(formData);
+        console.log("[CreateProduct] API Response:", response);
+
+        if (response && response.success) {
+          window.BikeApi.showToast("Đăng tin thành công! Tin của bạn đang chờ quản trị viên duyệt.", "success");
+          form.reset();
+          selectedProductImages = [];
+          renderImagePreviews();
+          syncImageInput(document.getElementById("productImage"));
+          window.setTimeout(function () {
+            window.location.href = "user.php";
+          }, 1500);
+        } else {
+          var errorMsg = response && response.message ? response.message : "Không thể đăng tin lúc này";
+          showToast(errorMsg, "error");
+          console.error("[CreateProduct] API Error:", errorMsg);
+        }
       } catch (error) {
+        console.error("[CreateProduct] Exception during submission:", error);
         showToast(getFriendlyCreateError(error), "error");
       } finally {
         if (submitButton) submitButton.disabled = false;
@@ -573,7 +631,7 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  function start() {
     var productForm = document.getElementById("productForm") || document.getElementById("createProductForm");
     if (productForm) {
       loadLookups();
@@ -638,21 +696,97 @@
       var productId = deleteBtn.dataset.id;
       if (!productId) return;
 
-      if (!confirm("Bạn có chắc chắn muốn xóa tin đăng này không? Thao tác này không thể hoàn tác.")) {
-        return;
-      }
+      const result = await Swal.fire({
+        title: 'Xác nhận xóa?',
+        text: "Bạn có chắc chắn muốn xóa tin đăng này không? Thao tác này không thể hoàn tác.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#95a5a6',
+        confirmButtonText: 'Xóa ngay',
+        cancelButtonText: 'Hủy'
+      });
+
+      if (!result.isConfirmed) return;
 
       try {
         var response = await window.BikeApi.deleteProduct(productId);
         if (response.success) {
-          showToast("Đã xóa tin đăng thành công.", "success");
-          loadUserListings(user); // Refresh the list
+          Swal.fire({
+            title: 'Đã xóa!',
+            text: 'Tin đăng của bạn đã được gỡ bỏ.',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false
+          });
+          
+          // Refresh lists
+          var currentUser = window.BikeApi.getAuthUser();
+          loadUserListings(currentUser || user); 
         } else {
-          showToast(response.message || "Không thể xóa tin đăng.", "error");
+          Swal.fire('Lỗi!', response.message || 'Không thể xóa tin đăng.', 'error');
         }
       } catch (error) {
-        showToast("Lỗi khi kết nối đến máy chủ.", "error");
+        console.error("[UserPage] Delete error:", error);
+        Swal.fire('Lỗi!', 'Đã xảy ra lỗi khi kết nối đến máy chủ.', 'error');
       }
     });
-  });
+  }
+
+  window.updateRequestStatus = async function(id, status) {
+    const statusLabels = {
+      'accepted': 'chấp nhận',
+      'rejected': 'từ chối',
+      'completed': 'hoàn thành'
+    };
+
+    const result = await Swal.fire({
+      title: 'Xác nhận?',
+      text: `Bạn có chắc muốn ${statusLabels[status]} yêu cầu này?`,
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Đồng ý',
+      cancelButtonText: 'Hủy'
+    });
+
+    if (!result.isConfirmed) return;
+
+    try {
+      var res = await window.BikeApi.updateBuyRequestStatus(id, status);
+      if (res.success) {
+        showToast("Cập nhật trạng thái thành công!", "success");
+        loadSellRequests(); // Refresh table
+      } else {
+        showToast(res.message || "Lỗi khi cập nhật.", "error");
+      }
+    } catch (error) {
+      showToast("Lỗi kết nối máy chủ.", "error");
+    }
+  };
+
+  function getStatusColor(status) {
+    switch (status) {
+      case 'pending': return 'warning';
+      case 'accepted': return 'success';
+      case 'rejected': return 'danger';
+      case 'completed': return 'info';
+      default: return 'secondary';
+    }
+  }
+
+  function translateStatus(status) {
+    switch (status) {
+      case 'pending': return 'Chờ phản hồi';
+      case 'accepted': return 'Đã chấp nhận';
+      case 'rejected': return 'Đã từ chối';
+      case 'completed': return 'Đã hoàn thành';
+      default: return status;
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", start);
+  } else {
+    start();
+  }
 })();

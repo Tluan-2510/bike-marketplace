@@ -21,6 +21,9 @@
           <li class="nav-item">
             <a class="nav-link" href="./create_product.php">Đăng bán</a>
           </li>
+          <li class="nav-item d-none" id="navAdminLink">
+            <a class="nav-link" href="./admin.php">Quản lý</a>
+          </li>
         </ul>
         <div class="user_option">
           <a class="cart_link mr-3" href="./favorites.php" title="Yêu thích">

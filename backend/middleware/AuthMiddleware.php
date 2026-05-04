@@ -14,7 +14,7 @@ class AuthMiddleware {
      *
      * @return array Payload đã decode (bao gồm user_id, role, iat, exp)
      */
-    public static function authenticate(): array {
+    public static function authenticate(bool $required = true): ?array {
         $headers = getallheaders();
 
         // Tương thích nhiều server: tìm Authorization header (case-insensitive)
@@ -25,21 +25,33 @@ class AuthMiddleware {
                 break;
             }
         }
+        
+        // Fallback for some server configurations (Nginx/FastCGI)
+        if (!$authHeader) {
+            if (isset($_SERVER['HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['HTTP_AUTHORIZATION'];
+            } elseif (isset($_SERVER['REDIRECT_HTTP_AUTHORIZATION'])) {
+                $authHeader = $_SERVER['REDIRECT_HTTP_AUTHORIZATION'];
+            }
+        }
 
         if (!$authHeader) {
-            self::unauthorized('Missing Authorization header');
+            if (!$required) return null;
+            self::unauthorized('Missing Authorization header (session_missing)');
         }
 
         // Kiểm tra định dạng "Bearer <token>"
         if (!preg_match('/^Bearer\s+(.+)$/i', $authHeader, $matches)) {
-            self::unauthorized('Invalid Authorization format. Expected: Bearer <token>');
+            if (!$required) return null;
+            self::unauthorized('Invalid Authorization format (bearer_invalid)');
         }
 
         $token = trim($matches[1]);
         $payload = JwtHelper::decode($token);
 
         if ($payload === false) {
-            self::unauthorized('Invalid or expired token');
+            if (!$required) return null;
+            self::unauthorized('Invalid or expired token (token_invalid)');
         }
 
         return $payload;
