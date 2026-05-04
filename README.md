@@ -114,66 +114,23 @@ bike-marketplace/
 ├── backend/                    # PHP Backend — RESTful API
 │   ├── config/
 │   │   └── database.php        # Kết nối PDO
-│   ├── controllers/
-│   │   ├── AuthController.php
-│   │   ├── ProductController.php
-│   │   ├── BuyRequestController.php
-│   │   ├── FavoriteController.php
-│   │   ├── UserController.php
-│   │   ├── AdminController.php
-│   │   ├── BrandController.php
-│   │   └── CategoryController.php
-│   ├── models/
-│   │   ├── User.php
-│   │   ├── Product.php
-│   │   ├── BuyRequest.php
-│   │   ├── Favorite.php
-│   │   ├── Brand.php
-│   │   └── Category.php
-│   ├── middleware/
-│   │   └── AuthMiddleware.php  # JWT verification
-│   ├── routes/
-│   │   └── api.php             # Route dispatcher
-│   ├── utils/
-│   │   ├── JwtHelper.php
-│   │   └── response.php
-│   ├── uploads/                # Ảnh sản phẩm (bị gitignore)
+│   ├── controllers/            # Logic nghiệp vụ
+│   ├── models/                 # Thao tác cơ sở dữ liệu
+│   ├── middleware/             # Bảo mật & Xác thực
+│   ├── routes/                 # Điều phối API
 │   └── index.php               # Entry point API
 │
 ├── frontend/                   # Giao diện người dùng
-│   ├── pages/
-│   │   ├── index.php           # Trang chủ
-│   │   ├── products.php        # Danh sách sản phẩm
-│   │   ├── product-detail.php  # Chi tiết sản phẩm
-│   │   ├── create_product.php  # Đăng bán xe
-│   │   ├── user.php            # Hồ sơ cá nhân
-│   │   ├── favorites.php       # Danh sách yêu thích
-│   │   ├── admin.php           # Trang quản trị
-│   │   ├── login.php
-│   │   └── register.php
-│   ├── includes/               # PHP components tái sử dụng
-│   │   ├── head.php
-│   │   ├── navbar.php
-│   │   ├── footer.php
-│   │   └── scripts.php
-│   └── assets/
-│       ├── css/                # Stylesheet theo trang
-│       ├── js/                 # JavaScript theo module
-│       └── images/             # Ảnh tĩnh (hero, categories, icons)
+│   ├── pages/                  # Các trang chức năng
+│   ├── includes/               # Thành phần giao diện tái sử dụng
+│   └── assets/                 # CSS, JS, Images
 │
 ├── database/
-│   ├── schema.sql              # DDL — Tạo toàn bộ bảng
-│   ├── seed.sql                # Dữ liệu mẫu cơ bản
-│   ├── sample_products.sql     # Dữ liệu sản phẩm demo
-│   └── reset_system.php        # Script reset & tạo admin
+│   ├── schema.sql              # Cấu trúc bảng
+│   └── seed.sql                # Dữ liệu khởi tạo
 │
-├── docker/
-│   ├── nginx/default.conf      # Nginx routing config
-│   └── php/Dockerfile          # PHP-FPM image
-│
-├── docker-compose.yml          # Điều phối 3 services
-├── .env.example                # Mẫu biến môi trường
-└── .gitignore
+├── docker-compose.yml          # Điều phối hệ thống
+└── .env.example                # Cấu hình môi trường
 ```
 
 ---
@@ -206,50 +163,12 @@ docker-compose up -d --build
 | **API Endpoint** | http://localhost:8888/api/v1/ |
 | **Database** | `localhost:3306` (user: root / pass: root) |
 
-### Tài khoản mặc định
+### Tài khoản quản trị mặc định
 
-Hệ thống tự động seed dữ liệu qua `database/seed.sql`. Để tạo tài khoản admin hoặc reset dữ liệu:
+Hệ thống tự động khởi tạo tài khoản admin sau khi seed dữ liệu:
 
-```bash
-docker exec -it bike_market_app php /var/www/html/database/reset_system.php
-```
-
----
-
-## 🔌 API Overview
-
-Base URL: `http://localhost:8888/api/v1`
-
-| Method | Endpoint | Mô tả | Auth |
-|---|---|---|---|
-| `POST` | `/auth/register` | Đăng ký tài khoản | ❌ |
-| `POST` | `/auth/login` | Đăng nhập, nhận JWT | ❌ |
-| `GET` | `/products` | Lấy danh sách sản phẩm | ❌ |
-| `GET` | `/products/{id}` | Chi tiết sản phẩm | ❌ |
-| `POST` | `/products` | Đăng bán sản phẩm | ✅ |
-| `PUT` | `/products/{id}` | Cập nhật sản phẩm | ✅ |
-| `DELETE` | `/products/{id}` | Xóa sản phẩm | ✅ |
-| `POST` | `/buy-requests` | Gửi yêu cầu mua | ✅ |
-| `GET` | `/buy-requests` | Xem yêu cầu của tôi | ✅ |
-| `POST` | `/favorites/{id}` | Thêm/bỏ yêu thích | ✅ |
-| `GET` | `/users/me` | Thông tin cá nhân | ✅ |
-| `PUT` | `/users/me` | Cập nhật hồ sơ | ✅ |
-| `GET` | `/admin/products` | Duyệt sản phẩm (admin) | ✅ Admin |
-| `PUT` | `/admin/products/{id}` | Approve/reject sản phẩm | ✅ Admin |
-| `GET` | `/brands` | Danh sách thương hiệu | ❌ |
-| `GET` | `/categories` | Danh sách danh mục | ❌ |
-
-> **Auth**: Gửi header `Authorization: Bearer <token>` với các endpoint yêu cầu xác thực.
-
----
-
-## 👥 Đội ngũ phát triển
-
-| Vai trò | Thành viên |
-|---|---|
-| **Frontend** | Huỳnh Văn Khánh, Nguyễn Hoàng Phương |
-| **Backend** | Vạn Tường Ceasar, Nguyễn Duy Ngọc, Nguyễn Thành Luân |
-| **Database & DevOps** | Phạm Văn Hưng |
+- **Email:** `admin@gmail.com`
+- **Mật khẩu:** `admin123`
 
 ---
 

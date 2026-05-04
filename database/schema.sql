@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS users (
     id           INT          NOT NULL AUTO_INCREMENT,
     username     VARCHAR(50)  NOT NULL UNIQUE,
     email        VARCHAR(100) NOT NULL UNIQUE,
-    password     VARCHAR(255) NOT NULL,          -- bcrypt hash (PASSWORD_BCRYPT)
+    password_hash VARCHAR(255) NOT NULL,          -- bcrypt hash (PASSWORD_BCRYPT)
     phone_number VARCHAR(20)           DEFAULT NULL,
     full_name    VARCHAR(100)          DEFAULT NULL,
     avatar_url   VARCHAR(255)          DEFAULT NULL,

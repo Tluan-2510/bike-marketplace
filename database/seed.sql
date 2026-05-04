@@ -1,20 +1,17 @@
--- Script to seed test products
+-- Standard Seed for Bike Marketplace
 SET NAMES utf8mb4;
 
+-- Clean existing data to ensure clean state
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE users;
+TRUNCATE TABLE products;
+TRUNCATE TABLE product_images;
+TRUNCATE TABLE favorites;
+TRUNCATE TABLE buy_requests;
+SET FOREIGN_KEY_CHECKS = 1;
 
-INSERT INTO users (id, full_name, username, email, password_hash, role, phone_number) 
-VALUES (999, 'Admin Tester', 'admin_test', 'tester@bikemarket.vn', '123456', 'admin', '0912345678');
-
--- Insert Products
-INSERT INTO products (id, seller_id, title, description, price, category_id, brand_id, frame_material, wheel_size, groupset, brake_type, condition_state, status)
-VALUES 
-(101, 999, 'Trek Emonda ALR 5', 'Dòng xe road khung nhôm siêu nhẹ, màu tím cực đẹp. Bộ truyền động Shimano 105 mượt mà, xe mới đi được 200km.', 35000000, 2, 1, 'Aluminum', '700c', 'Shimano 105', 'Phanh đĩa', 'Như mới', 'available'),
-(102, 999, 'Giant Anthem Advanced Pro', 'Siêu phẩm MTB full suspension khung carbon. Phù hợp cho các giải đua XC chuyên nghiệp.', 85000000, 1, 2, 'Carbon', '29 inch', 'SRAM GX Eagle', 'Phanh đĩa', 'Mới', 'available'),
-(103, 999, 'Specialized Sirrus 2.0', 'Xe hybrid đa năng cho cả đi làm và tập luyện cuối tuần. Thiết kế thanh lịch, cảm giác lái thoải mái.', 12500000, 3, 3, 'Aluminum', '700c', 'Shimano Acera', 'Phanh vành', 'Sử dụng tốt', 'available');
-
--- Insert Images
-INSERT INTO product_images (product_id, image_url, is_primary)
-VALUES 
-(101, 'test-trek.png', 1),
-(102, 'test-giant.png', 1),
-(103, 'test-specialized.png', 1);
+-- Insert Admin Account
+-- Email: admin@gmail.com
+-- Password: admin123
+INSERT INTO users (username, email, password_hash, full_name, role) 
+VALUES ('admin', 'admin@gmail.com', '$2y$10$KpCs4hYgEg6DeEzEbgPKY.q4m34/0YZjgO1I7CdwUlVWPBiCGZpIq', 'System Administrator', 'admin');
