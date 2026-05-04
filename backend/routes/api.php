@@ -28,10 +28,23 @@ header('Content-Type: application/json; charset=utf-8');
 
 // Trích xuất URI sạch
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-// Loại bỏ prefix /backend nếu có
-if (strpos($uri, '/backend') === 0) {
-    $uri = substr($uri, 8);
+
+// Loại bỏ các prefix không cần thiết để routing chính xác
+$prefixes = ['/backend', '/api/v1', '/api'];
+foreach ($prefixes as $prefix) {
+    if (strpos($uri, $prefix) === 0) {
+        $uri = substr($uri, strlen($prefix));
+    }
 }
+
+// Đảm bảo $uri luôn bắt đầu bằng /api để khớp với code cũ hoặc chuẩn hóa về không có /api
+// Ở đây tôi sẽ chuẩn hóa về không có /api để các câu lệnh if sau này gọn hơn, 
+// nhưng để an toàn nhất và không phải sửa hàng loạt "if ($uri === '/api/...')", 
+// tôi sẽ giữ /api ở đầu nếu nó bị mất.
+if (strpos($uri, '/api') !== 0) {
+    $uri = '/api' . $uri;
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 /* ═══════════════════════════════════════════
