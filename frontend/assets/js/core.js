@@ -65,8 +65,22 @@
 
         getAuthUser: function() {
             try {
-                var user = localStorage.getItem('auth_user');
-                return user ? JSON.parse(user) : null;
+                var userStr = localStorage.getItem('auth_user');
+                if (!userStr) return null;
+                var user = JSON.parse(userStr);
+                
+                // Auto-heal corrupted data from previous bug
+                if (user.success === false || (!user.id && !user.user_id && !user.email)) {
+                    console.warn("[BikeApi] Detected corrupted auth state, auto-clearing.");
+                    localStorage.removeItem('auth_user');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('token');
+                    // Force UI update by reloading
+                    window.location.reload();
+                    return null;
+                }
+                
+                return user;
             } catch (e) {
                 return null;
             }
